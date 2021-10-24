@@ -176,3 +176,42 @@ func TestVec3_Normalize(t *testing.T) {
 		t.Fatalf("\t\tFAILED: %v (expected %v)", unit, unit_expected)
 	}
 }
+
+func TestVec3_Elem(t *testing.T) {
+	A := Vec3{1.0, 2.0, 30.0}
+	t.Logf("Given a 3D vector %v", A)
+
+	t.Log("\twe can access its elements it:")
+	e0 := A.Elem(0)
+	e1 := A.Elem(1)
+	e2 := A.Elem(2)
+	aX := A.X
+	aY := A.Y
+	aZ := A.Z
+
+	if e0 == aX {
+		t.Logf("\t\tPASSED: %v", e0)
+	} else {
+		t.Fatalf("\t\tFAILED: %v (expected %v)", e0, aX)
+	}
+	if e1 == aY {
+		t.Logf("\t\tPASSED: %v", e1)
+	} else {
+		t.Fatalf("\t\tFAILED: %v (expected %v)", e1, aY)
+	}
+	if e2 == aZ {
+		t.Logf("\t\tPASSED: %v", e2)
+	} else {
+		t.Fatalf("\t\tFAILED: %v (expected %v)", e2, aZ)
+	}
+
+	t.Log("\twe get 0.0 if we give an invalid index:")
+	e3 := A.Elem(3)
+	e3_expected := 0.0
+
+	if e3 == e3_expected {
+		t.Logf("\t\tPASSED: %v", e3)
+	} else {
+		t.Fatalf("\t\tFAILED: %v (expected %v)", e2, e3_expected)
+	}
+}

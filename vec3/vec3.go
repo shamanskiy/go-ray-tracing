@@ -49,3 +49,16 @@ func (A Vec3) Length() float64 {
 func (A Vec3) Normalize() Vec3 {
 	return A.Div(A.Length())
 }
+
+func (A Vec3) Elem(i int) float64 {
+	switch i {
+	case 0:
+		return A.X
+	case 1:
+		return A.Y
+	case 2:
+		return A.Z
+	default:
+		return 0.0
+	}
+}
