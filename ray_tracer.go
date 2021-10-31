@@ -12,6 +12,11 @@ import (
 )
 
 func main() {
+
+	scene := core.Scene{}
+	scene.Add(core.Sphere{core.Vec3{0.0, 0.0, -1.0}, 0.5})
+	scene.Add(core.Sphere{core.Vec3{0.0, -100.5, -1.0}, 100.0})
+
 	width := 200
 	height := 100
 
@@ -30,9 +35,9 @@ func main() {
 		for y := 0; y < height; y++ {
 			u := float32(x) / float32(width)
 			v := float32(y) / float32(height)
-			ray := core.Ray{origin, upper_left_corner.Add(horizontal.Mul(u)).Add(vertical.Mul(v))}
+			ray := core.Ray{Origin: origin, Direction: upper_left_corner.Add(horizontal.Mul(u)).Add(vertical.Mul(v))}
 
-			c := testRay(ray)
+			c := testRay(ray, &scene)
 			img.Set(x, y, toRGBA(c))
 		}
 	}
@@ -50,30 +55,15 @@ func toZero255(x float32) uint8 {
 	return uint8(math32.Floor(255.99 * x))
 }
 
-func testRay(ray core.Ray) core.Color {
-	t := hitSphere(core.Vec3{0.0, 0.0, -1.0}, 0.5, ray)
-	if t > 0.0 {
-		N := ray.Eval(t).Sub(core.Vec3{0.0, 0.0, -1.0}).Normalize()
-		return N.Add(core.Color{1.0, 1.0, 1.0}).Mul(0.5)
+func testRay(ray core.Ray, scene *core.Scene) core.Color {
+	hit := scene.Hit(ray)
+	if hit.Hit {
+		return hit.Normal.Add(core.Color{1.0, 1.0, 1.0}).Mul(0.5)
 	}
 
 	unit_direction := ray.Direction.Normalize()
-	t = 0.5 * (unit_direction.Y() + 1.0)
+	t := 0.5 * (unit_direction.Y() + 1.0)
 	A := core.Color{1.0, 1.0, 1.0}.Mul(1.0 - t)
 	B := core.Color{0.5, 0.7, 1.0}.Mul(t)
 	return A.Add(B)
-}
-
-func hitSphere(center core.Vec3, radius core.Real, ray core.Ray) core.Real {
-	oc := ray.Origin.Sub(center)
-	a := ray.Direction.Dot(ray.Direction)
-	b := 2.0 * ray.Direction.Dot(oc)
-	c := oc.Dot(oc) - radius*radius
-	d := b*b - 4*a*c
-
-	if d < 0 {
-		return -1.0
-	} else {
-		return (-b - math32.Sqrt(d)) / (2.0 * a)
-	}
 }
