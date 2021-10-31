@@ -14,28 +14,30 @@ import (
 func main() {
 
 	scene := core.Scene{}
-	scene.Add(core.Sphere{core.Vec3{0.0, 0.0, -1.0}, 0.5})
-	scene.Add(core.Sphere{core.Vec3{0.0, -100.5, -1.0}, 100.0})
+	scene.Add(core.Sphere{Center: core.Vec3{0.0, 0.0, -1.0}, Radius: 0.5})
+	scene.Add(core.Sphere{Center: core.Vec3{0.0, -100.5, -1.0}, Radius: 100.0})
 
-	width := 200
-	height := 100
+	width := 400
+	height := 200
 
 	upLeft := image.Point{0, 0}
 	lowRight := image.Point{width, height}
 
 	img := image.NewRGBA(image.Rectangle{upLeft, lowRight})
 
-	origin := core.Vec3{0.0, 0.0, 0.0}
-	upper_left_corner := core.Vec3{-2.0, 1.0, -1.0}
-	horizontal := core.Vec3{4.0, 0.0, 0.0}
-	vertical := core.Vec3{0.0, -2.0, 0.0}
+	camera := core.Camera{
+		Origin:            core.Vec3{0.0, 0.0, 0.0},
+		Upper_left_corner: core.Vec3{-2.0, 1.0, -1.0},
+		Horizontal:        core.Vec3{4.0, 0.0, 0.0},
+		Vertical:          core.Vec3{0.0, -2.0, 0.0},
+	}
 
 	// Set color for each pixel.
 	for x := 0; x < width; x++ {
 		for y := 0; y < height; y++ {
 			u := float32(x) / float32(width)
 			v := float32(y) / float32(height)
-			ray := core.Ray{Origin: origin, Direction: upper_left_corner.Add(horizontal.Mul(u)).Add(vertical.Mul(v))}
+			ray := camera.GetRay(u, v)
 
 			c := testRay(ray, &scene)
 			img.Set(x, y, toRGBA(c))

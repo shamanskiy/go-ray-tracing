@@ -7,8 +7,8 @@ type Scene struct {
 func (s *Scene) Hit(ray Ray) HitRecord {
 	var hit HitRecord
 
-	for _, obj := range s.objects {
-		tempHit := obj.Hit(ray)
+	for i := range s.objects {
+		tempHit := s.objects[i].Hit(ray)
 		if tempHit.Hit {
 			if !hit.Hit || (hit.Hit && hit.Param > tempHit.Param) {
 				hit = tempHit
