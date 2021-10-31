@@ -7,7 +7,8 @@ import (
 	"os"
 
 	"github.com/chewxy/math32"
-	"github.com/go-gl/mathgl/mgl32"
+
+	"github.com/Shamanskiy/go-ray-tracer/core"
 )
 
 func main() {
@@ -19,11 +20,20 @@ func main() {
 
 	img := image.NewRGBA(image.Rectangle{upLeft, lowRight})
 
+	origin := core.Vec3{0.0, 0.0, 0.0}
+	upper_left_corner := core.Vec3{-2.0, 1.0, -1.0}
+	horizontal := core.Vec3{4.0, 0.0, 0.0}
+	vertical := core.Vec3{0.0, -2.0, 0.0}
+
 	// Set color for each pixel.
 	for x := 0; x < width; x++ {
 		for y := 0; y < height; y++ {
-			c := mgl32.Vec3{float32(x) / float32(width), float32(y) / float32(height), 0.5}
-			img.Set(x, y, color.RGBA{toZero255(c.X()), toZero255(c.Y()), toZero255(c.Z()), 0xff})
+			u := float32(x) / float32(width)
+			v := float32(y) / float32(height)
+			ray := core.Ray{origin, upper_left_corner.Add(horizontal.Mul(u)).Add(vertical.Mul(v))}
+
+			c := testRay(ray)
+			img.Set(x, y, toRGBA(c))
 		}
 	}
 
@@ -32,6 +42,18 @@ func main() {
 	png.Encode(f, img)
 }
 
+func toRGBA(c core.Color) color.RGBA {
+	return color.RGBA{toZero255(c.X()), toZero255(c.Y()), toZero255(c.Z()), 0xff}
+}
+
 func toZero255(x float32) uint8 {
 	return uint8(math32.Floor(255.99 * x))
+}
+
+func testRay(ray core.Ray) core.Color {
+	unit_direction := ray.Direction.Normalize()
+	t := 0.5 * (unit_direction.Y() + 1.0)
+	A := core.Vec3{1.0, 1.0, 1.0}.Mul(1.0 - t)
+	B := core.Vec3{0.5, 0.7, 1.0}.Mul(t)
+	return A.Add(B)
 }
