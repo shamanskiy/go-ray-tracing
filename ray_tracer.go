@@ -4,10 +4,10 @@ import (
 	"image"
 	"image/color"
 	"image/png"
-	"math"
 	"os"
 
-	"github.com/Shamanskiy/go-ray-tracer/vec3"
+	"github.com/chewxy/math32"
+	"github.com/go-gl/mathgl/mgl32"
 )
 
 func main() {
@@ -22,8 +22,8 @@ func main() {
 	// Set color for each pixel.
 	for x := 0; x < width; x++ {
 		for y := 0; y < height; y++ {
-			c := vec3.Vec3{float64(x) / float64(width), float64(y) / float64(height), 0.9}
-			img.Set(x, y, color.RGBA{toZero255(c.X), toZero255(c.Y), toZero255(c.Z), 0xff})
+			c := mgl32.Vec3{float32(x) / float32(width), float32(y) / float32(height), 0.5}
+			img.Set(x, y, color.RGBA{toZero255(c.X()), toZero255(c.Y()), toZero255(c.Z()), 0xff})
 		}
 	}
 
@@ -32,6 +32,6 @@ func main() {
 	png.Encode(f, img)
 }
 
-func toZero255(x float64) uint8 {
-	return uint8(math.Round(255.99 * x))
+func toZero255(x float32) uint8 {
+	return uint8(math32.Floor(255.99 * x))
 }
