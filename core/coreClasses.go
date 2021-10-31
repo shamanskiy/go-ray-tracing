@@ -9,8 +9,16 @@ type Real = float32
 type Ray struct {
 	Origin    Vec3
 	Direction Vec3
+	MinParam  Real
 }
 
 func (ray Ray) Eval(t float32) Vec3 {
 	return ray.Origin.Add(ray.Direction.Mul(t))
+}
+
+type HitRecord struct {
+	Hit    bool
+	Param  Real
+	Point  Vec3
+	Normal Vec3
 }
