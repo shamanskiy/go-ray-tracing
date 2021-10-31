@@ -51,22 +51,29 @@ func toZero255(x float32) uint8 {
 }
 
 func testRay(ray core.Ray) core.Color {
-	if hitSphere(core.Vec3{0.0, 0.0, -1.0}, 0.5, ray) {
-		return core.Color{1.0, 0.0, 0.0}
+	t := hitSphere(core.Vec3{0.0, 0.0, -1.0}, 0.5, ray)
+	if t > 0.0 {
+		N := ray.Eval(t).Sub(core.Vec3{0.0, 0.0, -1.0}).Normalize()
+		return N.Add(core.Color{1.0, 1.0, 1.0}).Mul(0.5)
 	}
 
 	unit_direction := ray.Direction.Normalize()
-	t := 0.5 * (unit_direction.Y() + 1.0)
+	t = 0.5 * (unit_direction.Y() + 1.0)
 	A := core.Color{1.0, 1.0, 1.0}.Mul(1.0 - t)
 	B := core.Color{0.5, 0.7, 1.0}.Mul(t)
 	return A.Add(B)
 }
 
-func hitSphere(center core.Vec3, radius core.Real, ray core.Ray) bool {
+func hitSphere(center core.Vec3, radius core.Real, ray core.Ray) core.Real {
 	oc := ray.Origin.Sub(center)
 	a := ray.Direction.Dot(ray.Direction)
 	b := 2.0 * ray.Direction.Dot(oc)
 	c := oc.Dot(oc) - radius*radius
 	d := b*b - 4*a*c
-	return d > 0.0
+
+	if d < 0 {
+		return -1.0
+	} else {
+		return (-b - math32.Sqrt(d)) / (2.0 * a)
+	}
 }
