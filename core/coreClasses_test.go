@@ -5,7 +5,7 @@ import (
 )
 
 func TestRay(t *testing.T) {
-	ray := Ray{Origin: Vec3{0.0, 0.0, 0.0}, Direction: Vec3{1.0, 2.0, 3.0}}
+	ray := Ray{Vec3{0.0, 0.0, 0.0}, Vec3{1.0, 2.0, 3.0}}
 	t.Logf("Given a ray with origin at %v and direction %v,\n", ray.Origin, ray.Direction)
 
 	t.Log("\twe can evaluate the ray at point t = 2.0:")

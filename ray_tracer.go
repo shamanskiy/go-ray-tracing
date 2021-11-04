@@ -20,7 +20,7 @@ func main() {
 
 	width := 400
 	height := 200
-	sampling := 10
+	sampling := 100
 
 	upLeft := image.Point{0, 0}
 	lowRight := image.Point{width, height}
@@ -60,13 +60,14 @@ func toRGBA(c core.Color) color.RGBA {
 }
 
 func toZero255(x float32) uint8 {
-	return uint8(math32.Floor(255.99 * x))
+	return uint8(math32.Floor(255.99 * math32.Sqrt(x)))
 }
 
 func testRay(ray core.Ray, scene *core.Scene) core.Color {
-	hit := scene.Hit(ray)
+	hit := scene.HitWithMin(ray, 0.0001)
 	if hit.Hit {
-		return hit.Normal.Add(core.Color{1.0, 1.0, 1.0}).Mul(0.5)
+		target := hit.Point.Add(hit.Normal).Add(randomInUnitSphere())
+		return testRay(core.Ray{hit.Point, target.Sub(hit.Point)}, scene).Mul(0.5)
 	}
 
 	unit_direction := ray.Direction.Normalize()
@@ -74,4 +75,12 @@ func testRay(ray core.Ray, scene *core.Scene) core.Color {
 	A := core.Color{1.0, 1.0, 1.0}.Mul(1.0 - t)
 	B := core.Color{0.5, 0.7, 1.0}.Mul(t)
 	return A.Add(B)
+}
+
+func randomInUnitSphere() core.Vec3 {
+	vec := core.Vec3{1.0, 0.0, 0.0}
+	for vec.LenSqr() >= 1.0 {
+		vec = core.Vec3{rand.Float32(), rand.Float32(), rand.Float32()}.Mul(2.0).Sub(core.Vec3{1.0, 1.0, 1.0})
+	}
+	return vec
 }

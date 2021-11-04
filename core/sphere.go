@@ -7,7 +7,7 @@ type Sphere struct {
 	Radius Real
 }
 
-func (s Sphere) Hit(ray Ray) HitRecord {
+func (s Sphere) HitWithMin(ray Ray, minParam Real) HitRecord {
 	centerToOrigin := ray.Origin.Sub(s.Center)
 
 	a := ray.Direction.Dot(ray.Direction)
@@ -20,12 +20,12 @@ func (s Sphere) Hit(ray Ray) HitRecord {
 		return hit
 	}
 
-	if left >= ray.MinParam {
+	if left >= minParam {
 		hit.Param = left
 		hit.Hit = true
 	}
 
-	if !hit.Hit && right >= ray.MinParam {
+	if !hit.Hit && right >= minParam {
 		hit.Param = right
 		hit.Hit = true
 	}
@@ -36,4 +36,8 @@ func (s Sphere) Hit(ray Ray) HitRecord {
 	}
 
 	return hit
+}
+
+func (s Sphere) Hit(ray Ray) HitRecord {
+	return s.HitWithMin(ray, 0.0)
 }
