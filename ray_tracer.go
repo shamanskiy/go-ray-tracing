@@ -4,6 +4,7 @@ import (
 	"image"
 	"image/color"
 	"image/png"
+	"math/rand"
 	"os"
 
 	"github.com/chewxy/math32"
@@ -19,6 +20,7 @@ func main() {
 
 	width := 400
 	height := 200
+	sampling := 10
 
 	upLeft := image.Point{0, 0}
 	lowRight := image.Point{width, height}
@@ -35,12 +37,16 @@ func main() {
 	// Set color for each pixel.
 	for x := 0; x < width; x++ {
 		for y := 0; y < height; y++ {
-			u := float32(x) / float32(width)
-			v := float32(y) / float32(height)
-			ray := camera.GetRay(u, v)
-
-			c := testRay(ray, &scene)
-			img.Set(x, y, toRGBA(c))
+			var clr core.Color
+			for s := 0; s < sampling; s++ {
+				u := (float32(x) + rand.Float32()) / float32(width)
+				v := (float32(y) + rand.Float32()) / float32(height)
+				ray := camera.GetRay(u, v)
+				c := testRay(ray, &scene)
+				clr = clr.Add(c)
+			}
+			clr = clr.Mul(1.0 / float32(sampling))
+			img.Set(x, y, toRGBA(clr))
 		}
 	}
 
