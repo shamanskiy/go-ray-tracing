@@ -9,7 +9,7 @@ type Sphere struct {
 	Radius core.Real
 }
 
-func (s Sphere) HitWithMin(ray core.Ray, minParam core.Real) core.HitRecord {
+func (s Sphere) HitWithMin(ray core.Ray, minParam core.Real) *HitRecord {
 	centerToOrigin := ray.Origin.Sub(s.Center)
 
 	a := ray.Direction.Dot(ray.Direction)
@@ -17,29 +17,25 @@ func (s Sphere) HitWithMin(ray core.Ray, minParam core.Real) core.HitRecord {
 	c := centerToOrigin.Dot(centerToOrigin) - s.Radius*s.Radius
 	left, right, err := core.SolveQuadraticEquation(a, b, c)
 
-	var hit core.HitRecord
 	if err != nil {
-		return hit
+		return nil
 	}
 
 	if left >= minParam {
-		hit.Param = left
-		hit.Hit = true
+		hitPoint := ray.Eval(left)
+		hitNormal := hitPoint.Sub(s.Center).Mul(1 / s.Radius)
+		return &HitRecord{left, hitPoint, hitNormal}
 	}
 
-	if !hit.Hit && right >= minParam {
-		hit.Param = right
-		hit.Hit = true
+	if right >= minParam {
+		hitPoint := ray.Eval(right)
+		hitNormal := hitPoint.Sub(s.Center).Mul(1 / s.Radius)
+		return &HitRecord{right, hitPoint, hitNormal}
 	}
 
-	if hit.Hit {
-		hit.Point = ray.Eval(hit.Param)
-		hit.Normal = hit.Point.Sub(s.Center).Mul(1 / s.Radius)
-	}
-
-	return hit
+	return nil
 }
 
-func (s Sphere) Hit(ray core.Ray) core.HitRecord {
+func (s Sphere) Hit(ray core.Ray) *HitRecord {
 	return s.HitWithMin(ray, 0.0)
 }

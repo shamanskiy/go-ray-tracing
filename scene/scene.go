@@ -9,17 +9,17 @@ type Scene struct {
 	objects []objects.Object
 }
 
-func (s *Scene) Hit(ray core.Ray) core.HitRecord {
+func (s *Scene) Hit(ray core.Ray) *objects.HitRecord {
 	return s.HitWithMin(ray, 0.0)
 }
 
-func (s *Scene) HitWithMin(ray core.Ray, minParam core.Real) core.HitRecord {
-	var hit core.HitRecord
+func (s *Scene) HitWithMin(ray core.Ray, minParam core.Real) *objects.HitRecord {
+	var hit *objects.HitRecord
 
 	for i := range s.objects {
 		tempHit := s.objects[i].HitWithMin(ray, minParam)
-		if tempHit.Hit {
-			if !hit.Hit || (hit.Hit && hit.Param > tempHit.Param) {
+		if tempHit != nil {
+			if hit == nil || (hit != nil && hit.Param > tempHit.Param) {
 				hit = tempHit
 			}
 		}

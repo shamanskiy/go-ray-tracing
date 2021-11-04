@@ -17,8 +17,8 @@ func TestScene_RightSphere(t *testing.T) {
 	hitRay := core.Ray{core.Vec3{4.0, 0.0, 0.0}, core.Vec3{-1.0, 0.0, 0.0}}
 	t.Logf("\twe can test if a ray with origin %v and direction %v hits anything:\n", hitRay.Origin, hitRay.Direction)
 	hitRecord := scene.Hit(hitRay)
-	expected := core.HitRecord{Hit: true, Param: 2.0, Point: core.Vec3{2.0, 0.0, 0.0}, Normal: core.Vec3{1.0, 0.0, 0.0}}
-	if hitRecord == expected {
+	expected := objects.HitRecord{Param: 2.0, Point: core.Vec3{2.0, 0.0, 0.0}, Normal: core.Vec3{1.0, 0.0, 0.0}}
+	if *hitRecord == expected {
 		t.Logf("\t\tPASSED: the ray hit the right sphere, hit record is %v, expected %v", hitRecord, expected)
 	} else {
 		t.Fatalf("\t\tFAILED: hit record is %v, expected %v", hitRecord, expected)
@@ -36,8 +36,8 @@ func TestScene_LeftSphere(t *testing.T) {
 	t.Logf("\twe can test if a ray with origin %v and direction %v hits anything with minimum parameter 7.0:\n",
 		hitRay.Origin, hitRay.Direction)
 	hitRecord := scene.HitWithMin(hitRay, 7.0)
-	expected := core.HitRecord{Hit: true, Param: 8.0, Point: core.Vec3{-4.0, 0.0, 0.0}, Normal: core.Vec3{1.0, 0.0, 0.0}}
-	if hitRecord == expected {
+	expected := objects.HitRecord{Param: 8.0, Point: core.Vec3{-4.0, 0.0, 0.0}, Normal: core.Vec3{1.0, 0.0, 0.0}}
+	if *hitRecord == expected {
 		t.Logf("\t\tPASSED: the ray hit the left sphere, hit record is %v, expected %v", hitRecord, expected)
 	} else {
 		t.Fatalf("\t\tFAILED: hit record is %v, expected %v", hitRecord, expected)

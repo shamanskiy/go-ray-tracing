@@ -68,7 +68,7 @@ func toZero255(x float32) uint8 {
 
 func testRay(ray core.Ray, scene *scene.Scene) core.Color {
 	hit := scene.HitWithMin(ray, 0.0001)
-	if hit.Hit {
+	if hit != nil {
 		target := hit.Point.Add(hit.Normal).Add(randomInUnitSphere())
 		return testRay(core.Ray{hit.Point, target.Sub(hit.Point)}, scene).Mul(0.5)
 	}
