@@ -11,6 +11,7 @@ import (
 
 	"github.com/Shamanskiy/go-ray-tracer/camera"
 	"github.com/Shamanskiy/go-ray-tracer/core"
+	"github.com/Shamanskiy/go-ray-tracer/materials"
 	"github.com/Shamanskiy/go-ray-tracer/objects"
 	"github.com/Shamanskiy/go-ray-tracer/scene"
 )
@@ -45,7 +46,7 @@ func main() {
 				u := (float32(x) + rand.Float32()) / float32(width)
 				v := (float32(y) + rand.Float32()) / float32(height)
 				ray := camera.GetRay(u, v)
-				c := testRay(ray, &scene)
+				c := testRay(ray, &scene, 0)
 				clr = clr.Add(c)
 			}
 			clr = clr.Mul(1.0 / float32(sampling))
@@ -66,11 +67,16 @@ func toZero255(x float32) uint8 {
 	return uint8(math32.Floor(255.99 * math32.Sqrt(x)))
 }
 
-func testRay(ray core.Ray, scene *scene.Scene) core.Color {
+func testRay(ray core.Ray, scene *scene.Scene, depth int) core.Color {
 	hit := scene.HitWithMin(ray, 0.0001)
+	m := materials.Diffusive{core.Color{1.0, 0.0, 0.0}}
 	if hit != nil {
-		target := hit.Point.Add(hit.Normal).Add(randomInUnitSphere())
-		return testRay(core.Ray{hit.Point, target.Sub(hit.Point)}, scene).Mul(0.5)
+		reflection := m.Reflect(ray, *hit)
+		if reflection != nil && depth < 10 {
+			return core.MulElem(testRay(reflection.Ray, scene, depth+1), reflection.Attenuation)
+		} else {
+			return core.Color{0.0, 0.0, 0.0}
+		}
 	}
 
 	unit_direction := ray.Direction.Normalize()
@@ -78,12 +84,4 @@ func testRay(ray core.Ray, scene *scene.Scene) core.Color {
 	A := core.Color{1.0, 1.0, 1.0}.Mul(1.0 - t)
 	B := core.Color{0.5, 0.7, 1.0}.Mul(t)
 	return A.Add(B)
-}
-
-func randomInUnitSphere() core.Vec3 {
-	vec := core.Vec3{1.0, 0.0, 0.0}
-	for vec.LenSqr() >= 1.0 {
-		vec = core.Vec3{rand.Float32(), rand.Float32(), rand.Float32()}.Mul(2.0).Sub(core.Vec3{1.0, 1.0, 1.0})
-	}
-	return vec
 }

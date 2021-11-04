@@ -6,11 +6,10 @@ import (
 )
 
 type Reflection struct {
-	NotAbsorbed bool
 	Ray         core.Ray
-	Attenuation core.Real
+	Attenuation core.Color
 }
 
 type Material interface {
-	Reflect(ray core.Ray, hit objects.HitRecord) Reflection
+	Reflect(ray core.Ray, hit objects.HitRecord) *Reflection
 }
