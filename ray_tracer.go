@@ -9,14 +9,17 @@ import (
 
 	"github.com/chewxy/math32"
 
+	"github.com/Shamanskiy/go-ray-tracer/camera"
 	"github.com/Shamanskiy/go-ray-tracer/core"
+	"github.com/Shamanskiy/go-ray-tracer/objects"
+	"github.com/Shamanskiy/go-ray-tracer/scene"
 )
 
 func main() {
 
-	scene := core.Scene{}
-	scene.Add(core.Sphere{Center: core.Vec3{0.0, 0.0, -1.0}, Radius: 0.5})
-	scene.Add(core.Sphere{Center: core.Vec3{0.0, -100.5, -1.0}, Radius: 100.0})
+	scene := scene.Scene{}
+	scene.Add(objects.Sphere{Center: core.Vec3{0.0, 0.0, -1.0}, Radius: 0.5})
+	scene.Add(objects.Sphere{Center: core.Vec3{0.0, -100.5, -1.0}, Radius: 100.0})
 
 	width := 400
 	height := 200
@@ -27,7 +30,7 @@ func main() {
 
 	img := image.NewRGBA(image.Rectangle{upLeft, lowRight})
 
-	camera := core.Camera{
+	camera := camera.Camera{
 		Origin:            core.Vec3{0.0, 0.0, 0.0},
 		Upper_left_corner: core.Vec3{-2.0, 1.0, -1.0},
 		Horizontal:        core.Vec3{4.0, 0.0, 0.0},
@@ -63,7 +66,7 @@ func toZero255(x float32) uint8 {
 	return uint8(math32.Floor(255.99 * math32.Sqrt(x)))
 }
 
-func testRay(ray core.Ray, scene *core.Scene) core.Color {
+func testRay(ray core.Ray, scene *scene.Scene) core.Color {
 	hit := scene.HitWithMin(ray, 0.0001)
 	if hit.Hit {
 		target := hit.Point.Add(hit.Normal).Add(randomInUnitSphere())

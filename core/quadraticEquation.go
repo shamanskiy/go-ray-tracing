@@ -1,4 +1,4 @@
-package utils
+package core
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"github.com/chewxy/math32"
 )
 
-func SolveQuadraticEquation(a, b, c float32) (left float32, right float32, err error) {
+func SolveQuadraticEquation(a, b, c Real) (left Real, right Real, err error) {
 	d := b*b - 4*a*c
 	if d >= 0 {
 		dSqrt := math32.Sqrt(d)

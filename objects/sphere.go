@@ -1,21 +1,23 @@
-package core
+package objects
 
-import "github.com/Shamanskiy/go-ray-tracer/utils"
+import (
+	"github.com/Shamanskiy/go-ray-tracer/core"
+)
 
 type Sphere struct {
-	Center Vec3
-	Radius Real
+	Center core.Vec3
+	Radius core.Real
 }
 
-func (s Sphere) HitWithMin(ray Ray, minParam Real) HitRecord {
+func (s Sphere) HitWithMin(ray core.Ray, minParam core.Real) core.HitRecord {
 	centerToOrigin := ray.Origin.Sub(s.Center)
 
 	a := ray.Direction.Dot(ray.Direction)
 	b := 2.0 * ray.Direction.Dot(centerToOrigin)
 	c := centerToOrigin.Dot(centerToOrigin) - s.Radius*s.Radius
-	left, right, err := utils.SolveQuadraticEquation(a, b, c)
+	left, right, err := core.SolveQuadraticEquation(a, b, c)
 
-	var hit HitRecord
+	var hit core.HitRecord
 	if err != nil {
 		return hit
 	}
@@ -38,6 +40,6 @@ func (s Sphere) HitWithMin(ray Ray, minParam Real) HitRecord {
 	return hit
 }
 
-func (s Sphere) Hit(ray Ray) HitRecord {
+func (s Sphere) Hit(ray core.Ray) core.HitRecord {
 	return s.HitWithMin(ray, 0.0)
 }
