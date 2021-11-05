@@ -10,6 +10,6 @@ type Diffusive struct {
 }
 
 func (d Diffusive) Reflect(ray core.Ray, hit objects.HitRecord) *Reflection {
-	reflectedDirection := hit.Normal.Add(core.RandomInUnitSphere())
+	reflectedDirection := hit.Normal.Add(core.Random().VecInUnitSphere())
 	return &Reflection{core.Ray{hit.Point, reflectedDirection}, d.Color}
 }

@@ -1,4 +1,4 @@
-package scene
+package render
 
 import (
 	"github.com/Shamanskiy/go-ray-tracer/core"

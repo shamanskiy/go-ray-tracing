@@ -1,4 +1,4 @@
-package camera
+package render
 
 import "github.com/Shamanskiy/go-ray-tracer/core"
 

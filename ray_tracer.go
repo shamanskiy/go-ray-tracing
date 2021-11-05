@@ -9,16 +9,15 @@ import (
 
 	"github.com/chewxy/math32"
 
-	"github.com/Shamanskiy/go-ray-tracer/camera"
 	"github.com/Shamanskiy/go-ray-tracer/core"
 	"github.com/Shamanskiy/go-ray-tracer/materials"
 	"github.com/Shamanskiy/go-ray-tracer/objects"
-	"github.com/Shamanskiy/go-ray-tracer/scene"
+	"github.com/Shamanskiy/go-ray-tracer/render"
 )
 
 func main() {
 
-	scene := scene.Scene{}
+	scene := render.Scene{}
 	scene.Add(objects.Sphere{Center: core.Vec3{0.0, 0.0, -1.0}, Radius: 0.5})
 	scene.Add(objects.Sphere{Center: core.Vec3{0.0, -100.5, -1.0}, Radius: 100.0})
 
@@ -31,7 +30,7 @@ func main() {
 
 	img := image.NewRGBA(image.Rectangle{upLeft, lowRight})
 
-	camera := camera.Camera{
+	camera := render.Camera{
 		Origin:            core.Vec3{0.0, 0.0, 0.0},
 		Upper_left_corner: core.Vec3{-2.0, 1.0, -1.0},
 		Horizontal:        core.Vec3{4.0, 0.0, 0.0},
@@ -67,9 +66,9 @@ func toZero255(x float32) uint8 {
 	return uint8(math32.Floor(255.99 * math32.Sqrt(x)))
 }
 
-func testRay(ray core.Ray, scene *scene.Scene, depth int) core.Color {
+func testRay(ray core.Ray, scene *render.Scene, depth int) core.Color {
 	hit := scene.HitWithMin(ray, 0.0001)
-	m := materials.Diffusive{core.Color{1.0, 0.0, 0.0}}
+	m := materials.Diffusive{core.Color{0.5, 0.5, 0.5}}
 	if hit != nil {
 		reflection := m.Reflect(ray, *hit)
 		if reflection != nil && depth < 10 {
@@ -81,7 +80,7 @@ func testRay(ray core.Ray, scene *scene.Scene, depth int) core.Color {
 
 	unit_direction := ray.Direction.Normalize()
 	t := 0.5 * (unit_direction.Y() + 1.0)
-	A := core.Color{1.0, 1.0, 1.0}.Mul(1.0 - t)
-	B := core.Color{0.5, 0.7, 1.0}.Mul(t)
+	A := core.White.Mul(1.0 - t)
+	B := core.SkyBlue.Mul(t)
 	return A.Add(B)
 }
