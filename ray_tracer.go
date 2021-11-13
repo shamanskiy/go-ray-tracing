@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"image"
 	"image/color"
 	"image/png"
@@ -21,8 +20,10 @@ import (
 
 func main() {
 	scene := render.Scene{}
-	scene.Add(objects.Sphere{Center: core.Vec3{0.0, 0.0, -1.0}, Radius: 0.5})
-	scene.Add(objects.Sphere{Center: core.Vec3{0.0, -100.5, -1.0}, Radius: 100.0})
+	scene.Add(objects.Sphere{Center: core.Vec3{0.0, 0.0, -1.0}, Radius: 0.5},
+		materials.Diffusive{core.Color{1.0, 0.0, 0.0}})
+	scene.Add(objects.Sphere{Center: core.Vec3{0.0, -100.5, -1.0}, Radius: 100.0},
+		materials.Diffusive{core.Color{0.5, 0.5, 0.5}})
 
 	width := 800
 	height := 400
@@ -40,14 +41,7 @@ func main() {
 		Vertical:          core.Vec3{0.0, -2.0, 0.0},
 	}
 
-	bar := progressbar.NewOptions(width,
-		progressbar.OptionFullWidth(),
-		progressbar.OptionSetDescription("rendering"),
-		progressbar.OptionShowCount(),
-		progressbar.OptionOnCompletion(func() { fmt.Println() }),
-		progressbar.OptionShowIts(),
-		progressbar.OptionSetItsString("col"),
-		progressbar.OptionThrottle(100*time.Millisecond))
+	bar := progressbar.Default(int64(width), "rendering")
 
 	start := time.Now()
 	for x := 0; x < width; x++ {
@@ -58,7 +52,7 @@ func main() {
 				u := (float32(x) + rand.Float32()) / float32(width)
 				v := (float32(y) + rand.Float32()) / float32(height)
 				ray := camera.GetRay(u, v)
-				c := testRay(ray, &scene, 0)
+				c := scene.TestRay(ray)
 				clr = clr.Add(c)
 			}
 			clr = clr.Mul(1.0 / float32(sampling))
@@ -79,23 +73,4 @@ func toRGBA(c core.Color) color.RGBA {
 
 func toZero255(x float32) uint8 {
 	return uint8(math32.Floor(255.99 * math32.Sqrt(x)))
-}
-
-func testRay(ray core.Ray, scene *render.Scene, depth int) core.Color {
-	hit := scene.HitWithMin(ray, 0.0001)
-	m := materials.Diffusive{core.Color{0.5, 0.5, 0.5}}
-	if hit != nil {
-		reflection := m.Reflect(ray, *hit)
-		if reflection != nil && depth < 10 {
-			return core.MulElem(testRay(reflection.Ray, scene, depth+1), reflection.Attenuation)
-		} else {
-			return core.Color{0.0, 0.0, 0.0}
-		}
-	}
-
-	unit_direction := ray.Direction.Normalize()
-	t := 0.5 * (unit_direction.Y() + 1.0)
-	A := core.White.Mul(1.0 - t)
-	B := core.SkyBlue.Mul(t)
-	return A.Add(B)
 }
