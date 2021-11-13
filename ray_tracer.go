@@ -1,13 +1,17 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"image/png"
+	"log"
 	"math/rand"
 	"os"
+	"time"
 
 	"github.com/chewxy/math32"
+	"github.com/schollz/progressbar/v3"
 
 	"github.com/Shamanskiy/go-ray-tracer/core"
 	"github.com/Shamanskiy/go-ray-tracer/materials"
@@ -16,14 +20,13 @@ import (
 )
 
 func main() {
-
 	scene := render.Scene{}
 	scene.Add(objects.Sphere{Center: core.Vec3{0.0, 0.0, -1.0}, Radius: 0.5})
 	scene.Add(objects.Sphere{Center: core.Vec3{0.0, -100.5, -1.0}, Radius: 100.0})
 
-	width := 400
-	height := 200
-	sampling := 100
+	width := 800
+	height := 400
+	sampling := 10
 
 	upLeft := image.Point{0, 0}
 	lowRight := image.Point{width, height}
@@ -37,8 +40,18 @@ func main() {
 		Vertical:          core.Vec3{0.0, -2.0, 0.0},
 	}
 
-	// Set color for each pixel.
+	bar := progressbar.NewOptions(width,
+		progressbar.OptionFullWidth(),
+		progressbar.OptionSetDescription("rendering"),
+		progressbar.OptionShowCount(),
+		progressbar.OptionOnCompletion(func() { fmt.Println() }),
+		progressbar.OptionShowIts(),
+		progressbar.OptionSetItsString("col"),
+		progressbar.OptionThrottle(100*time.Millisecond))
+
+	start := time.Now()
 	for x := 0; x < width; x++ {
+		bar.Add(1)
 		for y := 0; y < height; y++ {
 			var clr core.Color
 			for s := 0; s < sampling; s++ {
@@ -52,6 +65,8 @@ func main() {
 			img.Set(x, y, toRGBA(clr))
 		}
 	}
+	elapsed := time.Since(start)
+	log.Printf("Rendering took %s", elapsed)
 
 	// Encode as PNG.
 	f, _ := os.Create("image.png")
