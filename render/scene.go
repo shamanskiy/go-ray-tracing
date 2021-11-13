@@ -7,8 +7,10 @@ import (
 )
 
 type Scene struct {
-	objects   []objects.Object
-	materials []materials.Material
+	objects        []objects.Object
+	materials      []materials.Material
+	SkyColorTop    core.Color
+	SkyColorBottom core.Color
 }
 
 func (s *Scene) Hit(ray core.Ray, minParam core.Real) (hit *objects.HitRecord, objectIndex int) {
@@ -45,8 +47,8 @@ func (s *Scene) testRay(ray core.Ray, depth int) core.Color {
 
 	unit_direction := ray.Direction.Normalize()
 	t := 0.5 * (unit_direction.Y() + 1.0)
-	A := core.White.Mul(1.0 - t)
-	B := core.SkyBlue.Mul(t)
+	A := s.SkyColorBottom.Mul(1.0 - t)
+	B := s.SkyColorTop.Mul(t)
 	return A.Add(B)
 }
 
