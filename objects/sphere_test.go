@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/Shamanskiy/go-ray-tracer/core"
+	"github.com/Shamanskiy/go-ray-tracer/utils"
 )
 
 func TestSphere_FirstHit(t *testing.T) {
@@ -14,11 +15,8 @@ func TestSphere_FirstHit(t *testing.T) {
 	t.Logf("\twe can test if a ray with origin %v and direction %v hits the sphere:\n", hitRay.Origin, hitRay.Direction)
 	hitRecord := sphere.Hit(hitRay)
 	expected := HitRecord{Param: 2.0, Point: core.Vec3{2.0, 0.0, 0.0}, Normal: core.Vec3{1.0, 0.0, 0.0}}
-	if *hitRecord == expected {
-		t.Logf("\t\tPASSED: result is %v, expected %v", hitRecord, expected)
-	} else {
-		t.Fatalf("\t\tFAILED: result is %v, expected %v", hitRecord, expected)
-	}
+
+	utils.CheckResult(t, "hit record", *hitRecord, expected)
 }
 
 func TestSphere_SecondHit(t *testing.T) {
@@ -31,11 +29,8 @@ func TestSphere_SecondHit(t *testing.T) {
 	hitRecord := sphere.HitWithMin(hitRay, 3.0)
 
 	expected := HitRecord{Param: 6.0, Point: core.Vec3{-2.0, 0.0, 0.0}, Normal: core.Vec3{-1.0, 0.0, 0.0}}
-	if *hitRecord == expected {
-		t.Logf("\t\tPASSED: result is %v, expected %v", hitRecord, expected)
-	} else {
-		t.Fatalf("\t\tFAILED: result is %v, expected %v", hitRecord, expected)
-	}
+
+	utils.CheckResult(t, "hit record", *hitRecord, expected)
 }
 
 func TestSphere_TangentHit(t *testing.T) {
@@ -47,11 +42,8 @@ func TestSphere_TangentHit(t *testing.T) {
 	hitRecord := sphere.Hit(hitRay)
 
 	expected := HitRecord{Param: 4.0, Point: core.Vec3{0.0, 2.0, 0.0}, Normal: core.Vec3{0.0, 1.0, 0.0}}
-	if *hitRecord == expected {
-		t.Logf("\t\tPASSED: result is %v, expected %v", hitRecord, expected)
-	} else {
-		t.Fatalf("\t\tFAILED: result is %v, expected %v", hitRecord, expected)
-	}
+
+	utils.CheckResult(t, "hit record", *hitRecord, expected)
 }
 
 func TestSphere_NoHit_RayParamIsTooLarge(t *testing.T) {

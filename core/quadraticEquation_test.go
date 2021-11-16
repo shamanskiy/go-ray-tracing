@@ -1,27 +1,27 @@
 package core
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/Shamanskiy/go-ray-tracer/utils"
+)
 
 func TestQuadEquation_TwoSolutions(t *testing.T) {
 	t.Log("Given a quadratic equation 2x^2 - 6x + 4 = 0,")
 	t.Log("\twe can solve it:")
 	left, right, _ := SolveQuadraticEquation(2.0, -6.0, 4.0)
-	if left == 1.0 && right == 2.0 {
-		t.Logf("\t\tPASSED: solutions are %v and %v, expected 1 and 2", left, right)
-	} else {
-		t.Fatalf("\t\tFAILED: solutions are %v and %v, expected 1 and 2", left, right)
-	}
+
+	utils.CheckResult(t, "left solution", left, float32(1.0))
+	utils.CheckResult(t, "right solution", right, float32(2.0))
 }
 
 func TestQuadEquation_OneSolution(t *testing.T) {
 	t.Log("Given a quadratic equation 2x^2 - 4x + 2 = 0,")
 	t.Log("\twe can solve it:")
 	left, right, _ := SolveQuadraticEquation(2.0, -4.0, 2.0)
-	if left == 1.0 && right == 1.0 {
-		t.Logf("\t\tPASSED: solutions are %v and %v, expected 1 and 1", left, right)
-	} else {
-		t.Fatalf("\t\tFAILED: solutions are %v and %v, expected 1 and 1", left, right)
-	}
+
+	utils.CheckResult(t, "left solution", left, float32(1.0))
+	utils.CheckResult(t, "right solution", right, float32(1.0))
 }
 
 func TestQuadEquation_NoSolutions(t *testing.T) {

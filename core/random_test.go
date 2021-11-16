@@ -2,6 +2,8 @@ package core
 
 import (
 	"testing"
+
+	"github.com/Shamanskiy/go-ray-tracer/utils"
 )
 
 func TestRandom_VecInUnitSphere(t *testing.T) {
@@ -23,9 +25,6 @@ func TestRandom_VecInUnitSphere_Disable(t *testing.T) {
 
 	randomVec := Random().VecInUnitSphere()
 	expectedVec := Vec3{0.0, 0.0, 0.0}
-	if randomVec == expectedVec {
-		t.Logf("\tPASSED: result is %v, expected %v.\n", randomVec, expectedVec)
-	} else {
-		t.Fatalf("\tFAILED: result is %v, expected %v.\n", randomVec, expectedVec)
-	}
+
+	utils.CheckResult(t, "vector", randomVec, expectedVec)
 }

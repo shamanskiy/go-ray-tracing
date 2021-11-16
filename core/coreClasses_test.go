@@ -2,6 +2,8 @@ package core
 
 import (
 	"testing"
+
+	"github.com/Shamanskiy/go-ray-tracer/utils"
 )
 
 func TestRay(t *testing.T) {
@@ -11,18 +13,10 @@ func TestRay(t *testing.T) {
 	t.Log("\twe can evaluate the ray at point t = 2.0:")
 	point := ray.Eval(2.0)
 	expected := Vec3{2.0, 4.0, 6.0}
-	if point == expected {
-		t.Logf("\t\tPASSED: result is %v, expected %v.\n", point, expected)
-	} else {
-		t.Fatalf("\t\tFAILED: result is %v, expected %v.\n", point, expected)
-	}
+	utils.CheckResult(t, "vector", point, expected)
 
 	t.Log("\twe can evaluate the ray at point t = -2.0:")
 	point = ray.Eval(-2.0)
 	expected = Vec3{-2.0, -4.0, -6.0}
-	if point == expected {
-		t.Logf("\t\tPASSED: result is %v, expected %v.\n", point, expected)
-	} else {
-		t.Fatalf("\t\tFAILED: result is %v, expected %v.\n", point, expected)
-	}
+	utils.CheckResult(t, "vector", point, expected)
 }
