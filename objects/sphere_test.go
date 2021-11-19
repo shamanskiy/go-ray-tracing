@@ -55,11 +55,7 @@ func TestSphere_NoHit_RayParamIsTooLarge(t *testing.T) {
 		hitRay.Origin, hitRay.Direction)
 	hitRecord := sphere.HitWithMin(hitRay, 7.0)
 
-	if hitRecord == nil {
-		t.Logf("\t\tPASSED: no hit, result is nil, expected nil")
-	} else {
-		t.Fatalf("\t\tFAILED: result is %v, expected nil", *hitRecord)
-	}
+	utils.CheckNil(t, "hit record", hitRecord)
 }
 
 func TestSphere_NoHit_RayMisses(t *testing.T) {
@@ -70,9 +66,5 @@ func TestSphere_NoHit_RayMisses(t *testing.T) {
 	t.Logf("\twe can test if a ray with origin %v and direction %v hits the sphere:\n", hitRay.Origin, hitRay.Direction)
 	hitRecord := sphere.Hit(hitRay)
 
-	if hitRecord == nil {
-		t.Logf("\t\tPASSED: no hit, result is nil, expected nil")
-	} else {
-		t.Fatalf("\t\tFAILED: result is %v, expected nil", *hitRecord)
-	}
+	utils.CheckNil(t, "hit record", hitRecord)
 }

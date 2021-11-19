@@ -5,6 +5,7 @@ import (
 
 	"github.com/Shamanskiy/go-ray-tracer/core"
 	"github.com/Shamanskiy/go-ray-tracer/objects"
+	"github.com/Shamanskiy/go-ray-tracer/utils"
 )
 
 func TestDiffusive(t *testing.T) {
@@ -29,10 +30,6 @@ func TestDiffusive(t *testing.T) {
 		Ray:         core.Ray{hit.Point, hit.Normal},
 		Attenuation: redDiffusive.Color}
 
-	if reflection != nil && *reflection == expected {
-		t.Logf("\tPASSED: reflection is %v, expected %v.\n", reflection, expected)
-	} else {
-		t.Fatalf("\tFAILED: reflection is %v, expected %v.\n", reflection, expected)
-	}
-
+	utils.CheckNotNil(t, "reflection", reflection)
+	utils.CheckResult(t, "reflection", *reflection, expected)
 }
