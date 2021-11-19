@@ -7,6 +7,7 @@ import (
 	"github.com/Shamanskiy/go-ray-tracer/materials"
 	"github.com/Shamanskiy/go-ray-tracer/objects"
 	"github.com/Shamanskiy/go-ray-tracer/utils"
+	"github.com/chewxy/math32"
 )
 
 func TestScene_Default(t *testing.T) {
@@ -95,4 +96,58 @@ func TestScene_TestRay_SingleSphere(t *testing.T) {
 	rayColor = scene.TestRay(hitRay)
 	expectedColor = skyColor
 	utils.CheckResult(t, "ray color", rayColor, expectedColor)
+}
+
+func TestScene_NumberOfReflectionsExceeded(t *testing.T) {
+	t.Log("Given a scene with a white skybox,")
+	skyColor := core.White
+	scene := Scene{SkyColorBottom: skyColor, SkyColorTop: skyColor}
+	t.Log("two red spheres,")
+	sphereA := objects.Sphere{core.Vec3{0.0, 0.0, 0.0}, 1.0}
+	sphereB := objects.Sphere{core.Vec3{4.0, 0.0, 0.0}, 1.0}
+	material := materials.Diffusive{core.Red}
+	scene.Add(sphereA, material)
+	scene.Add(sphereB, material)
+
+	t.Log("and a disabled randomizer,")
+	core.Random().Disable()
+	defer core.Random().Enable()
+
+	ray := core.Ray{core.Vec3{2.0, 0.0, 0.0}, core.Vec3{1.0, 0.0, 0.0}}
+	t.Log("\t a ray colinear with the line between the spheres' centers")
+	t.Log("\t will bounce between the spheres until the number of reflections is exceeded.")
+	t.Log("\t The resulting color should be black:")
+	rayColor := scene.TestRay(ray)
+	expected := core.Black
+
+	utils.CheckResult(t, "ray color", rayColor, expected)
+}
+
+func TestScene_TwoReflections(t *testing.T) {
+	t.Log("Given a scene with a white skybox,")
+	skyColor := core.White
+	scene := Scene{SkyColorBottom: skyColor, SkyColorTop: skyColor}
+	t.Log("a disabled randomizer,")
+	core.Random().Disable()
+	defer core.Random().Enable()
+
+	sphereA := objects.Sphere{core.Vec3{0.0, 0.0, 0.0}, 1.0}
+	sphereB := objects.Sphere{core.Vec3{4.0, 3.0, 0.0}, 1.0}
+	sphereColor := core.Vec3{0.2, 0.4, 0.6}
+	material := materials.Diffusive{sphereColor}
+	scene.Add(sphereA, material)
+	scene.Add(sphereB, material)
+	t.Logf("and two spheres %v and %v with diffusive color %v,\n",
+		sphereA, sphereB, sphereColor)
+
+	firstHitPoint := core.Vec3{math32.Sqrt(2) / 2, math32.Sqrt(2) / 2, 0.0}
+	rayOrigin := core.Vec3{10.0, 0.0, 0.0}
+	ray := core.Ray{rayOrigin, firstHitPoint.Sub(rayOrigin)}
+	t.Logf("\t a ray %v should hit the first sphere at point %v,\n", ray, firstHitPoint)
+	t.Log("\t get reflected and hit the second sphere at point [3.0 3.0 0.0],")
+	t.Log("\t then get reflected towards the sky:")
+	rayColor := scene.TestRay(ray)
+	expected := core.MulElem(sphereColor, sphereColor)
+
+	utils.CheckResult(t, "ray color", rayColor, expected)
 }

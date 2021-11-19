@@ -21,7 +21,7 @@ import (
 func main() {
 	scene := render.Scene{SkyColorTop: core.SkyBlue, SkyColorBottom: core.White}
 	scene.Add(objects.Sphere{Center: core.Vec3{0.0, 0.0, -1.0}, Radius: 0.5},
-		materials.Diffusive{core.Blue})
+		materials.Diffusive{core.Color{1.0, 0.0, 1.0}})
 	scene.Add(objects.Sphere{Center: core.Vec3{0.0, -100.5, -1.0}, Radius: 100.0},
 		materials.Diffusive{core.GrayMedium})
 
