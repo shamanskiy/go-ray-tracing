@@ -7,12 +7,22 @@ import (
 
 type Reflective struct {
 	Color     core.Color
-	Fuzziness core.Real
+	fuzziness core.Real
+}
+
+func NewReflectiveWithFuzziness(color core.Color, fuzziness core.Real) Reflective {
+	if fuzziness < 0 {
+		fuzziness = 0
+	}
+	if fuzziness > 1 {
+		fuzziness = 1
+	}
+	return Reflective{color, fuzziness}
 }
 
 func (r Reflective) Reflect(ray core.Ray, hit objects.HitRecord) *Reflection {
 	reflectedDirection := core.Reflect(ray.Direction.Normalize(), hit.Normal)
-	fuzzyPerturbation := core.Random().VecInUnitSphere().Mul(r.Fuzziness)
+	fuzzyPerturbation := core.Random().VecInUnitSphere().Mul(r.fuzziness)
 	reflectedDirection = reflectedDirection.Add(fuzzyPerturbation)
 
 	if reflectedDirection.Dot(hit.Normal) > 0 {
