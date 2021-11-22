@@ -3,6 +3,7 @@ package core
 import (
 	"math/rand"
 	"sync"
+	"time"
 )
 
 var once sync.Once
@@ -18,6 +19,7 @@ func Random() *randomizer {
 	once.Do(func() {
 
 		instance = &randomizer{on: true}
+		rand.Seed(time.Now().Unix())
 	})
 
 	return instance
