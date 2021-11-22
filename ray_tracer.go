@@ -31,7 +31,7 @@ func main() {
 
 	width := 800
 	height := 400
-	sampling := 1
+	sampling := 4
 
 	upLeft := image.Point{0, 0}
 	lowRight := image.Point{width, height}
