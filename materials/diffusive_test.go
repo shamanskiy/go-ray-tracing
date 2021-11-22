@@ -51,15 +51,15 @@ func TestDiffusive_Random(t *testing.T) {
 
 	t.Log("  the direction of the reflected the ray is random")
 	reflection := material.Reflect(ray, hit)
-	t.Log("  but it should be within a unit sphere of the surface normal:")
+	t.Logf("  but it should be within a unit sphere of the surface normal %v:\n", hit.Normal)
 
 	utils.CheckNotNil(t, "reflection", reflection)
-	randomPerturbation := reflection.Ray.Direction.Sub(hit.Normal).LenSqr()
+	randomPerturbation := reflection.Ray.Direction.Sub(hit.Normal).Len()
 	if randomPerturbation < 1.0 {
-		t.Logf("\tPASSED: reflection direction %v, normal %v, perturbation %v",
-			reflection.Ray.Direction, hit.Normal, randomPerturbation)
+		t.Logf("\tPASSED: reflection direction %v, perturbation %v",
+			reflection.Ray.Direction, randomPerturbation)
 	} else {
-		t.Fatalf("\tPASSED: reflection direction %v, normal %v, perturbation %v",
-			reflection.Ray.Direction, hit.Normal, randomPerturbation)
+		t.Fatalf("\tPASSED: reflection direction %v, perturbation %v",
+			reflection.Ray.Direction, randomPerturbation)
 	}
 }

@@ -70,5 +70,32 @@ func TestReflective_FuzzinessLimits(t *testing.T) {
 }
 
 func TestRefective_WithFuzziness(t *testing.T) {
+	material := NewReflectiveWithFuzziness(core.Red, 0.5)
+	ray := core.Ray{
+		Origin:    core.Vec3{-3.0, 5.0, 3.0},
+		Direction: core.Vec3{4.0, -3.0, 0.0},
+	}
+	hit := objects.HitRecord{
+		Param:  1.0,
+		Point:  core.Vec3{1.0, 2.0, 3.0},
+		Normal: core.Vec3{0.0, 1.0, 0.0},
+	}
+	t.Logf("Given a reflective material with color %v and fuzziness %v,\n", material.Color, material.fuzziness)
+	t.Logf("a ray %v and a hit record %v,\n", ray, hit)
 
+	t.Log("  the direction of the reflected the ray is random")
+	reflection := material.Reflect(ray, hit)
+	expectedMeanDirection := core.Vec3{0.8, 0.6, 0.0}
+	t.Logf("  but it should be within a sphere of radius %v of the expected direction %v:\n",
+		material.fuzziness, expectedMeanDirection)
+
+	utils.CheckNotNil(t, "reflection", reflection)
+	randomPerturbation := reflection.Ray.Direction.Sub(expectedMeanDirection).Len()
+	if randomPerturbation < material.fuzziness {
+		t.Logf("\tPASSED: reflection direction %v, perturbation %v",
+			reflection.Ray.Direction, randomPerturbation)
+	} else {
+		t.Fatalf("\tPASSED: reflection direction %v, perturbation %v",
+			reflection.Ray.Direction, randomPerturbation)
+	}
 }
