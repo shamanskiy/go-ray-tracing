@@ -36,14 +36,14 @@ func makeScene() *render.Scene {
 }
 
 func makeCamera() *render.Camera {
-	camera := render.Camera{
-		Origin:            core.Vec3{0.0, 0.0, 0.0},
-		Upper_left_corner: core.Vec3{-2.0, 1.0, -1.0},
-		Horizontal:        core.Vec3{4.0, 0.0, 0.0},
-		Vertical:          core.Vec3{0.0, -2.0, 0.0},
-	}
+	settings := render.DefaultCameraSettings()
+	settings.ImagePixelWidth = 400
+	settings.ImagePixelHeight = 200
+	settings.Antialiasing = 1
 
-	return &camera
+	camera := render.NewCamera(settings)
+
+	return camera
 }
 
 func saveImage(img *image.RGBA, filename string) {
@@ -54,7 +54,6 @@ func saveImage(img *image.RGBA, filename string) {
 
 func main() {
 	scene := makeScene()
-
 	camera := makeCamera()
 
 	img := camera.Render(scene)
