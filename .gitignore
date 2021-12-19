@@ -2,3 +2,4 @@ ray_tracer
 image.png
 .DS_Store
 .vscode
+go.sum

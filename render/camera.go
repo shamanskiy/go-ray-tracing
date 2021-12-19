@@ -1,6 +1,16 @@
 package render
 
-import "github.com/Shamanskiy/go-ray-tracer/core"
+import (
+	"image"
+	"image/color"
+	"log"
+	"math/rand"
+	"time"
+
+	"github.com/Shamanskiy/go-ray-tracer/core"
+	"github.com/chewxy/math32"
+	"github.com/schollz/progressbar/v3"
+)
 
 type Camera struct {
 	Origin            core.Vec3
@@ -16,6 +26,48 @@ type Camera struct {
 		horizontal:        Vec3{4.0, 0.0, 0.0},
 		vertical:          Vec3{0.0, -2.0, 0.0}}
 }*/
+
+func (c *Camera) Render(scene *Scene) *image.RGBA {
+	width := 800
+	height := 400
+	sampling := 4
+
+	upLeft := image.Point{0, 0}
+	lowRight := image.Point{width, height}
+
+	img := image.NewRGBA(image.Rectangle{upLeft, lowRight})
+
+	bar := progressbar.Default(int64(width), "rendering")
+
+	start := time.Now()
+	for x := 0; x < width; x++ {
+		bar.Add(1)
+		for y := 0; y < height; y++ {
+			var clr core.Color
+			for s := 0; s < sampling; s++ {
+				u := (core.Real(x) + rand.Float32()) / core.Real(width)
+				v := (core.Real(y) + rand.Float32()) / core.Real(height)
+				ray := c.GetRay(u, v)
+				c := scene.TestRay(ray)
+				clr = clr.Add(c)
+			}
+			clr = clr.Mul(1.0 / core.Real(sampling))
+			img.Set(x, y, toRGBA(clr))
+		}
+	}
+	elapsed := time.Since(start)
+	log.Printf("Rendering took %s", elapsed)
+
+	return img
+}
+
+func toRGBA(c core.Color) color.RGBA {
+	return color.RGBA{toZero255(c.X()), toZero255(c.Y()), toZero255(c.Z()), 0xff}
+}
+
+func toZero255(x core.Real) uint8 {
+	return uint8(math32.Floor(255.99 * math32.Sqrt(x)))
+}
 
 func (c *Camera) GetRay(u, v core.Real) core.Ray {
 	ray := core.Ray{

@@ -9,3 +9,4 @@ var SkyBlue = Color{0.5, 0.7, 1.0}
 var GrayMedium = Color{0.5, 0.5, 0.5}
 var GrayLight = Color{0.8, 0.8, 0.8}
 var Golden = Color{0.8, 0.6, 0.2}
+var Yellow = Color{1.0, 1.0, 0.2}
