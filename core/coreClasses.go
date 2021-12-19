@@ -28,16 +28,28 @@ func Reflect(vec Vec3, axis Vec3) Vec3 {
 	return vec.Sub(axis.Mul(2 * vec.Dot(axis)))
 }
 
-func CheckVec3SameTol(t *testing.T, name string, result Vec3, expected Vec3) {
-	if (result.Sub(expected).LenSqr()) < 1e-10 {
+func RealTolerance() Real {
+	return 1e-5
+}
+
+func IsSameReal(A, B Real) bool {
+	return math32.Abs(A-B) < RealTolerance()
+}
+
+func IsSameVec3(A, B Vec3) bool {
+	return A.Sub(B).LenSqr() < RealTolerance()*RealTolerance()
+}
+
+func CheckVec3Tol(t *testing.T, name string, result Vec3, expected Vec3) {
+	if IsSameVec3(result, expected) {
 		t.Logf("\t\tPASSED: %v %v, expected %v", name, result, expected)
 	} else {
 		t.Fatalf("\t\tFAILED: %v %v, expected %v", name, result, expected)
 	}
 }
 
-func CheckFloatSameTol(t *testing.T, name string, result Real, expected Real) {
-	if math32.Abs(result-expected) < 1e-5 {
+func CheckRealTol(t *testing.T, name string, result Real, expected Real) {
+	if IsSameReal(result, expected) {
 		t.Logf("\t\tPASSED: %v %v, expected %v", name, result, expected)
 	} else {
 		t.Fatalf("\t\tFAILED: %v %v, expected %v", name, result, expected)

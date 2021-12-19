@@ -27,26 +27,42 @@ func schlickLaw(cosIn core.Real, refractionIndex core.Real) core.Real {
 	return r0 + (1-r0)*math32.Pow(1-cosIn, 5)
 }
 
-func refract(directionIn core.Vec3, normal core.Vec3, inOutRefractionRatio core.Real) (directionOut *core.Vec3, cosOut core.Real) {
-	cosIn := directionIn.Dot(normal)
+func computeInOutRefractionRatio(rayFromOutside bool, refractionIndex core.Real) core.Real {
+	if rayFromOutside {
+		return 1. / refractionIndex
+	} else {
+		return refractionIndex
+	}
+}
+
+// Returns the direction of the refracted ray and the portion of the reflected light.
+// If the ray comes from material at a too large incident angle, returns nil (full internal reflection).
+func computeRefraction(dirIn core.Vec3, normal core.Vec3, refractionIndex core.Real) (dirOut *core.Vec3, reflectionRatio core.Real) {
+	inDotNormal := dirIn.Dot(normal)
+	rayFromOutside := inDotNormal <= 0
+	inOutRefractionRatio := computeInOutRefractionRatio(rayFromOutside, refractionIndex)
+
+	cosIn := inDotNormal / dirIn.Len()
 	cosOutSquared := 1 - (1-cosIn*cosIn)*inOutRefractionRatio*inOutRefractionRatio
+
 	if cosOutSquared > 0 {
-		inNormal := normal.Mul(cosIn)
-		inTangent := directionIn.Sub(inNormal)
+		inNormal := normal.Mul(inDotNormal)
+		inTangent := dirIn.Sub(inNormal)
 		outTangent := inTangent.Mul(inOutRefractionRatio)
 		cosOut := math32.Sqrt(cosOutSquared)
 		outNormal := inNormal.Mul(cosOut / math32.Abs(cosIn))
 		directionOut := outTangent.Add(outNormal)
-		return &directionOut, cosOut
+
+		return &directionOut, computeReflectionRatio(rayFromOutside, cosIn, cosOut, refractionIndex)
 	} else {
 		// The ray enters a less dense material. The incidence angle is too large, so the out angle is > 90deg.
 		// There is no refraction, instead we have a full reflection.
-		return nil, 0
+		return nil, 1.
 	}
 }
 
-func computeReflectionRatio(rayComesFromOutside bool, cosIn core.Real, cosOut core.Real, refractionIndex core.Real) core.Real {
-	if rayComesFromOutside {
+func computeReflectionRatio(rayFromOutside bool, cosIn core.Real, cosOut core.Real, refractionIndex core.Real) core.Real {
+	if rayFromOutside {
 		return schlickLaw(math32.Abs(cosIn), refractionIndex)
 	} else {
 		return schlickLaw(cosOut, refractionIndex)
@@ -54,32 +70,15 @@ func computeReflectionRatio(rayComesFromOutside bool, cosIn core.Real, cosOut co
 }
 
 func (m Transparent) Reflect(ray core.Ray, hit objects.HitRecord) *Reflection {
-	directionIn := ray.Direction.Normalize()
-	cosIn := directionIn.Dot(hit.Normal)
+	refractedDirection, reflectionRatio := computeRefraction(ray.Direction, hit.Normal, m.refractionIndex)
+	reflectedDirection := core.Reflect(ray.Direction, hit.Normal)
 
-	var inOutRefractionRatio core.Real
-	rayComesFromOutside := cosIn <= 0.
-	if rayComesFromOutside {
-		inOutRefractionRatio = 1. / m.refractionIndex
+	// Transparent material reflects a portion of the incoming light
+	if refractedDirection != nil && core.Random().From01() > reflectionRatio {
+		refractedRay := core.Ray{hit.Point, *refractedDirection}
+		return &Reflection{refractedRay, core.White}
 	} else {
-		inOutRefractionRatio = m.refractionIndex
-	}
-
-	refractedDirection, cosOut := refract(directionIn, hit.Normal, inOutRefractionRatio)
-	reflectedDirection := core.Reflect(directionIn, hit.Normal)
-	if refractedDirection != nil {
-		reflectionRatio := computeReflectionRatio(rayComesFromOutside, cosIn, cosOut, m.refractionIndex)
-		if core.Random().From01() < reflectionRatio {
-			reflectedRay := core.Ray{hit.Point, reflectedDirection}
-			return &Reflection{reflectedRay, core.White}
-		} else {
-
-			refractedRay := core.Ray{hit.Point, *refractedDirection}
-			// transparent material doesn't alter the reflection color
-			return &Reflection{refractedRay, core.White}
-		}
-
-	} else {
+		// Full internal reflection
 		reflectedRay := core.Ray{hit.Point, reflectedDirection}
 		return &Reflection{reflectedRay, core.White}
 	}

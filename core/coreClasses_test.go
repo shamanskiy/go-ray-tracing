@@ -54,3 +54,44 @@ func TestReflect(t *testing.T) {
 
 	utils.CheckResult(t, "reflected vector", reflected, expected)
 }
+
+func TestIsSameReal(t *testing.T) {
+	A := Real(1.0)
+	B := Real(1.000001)
+	t.Logf("Given two real numbers %v and %v,\n", A, B)
+	t.Logf("  we can check if they are within tolerance %v:", RealTolerance())
+	utils.CheckResult(t, "Numbers are within tolerance", IsSameReal(A, B), true)
+
+	A = Real(1.0)
+	B = Real(2.0)
+	t.Logf("Given two real numbers %v and %v,\n", A, B)
+	t.Logf("  we can check if they are within tolerance %v:", RealTolerance())
+	utils.CheckResult(t, "Numbers are within tolerance", IsSameReal(A, B), false)
+
+	A = Real(1.0)
+	B = Real(1.00001)
+	t.Logf("Given two real numbers %v and %v,\n", A, B)
+	t.Logf("  we can check if they are within tolerance %v:", RealTolerance())
+	utils.CheckResult(t, "Numbers are within tolerance", IsSameReal(A, B), false)
+}
+
+func TestIsSameVec3(t *testing.T) {
+	A := Vec3{1.0, 0.0, 0.0}
+	B := Vec3{1.000001, 0.0, 0.0}
+	t.Logf("Given two vectors %v and %v,\n", A, B)
+	t.Logf("  we can check if they are within tolerance %v:", RealTolerance())
+	utils.CheckResult(t, "Numbers are within tolerance", IsSameVec3(A, B), true)
+
+	A = Vec3{1.0, 0.0, 0.0}
+	B = Vec3{2.0, 0.0, 0.0}
+	t.Logf("Given two vectors %v and %v,\n", A, B)
+	t.Logf("  we can check if they are within tolerance %v:", RealTolerance())
+	utils.CheckResult(t, "Numbers are within tolerance", IsSameVec3(A, B), false)
+
+	A = Vec3{1.0, 0.0, 0.0}
+	B = Vec3{1.00001, 0.0, 0.0}
+	t.Logf("Given two vectors %v and %v,\n", A, B)
+	t.Logf("  we can check if they are within tolerance %v:", RealTolerance())
+	utils.CheckResult(t, "Numbers are within tolerance", IsSameVec3(A, B), false)
+
+}
