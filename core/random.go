@@ -37,6 +37,13 @@ func (r *randomizer) VecInUnitSphere() Vec3 {
 	return vec
 }
 
+func (r *randomizer) From01() Real {
+	if !r.on {
+		return 0.0
+	}
+	return rand.Float32()
+}
+
 func (r *randomizer) Enable() {
 	r.on = true
 }

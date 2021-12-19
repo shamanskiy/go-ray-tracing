@@ -1,6 +1,11 @@
 package core
 
-import "github.com/go-gl/mathgl/mgl32"
+import (
+	"testing"
+
+	"github.com/chewxy/math32"
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 type Color = mgl32.Vec3
 type Vec3 = mgl32.Vec3
@@ -21,4 +26,20 @@ func MulElem(a, b Vec3) Vec3 {
 
 func Reflect(vec Vec3, axis Vec3) Vec3 {
 	return vec.Sub(axis.Mul(2 * vec.Dot(axis)))
+}
+
+func CheckVec3SameTol(t *testing.T, name string, result Vec3, expected Vec3) {
+	if (result.Sub(expected).LenSqr()) < 1e-10 {
+		t.Logf("\t\tPASSED: %v %v, expected %v", name, result, expected)
+	} else {
+		t.Fatalf("\t\tFAILED: %v %v, expected %v", name, result, expected)
+	}
+}
+
+func CheckFloatSameTol(t *testing.T, name string, result Real, expected Real) {
+	if math32.Abs(result-expected) < 1e-5 {
+		t.Logf("\t\tPASSED: %v %v, expected %v", name, result, expected)
+	} else {
+		t.Fatalf("\t\tFAILED: %v %v, expected %v", name, result, expected)
+	}
 }

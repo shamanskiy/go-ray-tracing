@@ -22,16 +22,18 @@ func main() {
 	scene := render.Scene{SkyColorTop: core.SkyBlue, SkyColorBottom: core.White}
 	scene.Add(objects.Sphere{Center: core.Vec3{0.0, 0.0, -1.0}, Radius: 0.5},
 		materials.Diffusive{core.Red})
-	scene.Add(objects.Sphere{Center: core.Vec3{-1.0, 0.0, -1.0}, Radius: 0.5},
-		materials.Reflective{Color: core.GrayLight})
 	scene.Add(objects.Sphere{Center: core.Vec3{1.0, 0.0, -1.0}, Radius: 0.5},
+		materials.Reflective{Color: core.GrayLight})
+	scene.Add(objects.Sphere{Center: core.Vec3{-1.0, 0.0, -1.0}, Radius: 0.5},
 		materials.NewTransparent(1.5))
+	//scene.Add(objects.Sphere{Center: core.Vec3{-1.0, 0.0, -1.0}, Radius: -0.4},
+	//	materials.NewTransparent(1.5))
 	scene.Add(objects.Sphere{Center: core.Vec3{0.0, -100.5, -1.0}, Radius: 100.0},
 		materials.Diffusive{core.GrayMedium})
 
 	width := 800
 	height := 400
-	sampling := 4
+	sampling := 10
 
 	upLeft := image.Point{0, 0}
 	lowRight := image.Point{width, height}
