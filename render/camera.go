@@ -4,7 +4,6 @@ import (
 	"image"
 	"image/color"
 	"log"
-	"math/rand"
 	"time"
 
 	"github.com/Shamanskiy/go-ray-tracer/core"
@@ -14,7 +13,7 @@ import (
 
 type CameraSettings struct {
 	VerticalFOV      core.Real
-	ImagePixelWidth  int
+	AspectRatio      core.Real
 	ImagePixelHeight int
 
 	LookFrom core.Vec3
@@ -31,8 +30,8 @@ type CameraSettings struct {
 func DefaultCameraSettings() CameraSettings {
 	return CameraSettings{
 		VerticalFOV:       90,
-		ImagePixelWidth:   800,
-		ImagePixelHeight:  400,
+		AspectRatio:       2.,
+		ImagePixelHeight:  360,
 		LookFrom:          core.Vec3{0., 0., 0.},
 		LookAt:            core.Vec3{0., 0., -1.},
 		GlobalUp:          core.Vec3{0., 1., 0.},
@@ -46,61 +45,77 @@ type Camera struct {
 	upperLeftCorner core.Vec3
 	horizontalSpan  core.Vec3
 	verticalSpan    core.Vec3
-	settings        CameraSettings
+
+	pixelWidth  int
+	pixelHeight int
+	sampling    int
 }
 
-func (c *Camera) initialize() {
-	c.origin = c.settings.LookFrom
-	verticalFOV_rad := c.settings.VerticalFOV * math32.Pi / 180
-	aspectRatio := core.Real(c.settings.ImagePixelWidth) / core.Real(c.settings.ImagePixelHeight)
+func NewCamera(settings *CameraSettings) *Camera {
+	camera := Camera{}
+
+	camera.pixelHeight = settings.ImagePixelHeight
+	camera.pixelWidth = int(core.Real(settings.ImagePixelHeight) * settings.AspectRatio)
+	camera.sampling = settings.Antialiasing
+
+	camera.origin = settings.LookFrom
+	verticalFOV_rad := settings.VerticalFOV * math32.Pi / 180
 
 	halfHeight := math32.Tan(verticalFOV_rad / 2)
-	halfWidth := aspectRatio * halfHeight
+	halfWidth := settings.AspectRatio * halfHeight
 
-	back := c.settings.LookFrom.Sub(c.settings.LookAt).Normalize()
-	right := c.settings.GlobalUp.Cross(back).Normalize()
+	back := settings.LookFrom.Sub(settings.LookAt).Normalize()
+	right := settings.GlobalUp.Cross(back).Normalize()
 	up := back.Cross(right)
 
-	focusDistance := c.settings.LookFrom.Sub(c.settings.LookAt).Len()
+	focusDistance := settings.LookFrom.Sub(settings.LookAt).Len()
 
-	c.horizontalSpan = right.Mul(2 * halfWidth * focusDistance)
-	c.verticalSpan = up.Mul(-2 * halfHeight * focusDistance)
+	camera.horizontalSpan = right.Mul(2 * halfWidth * focusDistance)
+	camera.verticalSpan = up.Mul(-2 * halfHeight * focusDistance)
 
 	originToCorner := up.Mul(halfHeight).Sub(right.Mul(halfWidth)).Sub(back).Mul(focusDistance)
-	c.upperLeftCorner = c.origin.Add(originToCorner)
-}
+	camera.upperLeftCorner = camera.origin.Add(originToCorner)
 
-func NewCamera(settings CameraSettings) *Camera {
-	camera := Camera{settings: settings}
-	camera.initialize()
 	return &camera
 }
 
-func (c *Camera) Render(scene *Scene) *image.RGBA {
-	width := c.settings.ImagePixelWidth
-	height := c.settings.ImagePixelHeight
-
+func (c *Camera) createImage() *image.RGBA {
 	upLeft := image.Point{0, 0}
-	lowRight := image.Point{width, height}
+	lowRight := image.Point{c.pixelWidth, c.pixelHeight}
 
-	img := image.NewRGBA(image.Rectangle{upLeft, lowRight})
+	return image.NewRGBA(image.Rectangle{upLeft, lowRight})
+}
 
-	bar := progressbar.Default(int64(width), "rendering")
+func (c *Camera) createProgressBar() *progressbar.ProgressBar {
+	return progressbar.Default(int64(c.pixelWidth), "rendering")
+}
+
+func (c *Camera) indexToU(index int) core.Real {
+	return (core.Real(index) + core.Random().From01()) / core.Real(c.pixelWidth)
+}
+
+func (c *Camera) indexToV(index int) core.Real {
+	return (core.Real(index) + core.Random().From01()) / core.Real(c.pixelHeight)
+}
+
+func (c *Camera) Render(scene *Scene) *image.RGBA {
+	img := c.createImage()
+	bar := c.createProgressBar()
 
 	start := time.Now()
-	for x := 0; x < width; x++ {
+	for x := 0; x < c.pixelWidth; x++ {
 		bar.Add(1)
-		for y := 0; y < height; y++ {
-			var clr core.Color
-			for s := 0; s < c.settings.Antialiasing; s++ {
-				u := (core.Real(x) + rand.Float32()) / core.Real(width)
-				v := (core.Real(y) + rand.Float32()) / core.Real(height)
+		for y := 0; y < c.pixelHeight; y++ {
+			var pixelColor core.Color
+			for s := 0; s < c.sampling; s++ {
+				u := c.indexToU(x)
+				v := c.indexToV(y)
 				ray := c.GetRay(u, v)
-				c := scene.TestRay(ray)
-				clr = clr.Add(c)
+				rayColor := scene.TestRay(ray)
+				pixelColor = pixelColor.Add(rayColor)
 			}
-			clr = clr.Mul(1.0 / core.Real(c.settings.Antialiasing))
-			img.Set(x, y, toRGBA(clr))
+			pixelColor = core.Div(pixelColor, core.Real(c.sampling))
+			img.Set(x, y, toRGBA(pixelColor))
 		}
 	}
 	elapsed := time.Since(start)
@@ -110,17 +125,21 @@ func (c *Camera) Render(scene *Scene) *image.RGBA {
 }
 
 func toRGBA(c core.Color) color.RGBA {
-	return color.RGBA{toZero255(c.X()), toZero255(c.Y()), toZero255(c.Z()), 0xff}
+	return color.RGBA{toZero255(c.X()), toZero255(c.Y()), toZero255(c.Z()), 255}
 }
 
 func toZero255(x core.Real) uint8 {
-	return uint8(math32.Floor(255.99 * math32.Sqrt(x)))
+	return uint8(math32.Floor(255.99 * gammaCorrection(x)))
+}
+
+func gammaCorrection(input core.Real) core.Real {
+	return math32.Sqrt(input)
 }
 
 func (c *Camera) GetRay(u, v core.Real) core.Ray {
 	ray := core.Ray{
 		Origin:    c.origin,
-		Direction: c.upperLeftCorner.Add(c.horizontalSpan.Mul(u)).Add(c.verticalSpan.Mul(v))}
+		Direction: c.upperLeftCorner.Add(c.horizontalSpan.Mul(u)).Add(c.verticalSpan.Mul(v)).Sub(c.origin)}
 
 	return ray
 }

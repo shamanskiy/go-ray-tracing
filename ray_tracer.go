@@ -37,11 +37,14 @@ func makeScene() *render.Scene {
 
 func makeCamera() *render.Camera {
 	settings := render.DefaultCameraSettings()
-	settings.ImagePixelWidth = 400
-	settings.ImagePixelHeight = 200
-	settings.Antialiasing = 1
+	settings.AspectRatio = 16. / 9.
+	settings.ImagePixelHeight = 360
+	settings.Antialiasing = 4
+	settings.LookFrom = core.Vec3{0., 0., 0.5}
+	settings.LookAt = core.Vec3{0., 0., -1}
+	settings.VerticalFOV = 90
 
-	camera := render.NewCamera(settings)
+	camera := render.NewCamera(&settings)
 
 	return camera
 }

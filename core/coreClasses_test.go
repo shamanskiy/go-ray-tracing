@@ -95,3 +95,11 @@ func TestIsSameVec3(t *testing.T) {
 	utils.CheckResult(t, "Numbers are within tolerance", IsSameVec3(A, B), false)
 
 }
+
+func TestDiv(t *testing.T) {
+	A := Vec3{1., 2., 3.}
+	b := Real(2.)
+	t.Logf("Given a vector %v and a scalar %v,\n", A, b)
+	t.Log("  we can divide the vector by the scalar:")
+	utils.CheckResult(t, "Division result", Div(A, b), Vec3{0.5, 1., 1.5})
+}

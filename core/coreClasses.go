@@ -28,6 +28,10 @@ func Reflect(vec Vec3, axis Vec3) Vec3 {
 	return vec.Sub(axis.Mul(2 * vec.Dot(axis)))
 }
 
+func Div(vec Vec3, scalar Real) Vec3 {
+	return Vec3{vec.X() / scalar, vec.Y() / scalar, vec.Z() / scalar}
+}
+
 func RealTolerance() Real {
 	return 1e-5
 }
