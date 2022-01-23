@@ -57,20 +57,20 @@ func TestReflective_FuzzinessLimits(t *testing.T) {
 	t.Log("When we construct a reflective material with fuzziness,")
 
 	t.Log("  if we pass a value between 0 and 1, e.g. 0.5, fuzziness is set to 0.5:")
-	material := NewReflectiveWithFuzziness(core.Red, 0.5)
+	material := NewReflectiveFuzzy(core.Red, 0.5)
 	utils.CheckResult(t, "fuzziness", material.fuzziness, core.Real(0.5))
 
 	t.Log("  if we pass a value less than 0, e.g. -0.2, fuzziness is set to 0.0:")
-	material = NewReflectiveWithFuzziness(core.Red, -0.2)
+	material = NewReflectiveFuzzy(core.Red, -0.2)
 	utils.CheckResult(t, "fuzziness", material.fuzziness, core.Real(0.0))
 
 	t.Log("  if we pass a value greater than 1, e.g. 1.3, fuzziness is set to 1.0:")
-	material = NewReflectiveWithFuzziness(core.Red, 1.3)
+	material = NewReflectiveFuzzy(core.Red, 1.3)
 	utils.CheckResult(t, "fuzziness", material.fuzziness, core.Real(1.0))
 }
 
 func TestRefective_WithFuzziness(t *testing.T) {
-	material := NewReflectiveWithFuzziness(core.Red, 0.5)
+	material := NewReflectiveFuzzy(core.Red, 0.5)
 	ray := core.Ray{
 		Origin:    core.Vec3{-3.0, 5.0, 3.0},
 		Direction: core.Vec3{4.0, -3.0, 0.0},

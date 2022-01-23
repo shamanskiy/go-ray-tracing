@@ -44,6 +44,13 @@ func (r *randomizer) From01() Real {
 	return rand.Float32()
 }
 
+func (r *randomizer) Vec3From01() Vec3 {
+	if !r.on {
+		return Vec3{0., 0., 0.}
+	}
+	return Vec3{rand.Float32(), rand.Float32(), rand.Float32()}
+}
+
 func (r *randomizer) Enable() {
 	r.on = true
 }

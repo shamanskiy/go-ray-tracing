@@ -1,5 +1,5 @@
 ray_tracer
-image.png
+*.png
 .DS_Store
 .vscode
 go.sum

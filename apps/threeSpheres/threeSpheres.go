@@ -1,3 +1,5 @@
+// This is a demo app that renders three spheres with
+// different materials.
 package main
 
 import (
@@ -20,7 +22,7 @@ func makeScene() *render.Scene {
 
 	// mirrow ball
 	scene.Add(objects.Sphere{Center: core.Vec3{1.0, 0.0, -1.0}, Radius: 0.5},
-		materials.Reflective{Color: core.GrayLight})
+		materials.NewReflectiveFuzzy(core.Golden, 0.1))
 
 	// glass shell
 	scene.Add(objects.Sphere{Center: core.Vec3{-1.0, 0.0, -1.0}, Radius: 0.5},
@@ -40,9 +42,8 @@ func makeCamera() *render.Camera {
 	settings.AspectRatio = 16. / 9.
 	settings.ImagePixelHeight = 360
 	settings.Antialiasing = 4
-	settings.LookFrom = core.Vec3{0., 0., 0.5}
+	settings.LookFrom = core.Vec3{0., 0., 0.15}
 	settings.LookAt = core.Vec3{0., 0., -1}
-	settings.VerticalFOV = 90
 
 	camera := render.NewCamera(&settings)
 
@@ -58,8 +59,6 @@ func saveImage(img *image.RGBA, filename string) {
 func main() {
 	scene := makeScene()
 	camera := makeCamera()
-
 	img := camera.Render(scene)
-
-	saveImage(img, "image.png")
+	saveImage(img, "threeSpheres.png")
 }

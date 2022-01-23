@@ -10,7 +10,7 @@ type Reflective struct {
 	fuzziness core.Real
 }
 
-func NewReflectiveWithFuzziness(color core.Color, fuzziness core.Real) Reflective {
+func NewReflectiveFuzzy(color core.Color, fuzziness core.Real) Reflective {
 	if fuzziness < 0 {
 		fuzziness = 0
 	}

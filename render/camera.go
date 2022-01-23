@@ -23,7 +23,6 @@ type CameraSettings struct {
 	Antialiasing      int
 	MaxRayReflections int
 
-	//Verbosity verbosity{ Verbosity::none };
 	//float lensRadius{0.0};
 }
 
@@ -46,9 +45,10 @@ type Camera struct {
 	horizontalSpan  core.Vec3
 	verticalSpan    core.Vec3
 
-	pixelWidth  int
-	pixelHeight int
-	sampling    int
+	pixelWidth     int
+	pixelHeight    int
+	sampling       int
+	maxReflections int
 }
 
 func NewCamera(settings *CameraSettings) *Camera {
@@ -57,6 +57,7 @@ func NewCamera(settings *CameraSettings) *Camera {
 	camera.pixelHeight = settings.ImagePixelHeight
 	camera.pixelWidth = int(core.Real(settings.ImagePixelHeight) * settings.AspectRatio)
 	camera.sampling = settings.Antialiasing
+	camera.maxReflections = settings.MaxRayReflections
 
 	camera.origin = settings.LookFrom
 	verticalFOV_rad := settings.VerticalFOV * math32.Pi / 180
