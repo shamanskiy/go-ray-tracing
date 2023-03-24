@@ -1,9 +1,6 @@
 package core
 
 import (
-	"testing"
-
-	"github.com/chewxy/math32"
 	"github.com/go-gl/mathgl/mgl32"
 )
 
@@ -32,22 +29,6 @@ func Div(vec Vec3, scalar Real) Vec3 {
 	return Vec3{vec.X() / scalar, vec.Y() / scalar, vec.Z() / scalar}
 }
 
-func RealTolerance() Real {
-	return 1e-5
-}
-
-func IsSameReal(A, B Real) bool {
-	return math32.Abs(A-B) < RealTolerance()
-}
-
 func IsVec3InDelta(A, B Vec3, delta Real) bool {
 	return A.Sub(B).LenSqr() < delta*delta
-}
-
-func CheckRealTol(t *testing.T, name string, result Real, expected Real) {
-	if IsSameReal(result, expected) {
-		t.Logf("\t\tPASSED: %v %v, expected %v", name, result, expected)
-	} else {
-		t.Fatalf("\t\tFAILED: %v %v, expected %v", name, result, expected)
-	}
 }

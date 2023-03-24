@@ -15,22 +15,22 @@ func (s Sphere) HitWithMin(ray core.Ray, minParam core.Real) *HitRecord {
 	a := ray.Direction.Dot(ray.Direction)
 	b := 2.0 * ray.Direction.Dot(centerToOrigin)
 	c := centerToOrigin.Dot(centerToOrigin) - s.Radius*s.Radius
-	left, right, err := core.SolveQuadraticEquation(a, b, c)
+	solution := core.SolveQuadEquation(a, b, c)
 
-	if err != nil {
+	if solution.NoSolution {
 		return nil
 	}
 
-	if left >= minParam {
-		hitPoint := ray.Eval(left)
+	if solution.Left >= minParam {
+		hitPoint := ray.Eval(solution.Left)
 		hitNormal := hitPoint.Sub(s.Center).Mul(1 / s.Radius)
-		return &HitRecord{left, hitPoint, hitNormal}
+		return &HitRecord{solution.Left, hitPoint, hitNormal}
 	}
 
-	if right >= minParam {
-		hitPoint := ray.Eval(right)
+	if solution.Right >= minParam {
+		hitPoint := ray.Eval(solution.Right)
 		hitNormal := hitPoint.Sub(s.Center).Mul(1 / s.Radius)
-		return &HitRecord{right, hitPoint, hitNormal}
+		return &HitRecord{solution.Right, hitPoint, hitNormal}
 	}
 
 	return nil

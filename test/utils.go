@@ -31,5 +31,5 @@ func CheckNotNil(t *testing.T, name string, resultPointer interface{}) {
 }
 
 func AssertInDeltaVec3(t *testing.T, expected core.Vec3, result core.Vec3, delta float32) {
-	assert.Lessf(t, expected.Sub(result).LenSqr(), delta*delta, "expected %v, got %v, tolerance %v", expected, result, delta)
+	assert.True(t, core.IsVec3InDelta(expected, result, delta), "expected %v, got %v, tolerance %v", expected, result, delta)
 }

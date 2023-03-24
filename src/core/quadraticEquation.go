@@ -1,21 +1,23 @@
 package core
 
 import (
-	"fmt"
-
 	"github.com/chewxy/math32"
 )
 
-func SolveQuadraticEquation(a, b, c Real) (left Real, right Real, err error) {
+type QuadEqSolution struct {
+	Left       Real
+	Right      Real
+	NoSolution bool
+}
+
+func SolveQuadEquation(a, b, c Real) QuadEqSolution {
 	d := b*b - 4*a*c
 	if d >= 0 {
 		dSqrt := math32.Sqrt(d)
-		left = (-b - dSqrt) / (2 * a)
-		right = (-b + dSqrt) / (2 * a)
-		err = nil
-		return
+		left := (-b - dSqrt) / (2 * a)
+		right := (-b + dSqrt) / (2 * a)
+		return QuadEqSolution{Left: left, Right: right, NoSolution: false}
 	}
 
-	err = fmt.Errorf("negative discriminant: %v", d)
-	return
+	return QuadEqSolution{NoSolution: true}
 }

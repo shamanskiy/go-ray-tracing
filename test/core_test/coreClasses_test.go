@@ -44,26 +44,6 @@ func TestVec3_ShouldReflectAroundAxis(t *testing.T) {
 	assert.Equal(t, core.Vec3{3., 4., 0.}, reflected)
 }
 
-func TestIsSameReal(t *testing.T) {
-	A := core.Real(1.0)
-	B := core.Real(1.000001)
-	t.Logf("Given two real numbers %v and %v,\n", A, B)
-	t.Logf("  we can check if they are within tolerance %v:", core.RealTolerance())
-	test.CheckResult(t, "Numbers are within tolerance", core.IsSameReal(A, B), true)
-
-	A = core.Real(1.0)
-	B = core.Real(2.0)
-	t.Logf("Given two real numbers %v and %v,\n", A, B)
-	t.Logf("  we can check if they are within tolerance %v:", core.RealTolerance())
-	test.CheckResult(t, "Numbers are within tolerance", core.IsSameReal(A, B), false)
-
-	A = core.Real(1.0)
-	B = core.Real(1.00001)
-	t.Logf("Given two real numbers %v and %v,\n", A, B)
-	t.Logf("  we can check if they are within tolerance %v:", core.RealTolerance())
-	test.CheckResult(t, "Numbers are within tolerance", core.IsSameReal(A, B), false)
-}
-
 func TestDiv(t *testing.T) {
 	A := core.Vec3{1., 2., 3.}
 	b := core.Real(2.)
