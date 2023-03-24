@@ -2,6 +2,7 @@ package materials
 
 import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
+	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/objects"
 	"github.com/chewxy/math32"
 )
@@ -71,15 +72,15 @@ func computeReflectionRatio(rayFromOutside bool, cosIn core.Real, cosOut core.Re
 
 func (m Transparent) Reflect(ray core.Ray, hit objects.HitRecord) *Reflection {
 	refractedDirection, reflectionRatio := ComputeRefraction(ray.Direction, hit.Normal, m.RefractionIndex)
-	reflectedDirection := core.Reflect(ray.Direction, hit.Normal)
+	reflectedDirection := ray.Direction.Reflect(hit.Normal)
 
 	// Transparent material reflects a portion of the incoming light
 	if refractedDirection != nil && core.Random().From01() > reflectionRatio {
 		refractedRay := core.Ray{hit.Point, *refractedDirection}
-		return &Reflection{refractedRay, core.White}
+		return &Reflection{refractedRay, color.White}
 	} else {
 		// Full internal reflection
 		reflectedRay := core.Ray{hit.Point, reflectedDirection}
-		return &Reflection{reflectedRay, core.White}
+		return &Reflection{reflectedRay, color.White}
 	}
 }

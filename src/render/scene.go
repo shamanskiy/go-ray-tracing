@@ -2,6 +2,7 @@ package render
 
 import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
+	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/materials"
 	"github.com/Shamanskiy/go-ray-tracer/src/objects"
 	"github.com/chewxy/math32"
@@ -10,8 +11,8 @@ import (
 type Scene struct {
 	objects        []objects.Object
 	materials      []materials.Material
-	SkyColorTop    core.Color
-	SkyColorBottom core.Color
+	SkyColorTop    color.Color
+	SkyColorBottom color.Color
 }
 
 func (s *Scene) HitClosestObject(ray core.Ray, minParam core.Real) (hit *objects.HitRecord, objectIndex int) {
@@ -34,26 +35,26 @@ func (s *Scene) Add(object objects.Object, material materials.Material) {
 	s.materials = append(s.materials, material)
 }
 
-func (s *Scene) testRay(ray core.Ray, depth int) core.Color {
+func (s *Scene) testRay(ray core.Ray, depth int) color.Color {
 	hit, objectIndex := s.HitClosestObject(ray, 0.0001)
 	if hit != nil {
 		reflection := s.materials[objectIndex].Reflect(ray, *hit)
 		if reflection != nil && depth < 10 {
 			reflectedRayColor := s.testRay(reflection.Ray, depth+1)
-			return core.MulElem(reflectedRayColor, reflection.Attenuation)
+			return reflectedRayColor.MulColor(reflection.Attenuation)
 		} else {
-			return core.Black
+			return color.Black
 		}
 	}
 
 	return s.computeSkyColor(ray)
 }
 
-func (s *Scene) TestRay(ray core.Ray) core.Color {
+func (s *Scene) TestRay(ray core.Ray) color.Color {
 	return s.testRay(ray, 0)
 }
 
-func (s *Scene) computeSkyColor(ray core.Ray) core.Color {
+func (s *Scene) computeSkyColor(ray core.Ray) color.Color {
 	unit_direction := ray.Direction.Normalize()
 
 	var t float32

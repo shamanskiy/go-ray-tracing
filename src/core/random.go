@@ -27,12 +27,14 @@ func Random() *randomizer {
 
 func (r *randomizer) VecInUnitSphere() Vec3 {
 	if !r.on {
-		return Vec3{0.0, 0.0, 0.0}
+		return NewVec3(0, 0, 0)
 	}
 
-	vec := Vec3{1.0, 0.0, 0.0}
+	unitDiagVec := NewVec3(1.0, 1.0, 1.0)
+
+	vec := NewVec3(1.0, 0.0, 0.0)
 	for vec.LenSqr() >= 1.0 {
-		vec = Vec3{rand.Float32(), rand.Float32(), rand.Float32()}.Mul(2.0).Sub(Vec3{1.0, 1.0, 1.0})
+		vec = NewVec3(rand.Float32(), rand.Float32(), rand.Float32()).Mul(2.0).Sub(unitDiagVec)
 	}
 	return vec
 }
@@ -46,9 +48,9 @@ func (r *randomizer) From01() Real {
 
 func (r *randomizer) Vec3From01() Vec3 {
 	if !r.on {
-		return Vec3{0., 0., 0.}
+		return NewVec3(0., 0., 0.)
 	}
-	return Vec3{rand.Float32(), rand.Float32(), rand.Float32()}
+	return NewVec3(rand.Float32(), rand.Float32(), rand.Float32())
 }
 
 func (r *randomizer) Enable() {

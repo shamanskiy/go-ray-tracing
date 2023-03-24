@@ -2,11 +2,12 @@ package materials
 
 import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
+	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/objects"
 )
 
 type Diffusive struct {
-	Color core.Color
+	Color color.Color
 }
 
 func (d Diffusive) Reflect(ray core.Ray, hit objects.HitRecord) *Reflection {

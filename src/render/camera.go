@@ -2,11 +2,11 @@ package render
 
 import (
 	"image"
-	"image/color"
 	"log"
 	"time"
 
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
+	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/chewxy/math32"
 	"github.com/schollz/progressbar/v3"
 )
@@ -31,9 +31,9 @@ func DefaultCameraSettings() CameraSettings {
 		VerticalFOV:       90,
 		AspectRatio:       2.,
 		ImagePixelHeight:  360,
-		LookFrom:          core.Vec3{0., 0., 0.},
-		LookAt:            core.Vec3{0., 0., -1.},
-		GlobalUp:          core.Vec3{0., 1., 0.},
+		LookFrom:          core.NewVec3(0., 0., 0.),
+		LookAt:            core.NewVec3(0., 0., -1.),
+		GlobalUp:          core.NewVec3(0., 1., 0.),
 		Antialiasing:      4,
 		MaxRayReflections: 10,
 	}
@@ -107,7 +107,7 @@ func (c *Camera) Render(scene *Scene) *image.RGBA {
 	for x := 0; x < c.PixelWidth; x++ {
 		bar.Add(1)
 		for y := 0; y < c.PixelHeight; y++ {
-			var pixelColor core.Color
+			var pixelColor color.Color
 			for s := 0; s < c.sampling; s++ {
 				u := c.IndexToU(x)
 				v := c.IndexToV(y)
@@ -115,26 +115,14 @@ func (c *Camera) Render(scene *Scene) *image.RGBA {
 				rayColor := scene.TestRay(ray)
 				pixelColor = pixelColor.Add(rayColor)
 			}
-			pixelColor = core.Div(pixelColor, core.Real(c.sampling))
-			img.Set(x, y, ToRGBA(pixelColor))
+			pixelColor = pixelColor.Div(core.Real(c.sampling))
+			img.Set(x, y, pixelColor.ToRGBA())
 		}
 	}
 	elapsed := time.Since(start)
 	log.Printf("Rendering took %s", elapsed)
 
 	return img
-}
-
-func ToRGBA(c core.Color) color.RGBA {
-	return color.RGBA{toZero255(c.X()), toZero255(c.Y()), toZero255(c.Z()), 255}
-}
-
-func toZero255(x core.Real) uint8 {
-	return uint8(math32.Floor(255.99 * gammaCorrection(x)))
-}
-
-func gammaCorrection(input core.Real) core.Real {
-	return math32.Sqrt(input)
 }
 
 func (c *Camera) GetRay(u, v core.Real) core.Ray {

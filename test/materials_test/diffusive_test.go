@@ -4,21 +4,22 @@ import (
 	"testing"
 
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
+	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/materials"
 	"github.com/Shamanskiy/go-ray-tracer/src/objects"
-	"github.com/Shamanskiy/go-ray-tracer/test"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDiffusive_NoRandom(t *testing.T) {
-	material := materials.Diffusive{core.Red}
+	material := materials.Diffusive{color.Red}
 	ray := core.Ray{
-		Origin:    core.Vec3{1.0, 2.0, 3.0},
-		Direction: core.Vec3{4.0, 5.0, 6.0},
+		Origin:    core.NewVec3(1.0, 2.0, 3.0),
+		Direction: core.NewVec3(4.0, 5.0, 6.0),
 	}
 	hit := objects.HitRecord{
 		Param:  1.0,
-		Point:  core.Vec3{0.0, 1.0, 2.0},
-		Normal: core.Vec3{0.0, 0.0, 1.0},
+		Point:  core.NewVec3(0.0, 1.0, 2.0),
+		Normal: core.NewVec3(0.0, 0.0, 1.0),
 	}
 	t.Logf("Given a diffusive material %v, a ray %v, a hit record %v,\n", material, ray, hit)
 	t.Log("and a DISABLED randomizer,")
@@ -32,20 +33,19 @@ func TestDiffusive_NoRandom(t *testing.T) {
 		Ray:         core.Ray{hit.Point, hit.Normal},
 		Attenuation: material.Color}
 
-	test.CheckNotNil(t, "reflection", reflection)
-	test.CheckResult(t, "reflection", *reflection, expected)
+	assert.Equal(t, expected, *reflection)
 }
 
 func TestDiffusive_Random(t *testing.T) {
-	material := materials.Diffusive{core.Red}
+	material := materials.Diffusive{color.Red}
 	ray := core.Ray{
-		Origin:    core.Vec3{1.0, 2.0, 3.0},
-		Direction: core.Vec3{4.0, 5.0, 6.0},
+		Origin:    core.NewVec3(1.0, 2.0, 3.0),
+		Direction: core.NewVec3(4.0, 5.0, 6.0),
 	}
 	hit := objects.HitRecord{
 		Param:  1.0,
-		Point:  core.Vec3{0.0, 1.0, 2.0},
-		Normal: core.Vec3{0.0, 0.0, 1.0},
+		Point:  core.NewVec3(0.0, 1.0, 2.0),
+		Normal: core.NewVec3(0.0, 0.0, 1.0),
 	}
 	t.Logf("Given a diffusive material %v, a ray %v, a hit record %v,\n", material, ray, hit)
 	t.Log("and an ENABLED randomizer,")
@@ -54,7 +54,7 @@ func TestDiffusive_Random(t *testing.T) {
 	reflection := material.Reflect(ray, hit)
 	t.Logf("  but it should be within a unit sphere of the surface normal %v:\n", hit.Normal)
 
-	test.CheckNotNil(t, "reflection", reflection)
+	assert.NotNil(t, reflection)
 	randomPerturbation := reflection.Ray.Direction.Sub(hit.Normal).Len()
 	if randomPerturbation < 1.0 {
 		t.Logf("\tPASSED: reflection direction %v, perturbation %v",

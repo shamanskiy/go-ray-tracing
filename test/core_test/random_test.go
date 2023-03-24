@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
-	"github.com/Shamanskiy/go-ray-tracer/test"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRandom_VecInUnitSphere(t *testing.T) {
@@ -25,7 +25,7 @@ func TestRandom_VecInUnitSphere_Disable(t *testing.T) {
 	defer core.Random().Enable()
 
 	randomVec := core.Random().VecInUnitSphere()
-	expectedVec := core.Vec3{0.0, 0.0, 0.0}
+	expectedVec := core.NewVec3(0.0, 0.0, 0.0)
 
-	test.CheckResult(t, "vector", randomVec, expectedVec)
+	assert.Equal(t, expectedVec, randomVec)
 }
