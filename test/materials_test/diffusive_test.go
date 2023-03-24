@@ -12,10 +12,7 @@ import (
 
 func TestDiffusive_NoRandom(t *testing.T) {
 	material := materials.Diffusive{color.Red}
-	ray := core.Ray{
-		Origin:    core.NewVec3(1.0, 2.0, 3.0),
-		Direction: core.NewVec3(4.0, 5.0, 6.0),
-	}
+	ray := core.NewRay(core.NewVec3(1.0, 2.0, 3.0), core.NewVec3(4.0, 5.0, 6.0))
 	hit := objects.HitRecord{
 		Param:  1.0,
 		Point:  core.NewVec3(0.0, 1.0, 2.0),
@@ -30,7 +27,7 @@ func TestDiffusive_NoRandom(t *testing.T) {
 	reflection := material.Reflect(ray, hit)
 
 	expected := materials.Reflection{
-		Ray:         core.Ray{hit.Point, hit.Normal},
+		Ray:         core.NewRay(hit.Point, hit.Normal),
 		Attenuation: material.Color}
 
 	assert.Equal(t, expected, *reflection)
@@ -38,10 +35,7 @@ func TestDiffusive_NoRandom(t *testing.T) {
 
 func TestDiffusive_Random(t *testing.T) {
 	material := materials.Diffusive{color.Red}
-	ray := core.Ray{
-		Origin:    core.NewVec3(1.0, 2.0, 3.0),
-		Direction: core.NewVec3(4.0, 5.0, 6.0),
-	}
+	ray := core.NewRay(core.NewVec3(1.0, 2.0, 3.0), core.NewVec3(4.0, 5.0, 6.0))
 	hit := objects.HitRecord{
 		Param:  1.0,
 		Point:  core.NewVec3(0.0, 1.0, 2.0),
@@ -55,7 +49,7 @@ func TestDiffusive_Random(t *testing.T) {
 	t.Logf("  but it should be within a unit sphere of the surface normal %v:\n", hit.Normal)
 
 	assert.NotNil(t, reflection)
-	randomPerturbation := reflection.Ray.Direction.Sub(hit.Normal).Len()
+	randomPerturbation := reflection.Ray.Direction().Sub(hit.Normal).Len()
 	if randomPerturbation < 1.0 {
 		t.Logf("\tPASSED: reflection direction %v, perturbation %v",
 			reflection.Ray.Direction, randomPerturbation)

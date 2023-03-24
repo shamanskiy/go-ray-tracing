@@ -17,12 +17,12 @@ func TestScene_Default(t *testing.T) {
 	scene := render.Scene{}
 	expected := color.Black
 
-	ray := core.Ray{core.NewVec3(0, 0, 0), core.NewVec3(0, 0, 0)}
+	ray := core.NewRay(core.NewVec3(0, 0, 0), core.NewVec3(0, 0, 0))
 	t.Logf("  ray %v tests black:\n", ray)
 	color := scene.TestRay(ray)
 	assert.Equal(t, expected, color)
 
-	ray = core.Ray{core.NewVec3(1, 2, 3), core.NewVec3(4, 5, 6)}
+	ray = core.NewRay(core.NewVec3(1, 2, 3), core.NewVec3(4, 5, 6))
 	t.Logf("  and any other ray, too, for example %v:\n", ray)
 	color = scene.TestRay(ray)
 	assert.Equal(t, expected, color)
@@ -34,19 +34,19 @@ func TestScene_Empty(t *testing.T) {
 	t.Logf("Given an empty scene with bottom sky color %v and top sky color %v,\n",
 		skyBottom, skyTop)
 
-	ray := core.Ray{core.NewVec3(0, 0, 0), core.NewVec3(0, -1, 0)}
+	ray := core.NewRay(core.NewVec3(0, 0, 0), core.NewVec3(0, -1, 0))
 	t.Logf("  down-facing ray %v should return the bottom color:\n", ray)
 	color := scene.TestRay(ray)
 	expected := skyBottom
 	assert.Equal(t, expected, color)
 
-	ray = core.Ray{core.NewVec3(0, 0, 0), core.NewVec3(0, 1, 0)}
+	ray = core.NewRay(core.NewVec3(0, 0, 0), core.NewVec3(0, 1, 0))
 	t.Logf("  up-facing ray %v should return the top color:\n", ray)
 	color = scene.TestRay(ray)
 	expected = skyTop
 	assert.Equal(t, expected, color)
 
-	ray = core.Ray{core.NewVec3(0, 0, 0), core.NewVec3(1, 0, 0)}
+	ray = core.NewRay(core.NewVec3(0, 0, 0), core.NewVec3(1, 0, 0))
 	t.Logf("  horizontal ray %v should return the blend color:\n", ray)
 	color = scene.TestRay(ray)
 	expected = skyTop.Add(skyBottom).Mul(0.5)
@@ -62,7 +62,7 @@ func TestScene_HitClosetObject(t *testing.T) {
 	scene.Add(leftSphere, material)
 	scene.Add(rightSphere, material)
 
-	hitRay := core.Ray{core.NewVec3(4.0, 0.0, 0.0), core.NewVec3(-1.0, 0.0, 0.0)}
+	hitRay := core.NewRay(core.NewVec3(4.0, 0.0, 0.0), core.NewVec3(-1.0, 0.0, 0.0))
 	t.Logf("  a ray with origin %v and direction %v should hit the right sphere:\n", hitRay.Origin, hitRay.Direction)
 	hitRecord, objectIndex := scene.HitClosestObject(hitRay, 0.001)
 
@@ -87,13 +87,13 @@ func TestScene_TestRay_SingleSphere(t *testing.T) {
 	material := materials.Diffusive{sphereColor}
 	scene.Add(sphere, material)
 
-	hitRay := core.Ray{core.NewVec3(4.0, 0.0, 0.0), core.NewVec3(-1.0, 0.0, 0.0)}
+	hitRay := core.NewRay(core.NewVec3(4.0, 0.0, 0.0), core.NewVec3(-1.0, 0.0, 0.0))
 	t.Logf("  a ray with origin %v and direction %v should return blue color:\n", hitRay.Origin, hitRay.Direction)
 	rayColor := scene.TestRay(hitRay)
 	expectedColor := sphereColor
 	assert.Equal(t, expectedColor, rayColor)
 
-	hitRay = core.Ray{core.NewVec3(4.0, 0.0, 0.0), core.NewVec3(0.0, 1.0, 0.0)}
+	hitRay = core.NewRay(core.NewVec3(4.0, 0.0, 0.0), core.NewVec3(0.0, 1.0, 0.0))
 	t.Logf("  a ray with origin %v and direction %v should return white color:\n", hitRay.Origin, hitRay.Direction)
 	rayColor = scene.TestRay(hitRay)
 	expectedColor = skyColor
@@ -116,7 +116,7 @@ func TestScene_NumberOfReflectionsExceeded(t *testing.T) {
 	core.Random().Disable()
 	defer core.Random().Enable()
 
-	ray := core.Ray{core.NewVec3(2.0, 0.0, 0.0), core.NewVec3(1.0, 0.0, 0.0)}
+	ray := core.NewRay(core.NewVec3(2.0, 0.0, 0.0), core.NewVec3(1.0, 0.0, 0.0))
 	t.Log("  a ray colinear with the line between the spheres' centers")
 	t.Log("  will bounce between the spheres until the number of reflections is exceeded.")
 	t.Log("  The resulting color should be black:")
@@ -136,7 +136,7 @@ func TestScene_TwoReflections(t *testing.T) {
 
 	sphereA := objects.Sphere{core.NewVec3(0.0, 0.0, 0.0), 1.0}
 	sphereB := objects.Sphere{core.NewVec3(4.0, 3.0, 0.0), 1.0}
-	sphereColor := color.NewColor(0.2, 0.4, 0.6)
+	sphereColor := color.New(0.2, 0.4, 0.6)
 	material := materials.Diffusive{sphereColor}
 	scene.Add(sphereA, material)
 	scene.Add(sphereB, material)
@@ -145,7 +145,7 @@ func TestScene_TwoReflections(t *testing.T) {
 
 	firstHitPoint := core.NewVec3(math32.Sqrt(2)/2, math32.Sqrt(2)/2, 0.0)
 	rayOrigin := core.NewVec3(10.0, 0.0, 0.0)
-	ray := core.Ray{rayOrigin, firstHitPoint.Sub(rayOrigin)}
+	ray := core.NewRay(rayOrigin, firstHitPoint.Sub(rayOrigin))
 	t.Logf("  a ray %v should hit the first sphere at point %v,\n", ray, firstHitPoint)
 	t.Log("  get reflected and hit the second sphere at point [3.0 3.0 0.0],")
 	t.Log("  then get reflected towards the sky:")

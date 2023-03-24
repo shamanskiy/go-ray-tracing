@@ -8,22 +8,22 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 )
 
-var Red = NewColor(1.0, 0.0, 0.0)
-var Green = NewColor(0.0, 1.0, 0.0)
-var Blue = NewColor(0.0, 0.0, 1.0)
-var Black = NewColor(0.0, 0.0, 0.0)
-var White = NewColor(1.0, 1.0, 1.0)
-var SkyBlue = NewColor(0.5, 0.7, 1.0)
-var GrayMedium = NewColor(0.5, 0.5, 0.5)
-var GrayLight = NewColor(0.8, 0.8, 0.8)
-var Golden = NewColor(0.8, 0.6, 0.2)
-var Yellow = NewColor(1.0, 1.0, 0.2)
+var Red = New(1.0, 0.0, 0.0)
+var Green = New(0.0, 1.0, 0.0)
+var Blue = New(0.0, 0.0, 1.0)
+var Black = New(0.0, 0.0, 0.0)
+var White = New(1.0, 1.0, 1.0)
+var SkyBlue = New(0.5, 0.7, 1.0)
+var GrayMedium = New(0.5, 0.5, 0.5)
+var GrayLight = New(0.8, 0.8, 0.8)
+var Golden = New(0.8, 0.6, 0.2)
+var Yellow = New(1.0, 1.0, 0.2)
 
 type Color struct {
 	vec mgl32.Vec3
 }
 
-func NewColor(r, g, b core.Real) Color {
+func New(r, g, b core.Real) Color {
 	return Color{vec: mgl32.Vec3{r, g, b}}
 }
 
@@ -48,11 +48,11 @@ func (c Color) Mul(scalar core.Real) Color {
 }
 
 func (c Color) MulColor(other Color) Color {
-	return NewColor(c.R()*other.R(), c.G()*other.G(), c.B()*other.B())
+	return New(c.R()*other.R(), c.G()*other.G(), c.B()*other.B())
 }
 
 func (c Color) Div(scalar core.Real) Color {
-	return NewColor(c.R()/scalar, c.G()/scalar, c.B()/scalar)
+	return New(c.R()/scalar, c.G()/scalar, c.B()/scalar)
 }
 
 func (c Color) ToRGBA() rgba.RGBA {

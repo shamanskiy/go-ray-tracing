@@ -38,11 +38,11 @@ func genRandomMaterial() materials.Material {
 	materialChoice := core.Random().From01()
 
 	randomVec := core.Random().Vec3From01()
-	randomColor := color.NewColor(randomVec.X(), randomVec.Y(), randomVec.Z())
+	randomColor := color.New(randomVec.X(), randomVec.Y(), randomVec.Z())
 	if materialChoice < 0.7 {
 		return materials.Diffusive{randomColor}
 	} else if materialChoice < 0.9 {
-		metallicColor := color.NewColor(1., 1., 1.).Add(randomColor).Mul(0.5)
+		metallicColor := color.New(1., 1., 1.).Add(randomColor).Mul(0.5)
 		fuzziness := 0.1 * core.Random().From01()
 		return materials.NewReflectiveFuzzy(metallicColor, fuzziness)
 	} else {

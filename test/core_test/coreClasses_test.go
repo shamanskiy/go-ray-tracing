@@ -8,10 +8,7 @@ import (
 )
 
 func TestRay_ShouldEvaluate(t *testing.T) {
-	ray := core.Ray{
-		Origin:    core.NewVec3(0.0, 0.0, 0.0),
-		Direction: core.NewVec3(1.0, 2.0, 3.0),
-	}
+	ray := core.NewRay(core.NewVec3(0.0, 0.0, 0.0), core.NewVec3(1.0, 2.0, 3.0))
 
 	point := ray.Eval(2.0)
 

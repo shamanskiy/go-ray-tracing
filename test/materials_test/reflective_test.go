@@ -12,10 +12,7 @@ import (
 
 func TestReflective_Reflected(t *testing.T) {
 	material := materials.Reflective{Color: color.Red}
-	ray := core.Ray{
-		Origin:    core.NewVec3(-3.0, 5.0, 3.0),
-		Direction: core.NewVec3(4.0, -3.0, 0.0),
-	}
+	ray := core.NewRay(core.NewVec3(-3.0, 5.0, 3.0), core.NewVec3(4.0, -3.0, 0.0))
 	hit := objects.HitRecord{
 		Param:  1.0,
 		Point:  core.NewVec3(1.0, 2.0, 3.0),
@@ -28,7 +25,7 @@ func TestReflective_Reflected(t *testing.T) {
 	reflection := material.Reflect(ray, hit)
 
 	expected := materials.Reflection{
-		Ray:         core.Ray{hit.Point, core.NewVec3(0.8, 0.6, 0.0)},
+		Ray:         core.NewRay(hit.Point, core.NewVec3(0.8, 0.6, 0.0)),
 		Attenuation: material.Color}
 
 	assert.Equal(t, expected, *reflection)
@@ -36,10 +33,7 @@ func TestReflective_Reflected(t *testing.T) {
 
 func TestReflective_NotReflected(t *testing.T) {
 	material := materials.Reflective{Color: color.Red}
-	ray := core.Ray{
-		Origin:    core.NewVec3(-3.0, -1.0, 3.0),
-		Direction: core.NewVec3(4.0, 3.0, 0.0),
-	}
+	ray := core.NewRay(core.NewVec3(-3.0, -1.0, 3.0), core.NewVec3(4.0, 3.0, 0.0))
 	hit := objects.HitRecord{
 		Param:  1.0,
 		Point:  core.NewVec3(1.0, 2.0, 3.0),
@@ -72,10 +66,7 @@ func TestReflective_FuzzinessLimits(t *testing.T) {
 
 func TestRefective_WithFuzziness(t *testing.T) {
 	material := materials.NewReflectiveFuzzy(color.Red, 0.5)
-	ray := core.Ray{
-		Origin:    core.NewVec3(-3.0, 5.0, 3.0),
-		Direction: core.NewVec3(4.0, -3.0, 0.0),
-	}
+	ray := core.NewRay(core.NewVec3(-3.0, 5.0, 3.0), core.NewVec3(4.0, -3.0, 0.0))
 	hit := objects.HitRecord{
 		Param:  1.0,
 		Point:  core.NewVec3(1.0, 2.0, 3.0),
@@ -91,7 +82,7 @@ func TestRefective_WithFuzziness(t *testing.T) {
 		material.Fuzziness, expectedMeanDirection)
 
 	assert.NotNil(t, reflection)
-	randomPerturbation := reflection.Ray.Direction.Sub(expectedMeanDirection).Len()
+	randomPerturbation := reflection.Ray.Direction().Sub(expectedMeanDirection).Len()
 	if randomPerturbation < material.Fuzziness {
 		t.Logf("\tPASSED: reflection direction %v, perturbation %v",
 			reflection.Ray.Direction, randomPerturbation)

@@ -10,10 +10,10 @@ type Sphere struct {
 }
 
 func (s Sphere) HitWithMin(ray core.Ray, minParam core.Real) *HitRecord {
-	centerToOrigin := ray.Origin.Sub(s.Center)
+	centerToOrigin := ray.Origin().Sub(s.Center)
 
-	a := ray.Direction.Dot(ray.Direction)
-	b := 2.0 * ray.Direction.Dot(centerToOrigin)
+	a := ray.Direction().Dot(ray.Direction())
+	b := 2.0 * ray.Direction().Dot(centerToOrigin)
 	c := centerToOrigin.Dot(centerToOrigin) - s.Radius*s.Radius
 	solution := core.SolveQuadEquation(a, b, c)
 

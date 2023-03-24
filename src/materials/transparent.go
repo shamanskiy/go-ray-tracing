@@ -71,16 +71,16 @@ func computeReflectionRatio(rayFromOutside bool, cosIn core.Real, cosOut core.Re
 }
 
 func (m Transparent) Reflect(ray core.Ray, hit objects.HitRecord) *Reflection {
-	refractedDirection, reflectionRatio := ComputeRefraction(ray.Direction, hit.Normal, m.RefractionIndex)
-	reflectedDirection := ray.Direction.Reflect(hit.Normal)
+	refractedDirection, reflectionRatio := ComputeRefraction(ray.Direction(), hit.Normal, m.RefractionIndex)
+	reflectedDirection := ray.Direction().Reflect(hit.Normal)
 
 	// Transparent material reflects a portion of the incoming light
 	if refractedDirection != nil && core.Random().From01() > reflectionRatio {
-		refractedRay := core.Ray{hit.Point, *refractedDirection}
+		refractedRay := core.NewRay(hit.Point, *refractedDirection)
 		return &Reflection{refractedRay, color.White}
 	} else {
 		// Full internal reflection
-		reflectedRay := core.Ray{hit.Point, reflectedDirection}
+		reflectedRay := core.NewRay(hit.Point, reflectedDirection)
 		return &Reflection{reflectedRay, color.White}
 	}
 }

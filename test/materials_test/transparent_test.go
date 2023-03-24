@@ -110,10 +110,7 @@ func TestSchlickLaw(t *testing.T) {
 
 func TestTransparent_RayGetsRefractedOrReflected(t *testing.T) {
 	material := materials.NewTransparent(1.5)
-	ray := core.Ray{
-		Origin:    core.NewVec3(0.0, 0.0, 3.0),
-		Direction: core.NewVec3(1.0, -1.0, 0.0),
-	}
+	ray := core.NewRay(core.NewVec3(0.0, 0.0, 3.0), core.NewVec3(1.0, -1.0, 0.0))
 	hit := objects.HitRecord{
 		Param:  1.0,
 		Point:  core.NewVec3(1.0, 2.0, 3.0),
@@ -129,18 +126,15 @@ func TestTransparent_RayGetsRefractedOrReflected(t *testing.T) {
 	refractedDirection := core.NewVec3(0.666666, -1.247219, 0)
 	reflectedDirection := core.NewVec3(1.0, 1.0, 0.0)
 
-	refracted := reflection.Ray.Direction.InDelta(refractedDirection, core.Tolerance)
-	reflected := reflection.Ray.Direction.InDelta(reflectedDirection, core.Tolerance)
+	refracted := reflection.Ray.Direction().InDelta(refractedDirection, core.Tolerance)
+	reflected := reflection.Ray.Direction().InDelta(reflectedDirection, core.Tolerance)
 
 	assert.True(t, refracted || reflected)
 }
 
 func TestTransparent_ShouldFullyReflect_WhenIncidenceAngleTooLarge(t *testing.T) {
 	material := materials.NewTransparent(1.5)
-	ray := core.Ray{
-		Origin:    core.NewVec3(0.0, 0.0, 3.0),
-		Direction: core.NewVec3(1.0, 1.0, 0.0),
-	}
+	ray := core.NewRay(core.NewVec3(0.0, 0.0, 3.0), core.NewVec3(1.0, 1.0, 0.0))
 	hit := objects.HitRecord{
 		Param:  1.0,
 		Point:  core.NewVec3(1.0, 2.0, 3.0),

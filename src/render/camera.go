@@ -126,9 +126,8 @@ func (c *Camera) Render(scene *Scene) *image.RGBA {
 }
 
 func (c *Camera) GetRay(u, v core.Real) core.Ray {
-	ray := core.Ray{
-		Origin:    c.Origin,
-		Direction: c.upperLeftCorner.Add(c.horizontalSpan.Mul(u)).Add(c.verticalSpan.Mul(v)).Sub(c.Origin)}
+	rayDirection := c.upperLeftCorner.Add(c.horizontalSpan.Mul(u)).Add(c.verticalSpan.Mul(v)).Sub(c.Origin)
+	ray := core.NewRay(c.Origin, rayDirection)
 
 	return ray
 }

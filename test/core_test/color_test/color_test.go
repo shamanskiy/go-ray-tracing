@@ -9,19 +9,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestColor_ToRGBA(t *testing.T) {
-	t.Log("Black to RGB")
-	colorIn := color.NewColor(0, 0, 0)
-	colorOut := rgba.RGBA{0, 0, 0, 255}
-	assert.Equal(t, colorOut, colorIn.ToRGBA())
+func TestColor_BlackToRGBA(t *testing.T) {
+	assert.Equal(t, rgba.RGBA{0, 0, 0, 255}, color.Black.ToRGBA())
+}
 
-	t.Log("White to RGB")
-	colorIn = color.NewColor(1., 1., 1.)
-	colorOut = rgba.RGBA{255, 255, 255, 255}
-	assert.Equal(t, colorOut, colorIn.ToRGBA())
+func TestColor_WhiteToRGBA(t *testing.T) {
+	assert.Equal(t, rgba.RGBA{255, 255, 255, 255}, color.White.ToRGBA())
+}
 
-	t.Log("Gray to RGB with gamma correction")
-	colorIn = color.NewColor(0.64, 0.64, 0.64)
-	colorOut = rgba.RGBA{204, 204, 204, 255}
-	assert.Equal(t, colorOut, colorIn.ToRGBA())
+func TestColor_GrayToRGBA(t *testing.T) {
+	assert.Equal(t, rgba.RGBA{181, 181, 181, 255}, color.GrayMedium.ToRGBA())
 }

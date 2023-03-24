@@ -22,12 +22,12 @@ func NewReflectiveFuzzy(color color.Color, fuzziness core.Real) Reflective {
 }
 
 func (r Reflective) Reflect(ray core.Ray, hit objects.HitRecord) *Reflection {
-	reflectedDirection := ray.Direction.Normalize().Reflect(hit.Normal)
+	reflectedDirection := ray.Direction().Normalize().Reflect(hit.Normal)
 	fuzzyPerturbation := core.Random().VecInUnitSphere().Mul(r.Fuzziness)
 	reflectedDirection = reflectedDirection.Add(fuzzyPerturbation)
 
 	if reflectedDirection.Dot(hit.Normal) > 0 {
-		return &Reflection{core.Ray{hit.Point, reflectedDirection}, r.Color}
+		return &Reflection{core.NewRay(hit.Point, reflectedDirection), r.Color}
 	} else {
 		return nil
 	}

@@ -21,7 +21,7 @@ func TestCamera_Default(t *testing.T) {
 	assert.Equal(t, settings.LookFrom, camera.Origin)
 
 	ray := camera.GetRay(0.5, 0.5)
-	test.AssertInDeltaVec3(t, settings.LookFrom, ray.Origin, core.Tolerance)
+	test.AssertInDeltaVec3(t, settings.LookFrom, ray.Origin(), core.Tolerance)
 	test.AssertInDeltaVec3(t, settings.LookAt, ray.Eval(1), core.Tolerance)
 
 	ray = camera.GetRay(0.5, 0)
@@ -49,7 +49,7 @@ func TestCamera_Custom(t *testing.T) {
 	test.AssertInDeltaVec3(t, settings.LookFrom, camera.Origin, core.Tolerance)
 
 	ray := camera.GetRay(0.5, 0.5)
-	test.AssertInDeltaVec3(t, settings.LookFrom, ray.Origin, core.Tolerance)
+	test.AssertInDeltaVec3(t, settings.LookFrom, ray.Origin(), core.Tolerance)
 	test.AssertInDeltaVec3(t, settings.LookAt, ray.Eval(1), core.Tolerance)
 
 	ray = camera.GetRay(0.5, 0)

@@ -55,7 +55,7 @@ func (s *Scene) TestRay(ray core.Ray) color.Color {
 }
 
 func (s *Scene) computeSkyColor(ray core.Ray) color.Color {
-	unit_direction := ray.Direction.Normalize()
+	unit_direction := ray.Direction().Normalize()
 
 	var t float32
 	// check for zero length vector
