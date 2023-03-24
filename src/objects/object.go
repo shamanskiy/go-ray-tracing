@@ -1,6 +1,6 @@
 package objects
 
-import "github.com/Shamanskiy/go-ray-tracer/core"
+import "github.com/Shamanskiy/go-ray-tracer/src/core"
 
 type HitRecord struct {
 	Param  core.Real

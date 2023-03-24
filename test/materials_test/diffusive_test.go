@@ -3,13 +3,14 @@ package materials
 import (
 	"testing"
 
-	"github.com/Shamanskiy/go-ray-tracer/core"
-	"github.com/Shamanskiy/go-ray-tracer/objects"
-	"github.com/Shamanskiy/go-ray-tracer/utils"
+	"github.com/Shamanskiy/go-ray-tracer/src/core"
+	"github.com/Shamanskiy/go-ray-tracer/src/materials"
+	"github.com/Shamanskiy/go-ray-tracer/src/objects"
+	"github.com/Shamanskiy/go-ray-tracer/test"
 )
 
 func TestDiffusive_NoRandom(t *testing.T) {
-	material := Diffusive{core.Red}
+	material := materials.Diffusive{core.Red}
 	ray := core.Ray{
 		Origin:    core.Vec3{1.0, 2.0, 3.0},
 		Direction: core.Vec3{4.0, 5.0, 6.0},
@@ -27,16 +28,16 @@ func TestDiffusive_NoRandom(t *testing.T) {
 	t.Log("  we can reflect the ray off the material and expect a predictable result:")
 	reflection := material.Reflect(ray, hit)
 
-	expected := Reflection{
+	expected := materials.Reflection{
 		Ray:         core.Ray{hit.Point, hit.Normal},
 		Attenuation: material.Color}
 
-	utils.CheckNotNil(t, "reflection", reflection)
-	utils.CheckResult(t, "reflection", *reflection, expected)
+	test.CheckNotNil(t, "reflection", reflection)
+	test.CheckResult(t, "reflection", *reflection, expected)
 }
 
 func TestDiffusive_Random(t *testing.T) {
-	material := Diffusive{core.Red}
+	material := materials.Diffusive{core.Red}
 	ray := core.Ray{
 		Origin:    core.Vec3{1.0, 2.0, 3.0},
 		Direction: core.Vec3{4.0, 5.0, 6.0},
@@ -53,7 +54,7 @@ func TestDiffusive_Random(t *testing.T) {
 	reflection := material.Reflect(ray, hit)
 	t.Logf("  but it should be within a unit sphere of the surface normal %v:\n", hit.Normal)
 
-	utils.CheckNotNil(t, "reflection", reflection)
+	test.CheckNotNil(t, "reflection", reflection)
 	randomPerturbation := reflection.Ray.Direction.Sub(hit.Normal).Len()
 	if randomPerturbation < 1.0 {
 		t.Logf("\tPASSED: reflection direction %v, perturbation %v",

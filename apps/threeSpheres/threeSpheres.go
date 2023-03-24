@@ -7,10 +7,10 @@ import (
 	"image/png"
 	"os"
 
-	"github.com/Shamanskiy/go-ray-tracer/core"
-	"github.com/Shamanskiy/go-ray-tracer/materials"
-	"github.com/Shamanskiy/go-ray-tracer/objects"
-	"github.com/Shamanskiy/go-ray-tracer/render"
+	"github.com/Shamanskiy/go-ray-tracer/src/core"
+	"github.com/Shamanskiy/go-ray-tracer/src/materials"
+	"github.com/Shamanskiy/go-ray-tracer/src/objects"
+	"github.com/Shamanskiy/go-ray-tracer/src/render"
 )
 
 func makeScene() *render.Scene {

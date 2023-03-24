@@ -1,8 +1,8 @@
 package materials
 
 import (
-	"github.com/Shamanskiy/go-ray-tracer/core"
-	"github.com/Shamanskiy/go-ray-tracer/objects"
+	"github.com/Shamanskiy/go-ray-tracer/src/core"
+	"github.com/Shamanskiy/go-ray-tracer/src/objects"
 )
 
 type Diffusive struct {

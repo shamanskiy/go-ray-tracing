@@ -3,13 +3,14 @@ package core
 import (
 	"testing"
 
-	"github.com/Shamanskiy/go-ray-tracer/utils"
+	"github.com/Shamanskiy/go-ray-tracer/src/core"
+	"github.com/Shamanskiy/go-ray-tracer/test"
 )
 
 func TestRandom_VecInUnitSphere(t *testing.T) {
 	t.Log("We can generate a random vector in a unit sphere:")
 	for i := 0; i < 10; i++ {
-		randomVec := Random().VecInUnitSphere()
+		randomVec := core.Random().VecInUnitSphere()
 		if randomVec.LenSqr() < 1 {
 			t.Logf("\tPASSED: generated %v, length is %v.\n", randomVec, randomVec.Len())
 		} else {
@@ -20,11 +21,11 @@ func TestRandom_VecInUnitSphere(t *testing.T) {
 
 func TestRandom_VecInUnitSphere_Disable(t *testing.T) {
 	t.Log("When we generate a random vector in a unit sphere, we can disable randomness:")
-	Random().Disable()
-	defer Random().Enable()
+	core.Random().Disable()
+	defer core.Random().Enable()
 
-	randomVec := Random().VecInUnitSphere()
-	expectedVec := Vec3{0.0, 0.0, 0.0}
+	randomVec := core.Random().VecInUnitSphere()
+	expectedVec := core.Vec3{0.0, 0.0, 0.0}
 
-	utils.CheckResult(t, "vector", randomVec, expectedVec)
+	test.CheckResult(t, "vector", randomVec, expectedVec)
 }

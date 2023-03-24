@@ -1,9 +1,9 @@
 package render
 
 import (
-	"github.com/Shamanskiy/go-ray-tracer/core"
-	"github.com/Shamanskiy/go-ray-tracer/materials"
-	"github.com/Shamanskiy/go-ray-tracer/objects"
+	"github.com/Shamanskiy/go-ray-tracer/src/core"
+	"github.com/Shamanskiy/go-ray-tracer/src/materials"
+	"github.com/Shamanskiy/go-ray-tracer/src/objects"
 	"github.com/chewxy/math32"
 )
 
@@ -14,7 +14,7 @@ type Scene struct {
 	SkyColorBottom core.Color
 }
 
-func (s *Scene) hitClosestObject(ray core.Ray, minParam core.Real) (hit *objects.HitRecord, objectIndex int) {
+func (s *Scene) HitClosestObject(ray core.Ray, minParam core.Real) (hit *objects.HitRecord, objectIndex int) {
 
 	for i := range s.objects {
 		tempHit := s.objects[i].HitWithMin(ray, minParam)
@@ -35,7 +35,7 @@ func (s *Scene) Add(object objects.Object, material materials.Material) {
 }
 
 func (s *Scene) testRay(ray core.Ray, depth int) core.Color {
-	hit, objectIndex := s.hitClosestObject(ray, 0.0001)
+	hit, objectIndex := s.HitClosestObject(ray, 0.0001)
 	if hit != nil {
 		reflection := s.materials[objectIndex].Reflect(ray, *hit)
 		if reflection != nil && depth < 10 {

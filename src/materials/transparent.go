@@ -1,26 +1,26 @@
 package materials
 
 import (
-	"github.com/Shamanskiy/go-ray-tracer/core"
-	"github.com/Shamanskiy/go-ray-tracer/objects"
+	"github.com/Shamanskiy/go-ray-tracer/src/core"
+	"github.com/Shamanskiy/go-ray-tracer/src/objects"
 	"github.com/chewxy/math32"
 )
 
 type Transparent struct {
-	refractionIndex core.Real
+	RefractionIndex core.Real
 }
 
 func NewTransparent(refractionIndex core.Real) Transparent {
 	if refractionIndex < 1. {
 		refractionIndex = 1.
 	}
-	return Transparent{refractionIndex: refractionIndex}
+	return Transparent{RefractionIndex: refractionIndex}
 }
 
 // Transparent materials reflect a portion of incoming light.
 // The reflected portion grows with the incidence angle.
 // The Schlick Law is a polynomial approximation of the reflection ratio.
-func schlickLaw(cosIn core.Real, refractionIndex core.Real) core.Real {
+func SchlickLaw(cosIn core.Real, refractionIndex core.Real) core.Real {
 	r0 := (1 - refractionIndex) / (1 + refractionIndex)
 	r0 *= r0
 
@@ -37,7 +37,7 @@ func computeInOutRefractionRatio(rayFromOutside bool, refractionIndex core.Real)
 
 // Returns the direction of the refracted ray and the portion of the reflected light.
 // If the ray comes from material at a too large incident angle, returns nil (full internal reflection).
-func computeRefraction(dirIn core.Vec3, normal core.Vec3, refractionIndex core.Real) (dirOut *core.Vec3, reflectionRatio core.Real) {
+func ComputeRefraction(dirIn core.Vec3, normal core.Vec3, refractionIndex core.Real) (dirOut *core.Vec3, reflectionRatio core.Real) {
 	inDotNormal := dirIn.Dot(normal)
 	rayFromOutside := inDotNormal <= 0
 	inOutRefractionRatio := computeInOutRefractionRatio(rayFromOutside, refractionIndex)
@@ -63,14 +63,14 @@ func computeRefraction(dirIn core.Vec3, normal core.Vec3, refractionIndex core.R
 
 func computeReflectionRatio(rayFromOutside bool, cosIn core.Real, cosOut core.Real, refractionIndex core.Real) core.Real {
 	if rayFromOutside {
-		return schlickLaw(math32.Abs(cosIn), refractionIndex)
+		return SchlickLaw(math32.Abs(cosIn), refractionIndex)
 	} else {
-		return schlickLaw(cosOut, refractionIndex)
+		return SchlickLaw(cosOut, refractionIndex)
 	}
 }
 
 func (m Transparent) Reflect(ray core.Ray, hit objects.HitRecord) *Reflection {
-	refractedDirection, reflectionRatio := computeRefraction(ray.Direction, hit.Normal, m.refractionIndex)
+	refractedDirection, reflectionRatio := ComputeRefraction(ray.Direction, hit.Normal, m.RefractionIndex)
 	reflectedDirection := core.Reflect(ray.Direction, hit.Normal)
 
 	// Transparent material reflects a portion of the incoming light

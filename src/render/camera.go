@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/Shamanskiy/go-ray-tracer/core"
+	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/chewxy/math32"
 	"github.com/schollz/progressbar/v3"
 )
@@ -40,13 +40,13 @@ func DefaultCameraSettings() CameraSettings {
 }
 
 type Camera struct {
-	origin          core.Vec3
+	Origin          core.Vec3
 	upperLeftCorner core.Vec3
 	horizontalSpan  core.Vec3
 	verticalSpan    core.Vec3
 
-	pixelWidth     int
-	pixelHeight    int
+	PixelWidth     int
+	PixelHeight    int
 	sampling       int
 	maxReflections int
 }
@@ -54,12 +54,12 @@ type Camera struct {
 func NewCamera(settings *CameraSettings) *Camera {
 	camera := Camera{}
 
-	camera.pixelHeight = settings.ImagePixelHeight
-	camera.pixelWidth = int(core.Real(settings.ImagePixelHeight) * settings.AspectRatio)
+	camera.PixelHeight = settings.ImagePixelHeight
+	camera.PixelWidth = int(core.Real(settings.ImagePixelHeight) * settings.AspectRatio)
 	camera.sampling = settings.Antialiasing
 	camera.maxReflections = settings.MaxRayReflections
 
-	camera.origin = settings.LookFrom
+	camera.Origin = settings.LookFrom
 	verticalFOV_rad := settings.VerticalFOV * math32.Pi / 180
 
 	halfHeight := math32.Tan(verticalFOV_rad / 2)
@@ -75,28 +75,28 @@ func NewCamera(settings *CameraSettings) *Camera {
 	camera.verticalSpan = up.Mul(-2 * halfHeight * focusDistance)
 
 	originToCorner := up.Mul(halfHeight).Sub(right.Mul(halfWidth)).Sub(back).Mul(focusDistance)
-	camera.upperLeftCorner = camera.origin.Add(originToCorner)
+	camera.upperLeftCorner = camera.Origin.Add(originToCorner)
 
 	return &camera
 }
 
 func (c *Camera) createImage() *image.RGBA {
 	upLeft := image.Point{0, 0}
-	lowRight := image.Point{c.pixelWidth, c.pixelHeight}
+	lowRight := image.Point{c.PixelWidth, c.PixelHeight}
 
 	return image.NewRGBA(image.Rectangle{upLeft, lowRight})
 }
 
 func (c *Camera) createProgressBar() *progressbar.ProgressBar {
-	return progressbar.Default(int64(c.pixelWidth), "rendering")
+	return progressbar.Default(int64(c.PixelWidth), "rendering")
 }
 
-func (c *Camera) indexToU(index int) core.Real {
-	return (core.Real(index) + core.Random().From01()) / core.Real(c.pixelWidth)
+func (c *Camera) IndexToU(index int) core.Real {
+	return (core.Real(index) + core.Random().From01()) / core.Real(c.PixelWidth)
 }
 
-func (c *Camera) indexToV(index int) core.Real {
-	return (core.Real(index) + core.Random().From01()) / core.Real(c.pixelHeight)
+func (c *Camera) IndexToV(index int) core.Real {
+	return (core.Real(index) + core.Random().From01()) / core.Real(c.PixelHeight)
 }
 
 func (c *Camera) Render(scene *Scene) *image.RGBA {
@@ -104,19 +104,19 @@ func (c *Camera) Render(scene *Scene) *image.RGBA {
 	bar := c.createProgressBar()
 
 	start := time.Now()
-	for x := 0; x < c.pixelWidth; x++ {
+	for x := 0; x < c.PixelWidth; x++ {
 		bar.Add(1)
-		for y := 0; y < c.pixelHeight; y++ {
+		for y := 0; y < c.PixelHeight; y++ {
 			var pixelColor core.Color
 			for s := 0; s < c.sampling; s++ {
-				u := c.indexToU(x)
-				v := c.indexToV(y)
+				u := c.IndexToU(x)
+				v := c.IndexToV(y)
 				ray := c.GetRay(u, v)
 				rayColor := scene.TestRay(ray)
 				pixelColor = pixelColor.Add(rayColor)
 			}
 			pixelColor = core.Div(pixelColor, core.Real(c.sampling))
-			img.Set(x, y, toRGBA(pixelColor))
+			img.Set(x, y, ToRGBA(pixelColor))
 		}
 	}
 	elapsed := time.Since(start)
@@ -125,7 +125,7 @@ func (c *Camera) Render(scene *Scene) *image.RGBA {
 	return img
 }
 
-func toRGBA(c core.Color) color.RGBA {
+func ToRGBA(c core.Color) color.RGBA {
 	return color.RGBA{toZero255(c.X()), toZero255(c.Y()), toZero255(c.Z()), 255}
 }
 
@@ -139,8 +139,8 @@ func gammaCorrection(input core.Real) core.Real {
 
 func (c *Camera) GetRay(u, v core.Real) core.Ray {
 	ray := core.Ray{
-		Origin:    c.origin,
-		Direction: c.upperLeftCorner.Add(c.horizontalSpan.Mul(u)).Add(c.verticalSpan.Mul(v)).Sub(c.origin)}
+		Origin:    c.Origin,
+		Direction: c.upperLeftCorner.Add(c.horizontalSpan.Mul(u)).Add(c.verticalSpan.Mul(v)).Sub(c.Origin)}
 
 	return ray
 }

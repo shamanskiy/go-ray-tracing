@@ -1,7 +1,7 @@
 package objects
 
 import (
-	"github.com/Shamanskiy/go-ray-tracer/core"
+	"github.com/Shamanskiy/go-ray-tracer/src/core"
 )
 
 type Sphere struct {

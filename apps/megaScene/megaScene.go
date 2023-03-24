@@ -8,10 +8,10 @@ import (
 	"image/png"
 	"os"
 
-	"github.com/Shamanskiy/go-ray-tracer/core"
-	"github.com/Shamanskiy/go-ray-tracer/materials"
-	"github.com/Shamanskiy/go-ray-tracer/objects"
-	"github.com/Shamanskiy/go-ray-tracer/render"
+	"github.com/Shamanskiy/go-ray-tracer/src/core"
+	"github.com/Shamanskiy/go-ray-tracer/src/materials"
+	"github.com/Shamanskiy/go-ray-tracer/src/objects"
+	"github.com/Shamanskiy/go-ray-tracer/src/render"
 )
 
 func tooCloseToBigSpheres(sphere objects.Sphere, bigSpheres []objects.Sphere) bool {
@@ -84,7 +84,7 @@ func makeScene() *render.Scene {
 func makeCamera() *render.Camera {
 	settings := render.DefaultCameraSettings()
 	settings.AspectRatio = 16. / 9.
-	settings.ImagePixelHeight = 1080
+	settings.ImagePixelHeight = 300
 	settings.Antialiasing = 10
 	settings.LookFrom = core.Vec3{3.5, 1.35, 1.9}
 	settings.LookAt = core.Vec3{3., 1.25, 1.5}

@@ -1,6 +1,6 @@
 module github.com/Shamanskiy/go-ray-tracer
 
-go 1.17
+go 1.20
 
 require (
 	github.com/chewxy/math32 v1.10.1 // indirect
