@@ -7,6 +7,7 @@ import (
 	"github.com/Shamanskiy/go-ray-tracer/src/materials"
 	"github.com/Shamanskiy/go-ray-tracer/src/objects"
 	"github.com/Shamanskiy/go-ray-tracer/test"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestTransparent_RefactionIndexLimits(t *testing.T) {
@@ -24,106 +25,89 @@ func TestTransparent_RefactionIndexLimits(t *testing.T) {
 func TestRefract_OutsideToInside_Glass(t *testing.T) {
 	normal := core.Vec3{0., 1., 0.}
 	refractionIndex := core.Real(1.5)
-	t.Logf("Given a material with refraction index %v and normal %v,\n", refractionIndex, normal)
 
 	incidentVector := core.Vec3{1., -1., 0.}
-	t.Logf("  incident vector %v gets refracted:\n", incidentVector)
 	refractedDirection, reflectionRatio := materials.ComputeRefraction(incidentVector, normal, refractionIndex)
-	test.CheckNotNil(t, "Refracted direction", refractedDirection)
-	core.CheckVec3Tol(t, "Refracted direction", *refractedDirection, core.Vec3{0.666666, -1.247219, 0})
-	core.CheckRealTol(t, "Reflection ratio", reflectionRatio, core.Real(0.04207))
+
+	test.AssertInDeltaVec3(t, core.Vec3{0.666666, -1.247219, 0}, *refractedDirection, core.Tolerance)
+	assert.InDelta(t, 0.04207, reflectionRatio, core.Tolerance)
 
 	incidentVector = core.Vec3{1., -0.1, 0.}
-	t.Logf("  incident vector %v gets refracted:\n", incidentVector)
 	refractedDirection, reflectionRatio = materials.ComputeRefraction(incidentVector, normal, refractionIndex)
-	test.CheckNotNil(t, "Refracted direction", refractedDirection)
-	core.CheckVec3Tol(t, "Refracted direction", *refractedDirection, core.Vec3{0.666666, -0.752034, 0})
-	core.CheckRealTol(t, "Reflection ratio", reflectionRatio, core.Real(0.60843))
+
+	test.AssertInDeltaVec3(t, core.Vec3{0.666666, -0.752034, 0}, *refractedDirection, core.Tolerance)
+	assert.InDelta(t, 0.60843, reflectionRatio, core.Tolerance)
 
 	incidentVector = core.Vec3{1., -0.01, 0.}
-	t.Logf("  incident vector %v gets refracted:\n", incidentVector)
 	refractedDirection, reflectionRatio = materials.ComputeRefraction(incidentVector, normal, refractionIndex)
-	test.CheckNotNil(t, "Refracted direction", refractedDirection)
-	core.CheckVec3Tol(t, "Refracted direction", *refractedDirection, core.Vec3{0.666666, -0.745423, 0})
-	core.CheckRealTol(t, "Reflection ratio", reflectionRatio, core.Real(0.95295))
+
+	test.AssertInDeltaVec3(t, core.Vec3{0.666666, -0.745423, 0}, *refractedDirection, core.Tolerance)
+	assert.InDelta(t, 0.95295, reflectionRatio, core.Tolerance)
 }
 
 func TestRefract_OutsideToInside_Air(t *testing.T) {
 	normal := core.Vec3{0., 1., 0.}
 	refractionIndex := core.Real(1.)
-	t.Logf("Given a material with refraction index %v and normal %v,\n", refractionIndex, normal)
 
 	incidentVector := core.Vec3{1., -1., 0.}
-	t.Logf("  incident vector %v doesn't get refracted:\n", incidentVector)
 
 	refractedDirection, reflectionRatio := materials.ComputeRefraction(incidentVector, normal, refractionIndex)
-	test.CheckNotNil(t, "Refracted direction", refractedDirection)
-	core.CheckVec3Tol(t, "Refracted direction", *refractedDirection, core.Vec3{1., -1., 0})
-	core.CheckRealTol(t, "Reflection ratio", reflectionRatio, core.Real(0.002155))
+
+	test.AssertInDeltaVec3(t, core.Vec3{1, -1, 0}, *refractedDirection, core.Tolerance)
+	assert.InDelta(t, 0.002155, reflectionRatio, core.Tolerance)
 }
 
 func TestRefract_InsideToOutside_Glass(t *testing.T) {
 	normal := core.Vec3{0., 1., 0.}
 	refractionIndex := core.Real(1.5)
-	t.Logf("Given a material with refraction index %v and normal %v,\n", refractionIndex, normal)
 
 	incidentVector := core.Vec3{3, 4, 0.}
-	t.Logf("  incident vector %v gets refracted:\n", incidentVector)
 
 	refractedDirection, reflectionRatio := materials.ComputeRefraction(incidentVector, normal, refractionIndex)
-	test.CheckNotNil(t, "Refracted direction", refractedDirection)
-	core.CheckVec3Tol(t, "Refracted direction", *refractedDirection, core.Vec3{4.5, 2.179448, 0})
-	core.CheckRealTol(t, "Reflection ratio", reflectionRatio, core.Real(0.0948391))
+
+	test.AssertInDeltaVec3(t, core.Vec3{4.5, 2.179448, 0}, *refractedDirection, core.Tolerance)
+	assert.InDelta(t, 0.0948391, reflectionRatio, core.Tolerance)
 }
 
 func TestRefract_InsideToOutside_Air(t *testing.T) {
 	normal := core.Vec3{0., 1., 0.}
 	refractionIndex := core.Real(1.)
-	t.Logf("Given a material with refraction index %v and normal %v,\n", refractionIndex, normal)
 
 	incidentVector := core.Vec3{3, 4, 0.}
-	t.Logf("  incident vector %v doesn't get refracted:\n", incidentVector)
 
 	refractedDirection, reflectionRatio := materials.ComputeRefraction(incidentVector, normal, refractionIndex)
-	test.CheckNotNil(t, "Refracted direction", refractedDirection)
-	core.CheckVec3Tol(t, "Refracted direction", *refractedDirection, core.Vec3{3, 4, 0})
-	core.CheckRealTol(t, "Reflection ratio", reflectionRatio, core.Real(0.00032))
+	test.AssertInDeltaVec3(t, core.Vec3{3, 4, 0}, *refractedDirection, core.Tolerance)
+	assert.InDelta(t, 0.00032, reflectionRatio, core.Tolerance)
 }
 
-func TestRefract_InsideToOutside_Glass_FullReflection(t *testing.T) {
+func TestRefract_InsideToOutside_Glass_ShouldFullyReflect_AngleTooBig(t *testing.T) {
 	normal := core.Vec3{0., 1., 0.}
 	refractionIndex := core.Real(1.5)
-	t.Logf("Given a material with refraction index %v and normal %v,\n", refractionIndex, normal)
 
 	incidentVector := core.Vec3{1., 1., 0.}
-	t.Logf("  incident vector %v gets fully reflected because the incident angle is too big:\n", incidentVector)
 
 	refractedDirection, reflectionRatio := materials.ComputeRefraction(incidentVector, normal, refractionIndex)
-	test.CheckNil(t, "Refracted direction", refractedDirection)
-	core.CheckRealTol(t, "Reflection ratio", reflectionRatio, core.Real(1.0))
+	assert.Nil(t, refractedDirection)
+	assert.InDelta(t, 1, reflectionRatio, core.Tolerance)
 }
 
 func TestSchlickLaw(t *testing.T) {
 	refractionIndex := core.Real(1.5)
-	t.Logf("Given a material with refraction index %v,\n", refractionIndex)
 
 	cosIn := core.Real(1.0)
-	t.Logf("  for an incident angle cosine  %v, we can compute the reflection ratio:\n", cosIn)
 	reflectionRatio := materials.SchlickLaw(cosIn, refractionIndex)
-	core.CheckRealTol(t, "Reflected ratio", reflectionRatio, core.Real(0.04))
+	assert.InDelta(t, 0.04, reflectionRatio, core.Tolerance)
 
 	cosIn = core.Real(0.0)
-	t.Logf("  for an incident angle cosine  %v, we can compute the reflection ratio:\n", cosIn)
 	reflectionRatio = materials.SchlickLaw(cosIn, refractionIndex)
-	core.CheckRealTol(t, "Reflected ratio", reflectionRatio, core.Real(1))
+	assert.InDelta(t, 1, reflectionRatio, core.Tolerance)
 
 	cosIn = core.Real(0.5)
-	t.Logf("  for an incident angle cosine  %v, we can compute the reflection ratio:\n", cosIn)
 	reflectionRatio = materials.SchlickLaw(cosIn, refractionIndex)
-	core.CheckRealTol(t, "Reflected ratio", reflectionRatio, core.Real(0.07))
+	assert.InDelta(t, 0.07, reflectionRatio, core.Tolerance)
 }
 
-func TestTransparent(t *testing.T) {
+func TestTransparent_RayGetsRefractedOrReflected(t *testing.T) {
 	material := materials.NewTransparent(1.5)
 	ray := core.Ray{
 		Origin:    core.Vec3{0.0, 0.0, 3.0},
@@ -134,30 +118,23 @@ func TestTransparent(t *testing.T) {
 		Point:  core.Vec3{1.0, 2.0, 3.0},
 		Normal: core.Vec3{0.0, 1.0, 0.0},
 	}
-	t.Logf("Given a transparent material with refraction index %v,\n", material.RefractionIndex)
-	t.Logf("a ray %v and a hit record %v,\n", ray, hit)
 
-	t.Log("  the ray either gets refracted or reflected, and the attenuation is white:")
 	reflection := material.Reflect(ray, hit)
-	test.CheckNotNil(t, "reflection", reflection)
-	test.CheckResult(t, "Refraction color", reflection.Attenuation, core.White)
-	test.CheckResult(t, "Ray origin", reflection.Ray.Origin, hit.Point)
+
+	assert.NotNil(t, reflection)
+	assert.Equal(t, core.White, reflection.Attenuation)
+	assert.Equal(t, hit.Point, reflection.Ray.Origin)
 
 	refractedDirection := core.Vec3{0.666666, -1.247219, 0}
 	reflectedDirection := core.Vec3{1.0, 1.0, 0.0}
 
-	t.Logf("  expected refraction direction: %v", refractedDirection)
-	t.Logf("  expected reflection direction: %v", reflectedDirection)
+	refracted := core.IsVec3InDelta(reflection.Ray.Direction, refractedDirection, core.Tolerance)
+	reflected := core.IsVec3InDelta(reflection.Ray.Direction, reflectedDirection, core.Tolerance)
 
-	if core.IsSameVec3(reflection.Ray.Direction, refractedDirection) ||
-		core.IsSameVec3(reflection.Ray.Direction, reflectedDirection) {
-		t.Logf("\tPASSED: Ray direction %v", reflection.Ray.Direction)
-	} else {
-		t.Fatalf("\tPASSED: Ray direction %v", reflection.Ray.Direction)
-	}
+	assert.True(t, refracted || reflected)
 }
 
-func TestTransparent_FullReflection(t *testing.T) {
+func TestTransparent_ShouldFullyReflect_WhenIncidenceAngleTooLarge(t *testing.T) {
 	material := materials.NewTransparent(1.5)
 	ray := core.Ray{
 		Origin:    core.Vec3{0.0, 0.0, 3.0},
@@ -168,14 +145,11 @@ func TestTransparent_FullReflection(t *testing.T) {
 		Point:  core.Vec3{1.0, 2.0, 3.0},
 		Normal: core.Vec3{0.0, 1.0, 0.0},
 	}
-	t.Logf("Given a transparent material with refraction index %v,\n", material.RefractionIndex)
-	t.Logf("a ray %v and a hit record %v,\n", ray, hit)
 
-	t.Log("  the ray gets fully reflected because the incidence angle is too large:")
 	reflection := material.Reflect(ray, hit)
-	test.CheckNotNil(t, "reflection", reflection)
-	test.CheckResult(t, "Refraction color", reflection.Attenuation, core.White)
-	test.CheckResult(t, "Ray origin", reflection.Ray.Origin, hit.Point)
-	expectedDirection := core.Vec3{1.0, -1.0, 0.0}
-	test.CheckResult(t, "Ray direction", reflection.Ray.Direction, expectedDirection)
+
+	assert.NotNil(t, reflection)
+	assert.Equal(t, core.White, reflection.Attenuation)
+	assert.Equal(t, core.Vec3{1.0, -1.0, 0.0}, reflection.Ray.Direction)
+	assert.Equal(t, hit.Point, reflection.Ray.Origin)
 }

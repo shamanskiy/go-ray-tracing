@@ -40,16 +40,8 @@ func IsSameReal(A, B Real) bool {
 	return math32.Abs(A-B) < RealTolerance()
 }
 
-func IsSameVec3(A, B Vec3) bool {
-	return A.Sub(B).LenSqr() < RealTolerance()*RealTolerance()
-}
-
-func CheckVec3Tol(t *testing.T, name string, result Vec3, expected Vec3) {
-	if IsSameVec3(result, expected) {
-		t.Logf("\t\tPASSED: %v %v, expected %v", name, result, expected)
-	} else {
-		t.Fatalf("\t\tFAILED: %v %v, expected %v", name, result, expected)
-	}
+func IsVec3InDelta(A, B Vec3, delta Real) bool {
+	return A.Sub(B).LenSqr() < delta*delta
 }
 
 func CheckRealTol(t *testing.T, name string, result Real, expected Real) {

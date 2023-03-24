@@ -3,6 +3,9 @@ package test
 import (
 	"reflect"
 	"testing"
+
+	"github.com/Shamanskiy/go-ray-tracer/src/core"
+	"github.com/stretchr/testify/assert"
 )
 
 func CheckResult(t *testing.T, name string, result interface{}, expected interface{}) {
@@ -25,4 +28,8 @@ func CheckNotNil(t *testing.T, name string, resultPointer interface{}) {
 	if reflect.ValueOf(resultPointer).IsNil() {
 		t.Fatalf("\t\tFAILED: %v is nil!", name)
 	}
+}
+
+func AssertInDeltaVec3(t *testing.T, expected core.Vec3, result core.Vec3, delta float32) {
+	assert.Lessf(t, expected.Sub(result).LenSqr(), delta*delta, "expected %v, got %v, tolerance %v", expected, result, delta)
 }

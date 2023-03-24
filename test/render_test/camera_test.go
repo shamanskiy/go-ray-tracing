@@ -18,51 +18,43 @@ func TestCamera_Default(t *testing.T) {
 
 	test.CheckResult(t, "Camera origin", camera.Origin, settings.LookFrom)
 
-	t.Log("  GetRay u=0.5 v=0.5")
 	ray := camera.GetRay(0.5, 0.5)
-	core.CheckVec3Tol(t, "Ray origin", ray.Origin, settings.LookFrom)
-	core.CheckVec3Tol(t, "Ray target", ray.Eval(1.0), settings.LookAt)
+	test.AssertInDeltaVec3(t, settings.LookFrom, ray.Origin, core.Tolerance)
+	test.AssertInDeltaVec3(t, settings.LookAt, ray.Eval(1), core.Tolerance)
 
-	t.Log("  GetRay u=0.5 v=0.0")
-	ray = camera.GetRay(0.5, 0.0)
-	core.CheckVec3Tol(t, "Ray target", ray.Eval(1.0), core.Vec3{0., 1., -1})
+	ray = camera.GetRay(0.5, 0)
+	test.AssertInDeltaVec3(t, core.Vec3{0, 1, -1}, ray.Eval(1), core.Tolerance)
 
-	t.Log("  GetRay u=0.5 v=1.0")
-	ray = camera.GetRay(0.5, 1.0)
-	core.CheckVec3Tol(t, "Ray target", ray.Eval(1.0), core.Vec3{0., -1., -1})
+	ray = camera.GetRay(0.5, 1)
+	test.AssertInDeltaVec3(t, core.Vec3{0, -1, -1}, ray.Eval(1), core.Tolerance)
 
-	t.Log("  GetRay u=0.0 v=0.0")
-	ray = camera.GetRay(0.0, 0.0)
-	core.CheckVec3Tol(t, "Ray target", ray.Eval(1.0), core.Vec3{-2., 1., -1})
+	ray = camera.GetRay(0, 0)
+	test.AssertInDeltaVec3(t, core.Vec3{-2, 1, -1}, ray.Eval(1), core.Tolerance)
 
-	t.Log("  GetRay u=1.0 v=1.0")
-	ray = camera.GetRay(1.0, 1.0)
-	core.CheckVec3Tol(t, "Ray target", ray.Eval(1.0), core.Vec3{2., -1., -1})
+	ray = camera.GetRay(1, 1)
+	test.AssertInDeltaVec3(t, core.Vec3{2, -1, -1}, ray.Eval(1), core.Tolerance)
 }
 
 func TestCamera_Custom(t *testing.T) {
 	t.Log("Camera with custom settings without randomness")
 	settings := render.DefaultCameraSettings()
-	settings.LookAt = core.Vec3{3., 0., 4}
-	settings.AspectRatio = 1.0
+	settings.LookAt = core.Vec3{3, 0, 4}
+	settings.AspectRatio = 1
 	camera := render.NewCamera(&settings)
 	core.Random().Disable()
 	defer core.Random().Enable()
 
-	core.CheckVec3Tol(t, "Camera origin", camera.Origin, settings.LookFrom)
+	test.AssertInDeltaVec3(t, settings.LookFrom, camera.Origin, core.Tolerance)
 
-	t.Log("  GetRay u=0.5 v=0.5")
 	ray := camera.GetRay(0.5, 0.5)
-	core.CheckVec3Tol(t, "Ray origin", ray.Origin, settings.LookFrom)
-	core.CheckVec3Tol(t, "Ray target", ray.Eval(1.0), settings.LookAt)
+	test.AssertInDeltaVec3(t, settings.LookFrom, ray.Origin, core.Tolerance)
+	test.AssertInDeltaVec3(t, settings.LookAt, ray.Eval(1), core.Tolerance)
 
-	t.Log("  GetRay u=0.5 v=0.0")
-	ray = camera.GetRay(0.5, 0.0)
-	core.CheckVec3Tol(t, "Ray target", ray.Eval(1.0), core.Vec3{3., 5., 4.})
+	ray = camera.GetRay(0.5, 0)
+	test.AssertInDeltaVec3(t, core.Vec3{3, 5, 4}, ray.Eval(1), core.Tolerance)
 
-	t.Log("  GetRay u=0.0 v=0.5")
-	ray = camera.GetRay(0.0, 0.5)
-	core.CheckVec3Tol(t, "Ray target", ray.Eval(1.0), core.Vec3{7., 0., 1.})
+	ray = camera.GetRay(0, 0.5)
+	test.AssertInDeltaVec3(t, core.Vec3{7, 0, 1}, ray.Eval(1), core.Tolerance)
 }
 
 func TestCamera_indexToU(t *testing.T) {
@@ -79,23 +71,23 @@ func TestCamera_indexToU(t *testing.T) {
 	test.CheckResult(t, "Image width", camera.PixelWidth, 200)
 
 	t.Log("  Pixel 0 to u")
-	test.CheckResult(t, "u param", camera.IndexToU(0), core.Real(0.))
+	test.CheckResult(t, "u param", camera.IndexToU(0), core.Real(0))
 	t.Log("  Pixel 100 to u")
 	test.CheckResult(t, "u param", camera.IndexToU(100), core.Real(0.5))
 	t.Log("  Pixel 200 to u")
-	test.CheckResult(t, "u param", camera.IndexToU(200), core.Real(1.))
+	test.CheckResult(t, "u param", camera.IndexToU(200), core.Real(1))
 
 	t.Log("  Pixel 0 to v")
-	test.CheckResult(t, "v param", camera.IndexToV(0), core.Real(0.))
+	test.CheckResult(t, "v param", camera.IndexToV(0), core.Real(0))
 	t.Log("  Pixel 50 to v")
 	test.CheckResult(t, "v param", camera.IndexToV(50), core.Real(0.5))
 	t.Log("  Pixel 100 to v")
-	test.CheckResult(t, "v param", camera.IndexToV(100), core.Real(1.))
+	test.CheckResult(t, "v param", camera.IndexToV(100), core.Real(1))
 }
 
 func TestCamera_toRGBA(t *testing.T) {
 	t.Log("Black to RGB")
-	colorIn := core.Vec3{0., 0., 0.}
+	colorIn := core.Vec3{0, 0, 0}
 	colorOut := color.RGBA{0, 0, 0, 255}
 	test.CheckResult(t, "RGBA color", render.ToRGBA(colorIn), colorOut)
 
@@ -118,7 +110,7 @@ func TestCamera_RenderEmptyScene(t *testing.T) {
 	t.Logf("and a camera with %vx%v resolution,\n", imageSize, imageSize)
 	settings := render.DefaultCameraSettings()
 	settings.ImagePixelHeight = imageSize
-	settings.AspectRatio = 1.0
+	settings.AspectRatio = 1
 	settings.Antialiasing = 1
 	camera := render.NewCamera(&settings)
 
