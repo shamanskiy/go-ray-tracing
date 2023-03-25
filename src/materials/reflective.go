@@ -1,6 +1,8 @@
 package materials
 
 import (
+	"fmt"
+
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
@@ -29,11 +31,8 @@ func (r Reflective) Fuzziness() core.Real {
 }
 
 func NewReflectiveFuzzy(color color.Color, fuzziness core.Real, randomizer random.RandomGenerator) Reflective {
-	if fuzziness < 0 {
-		fuzziness = 0
-	}
-	if fuzziness > 1 {
-		fuzziness = 1
+	if fuzziness < 0 || fuzziness > 1 {
+		panic(fmt.Errorf("fuzziness must be in range [0, 1], got %f", fuzziness))
 	}
 	return Reflective{
 		color:      color,

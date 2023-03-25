@@ -12,17 +12,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTransparent_RefactionIndexLimits(t *testing.T) {
-	t.Log("When we construct a transparent material,")
-	randomizer := random.NewFakeRandomGenerator()
-
-	t.Log("  if we pass a refractive index less than 1, e.g. 0, the index is set to 1:")
-	material := materials.NewTransparent(0.0, randomizer)
-	assert.EqualValues(t, 1, material.RefractionIndex)
-
-	t.Log("  if we pass a refractive index equal or greater than 0.001, e.g. 1.5, the index is set to 1.5:")
-	material = materials.NewTransparent(1.5, randomizer)
-	assert.EqualValues(t, 1.5, material.RefractionIndex)
+func TestTransparent_RefractionIndexCantBeLessThanOne(t *testing.T) {
+	assert.Panics(t, func() {
+		materials.NewTransparent(0.5, random.NewRandomGenerator())
+	})
 }
 
 func TestRefract_OutsideToInside_Glass(t *testing.T) {

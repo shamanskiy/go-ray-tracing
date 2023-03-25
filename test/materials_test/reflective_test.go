@@ -4,14 +4,13 @@ import (
 	"testing"
 
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
-	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
 	"github.com/Shamanskiy/go-ray-tracer/src/materials"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestReflective_ShouldReflectRayAroundNormal_WhenNotFuzzy(t *testing.T) {
-	material := materials.NewReflective(color.Red, random.NewRandomGenerator())
+	material := materials.NewReflective(anyColor, random.NewRandomGenerator())
 	incidentDirection := core.NewVec3(4, -3, 0)
 	normalAtHitPoint := core.NewVec3(0, 1, 0)
 
@@ -25,7 +24,7 @@ func TestReflective_ShouldReflectRayAroundNormal_WhenNotFuzzy(t *testing.T) {
 }
 
 func TestReflective_ShouldNotReflect_WhenRayParallelToSurface(t *testing.T) {
-	material := materials.NewReflective(color.Red, random.NewRandomGenerator())
+	material := materials.NewReflective(anyColor, random.NewRandomGenerator())
 	incidentDirection := core.NewVec3(4, 0, 0)
 	normalAtHitPoint := core.NewVec3(0, 1, 0)
 
@@ -35,7 +34,7 @@ func TestReflective_ShouldNotReflect_WhenRayParallelToSurface(t *testing.T) {
 }
 
 func TestReflective_ShouldNotReflect_WhenRaysNormalComponentCoalignedWithNormal(t *testing.T) {
-	material := materials.NewReflective(color.Red, random.NewRandomGenerator())
+	material := materials.NewReflective(anyColor, random.NewRandomGenerator())
 	incidentDirection := core.NewVec3(4, 3, 0)
 	normalAtHitPoint := core.NewVec3(0, 1, 0)
 
@@ -45,7 +44,7 @@ func TestReflective_ShouldNotReflect_WhenRaysNormalComponentCoalignedWithNormal(
 }
 
 func TestRefective_WithFuzziness(t *testing.T) {
-	material := materials.NewReflectiveFuzzy(color.Red, 0.5, random.NewRandomGenerator())
+	material := materials.NewReflectiveFuzzy(anyColor, 0.5, random.NewRandomGenerator())
 	incidentDirection := core.NewVec3(4, -3, 0)
 	normalAtHitPoint := core.NewVec3(0, 1, 0)
 
@@ -54,4 +53,16 @@ func TestRefective_WithFuzziness(t *testing.T) {
 	expectedMeanDirection := core.NewVec3(4, 3, 0).Normalize()
 	randomPerturbation := reflection.Ray.Direction().Sub(expectedMeanDirection).Len()
 	assert.Less(t, randomPerturbation, material.Fuzziness())
+}
+
+func TestReflective_FuzzinessCantBeLessThanZero(t *testing.T) {
+	assert.Panics(t, func() {
+		materials.NewReflectiveFuzzy(anyColor, -0.5, random.NewRandomGenerator())
+	})
+}
+
+func TestReflective_FuzzinessCantBeMoreThanOne(t *testing.T) {
+	assert.Panics(t, func() {
+		materials.NewReflectiveFuzzy(anyColor, 1.5, random.NewRandomGenerator())
+	})
 }

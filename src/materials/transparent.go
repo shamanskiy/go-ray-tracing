@@ -1,6 +1,8 @@
 package materials
 
 import (
+	"fmt"
+
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
@@ -8,15 +10,19 @@ import (
 )
 
 type Transparent struct {
-	RefractionIndex core.Real
+	refractionIndex core.Real
 	randomizer      random.RandomGenerator
 }
 
 func NewTransparent(refractionIndex core.Real, randomizer random.RandomGenerator) Transparent {
-	if refractionIndex < 1. {
-		refractionIndex = 1.
+	if refractionIndex < 1 {
+		panic(fmt.Errorf("refractionIndex must be at least 1, got %f", refractionIndex))
 	}
-	return Transparent{RefractionIndex: refractionIndex, randomizer: randomizer}
+	return Transparent{refractionIndex: refractionIndex, randomizer: randomizer}
+}
+
+func (t Transparent) RefractionIndex() core.Real {
+	return t.refractionIndex
 }
 
 // Transparent materials reflect a portion of incoming light.
@@ -72,7 +78,7 @@ func computeReflectionRatio(rayFromOutside bool, cosIn core.Real, cosOut core.Re
 }
 
 func (m Transparent) Reflect(incidentDirection, hitPoint, normalAtHitPoint core.Vec3) *Reflection {
-	refractedDirection, reflectionRatio := ComputeRefraction(incidentDirection, normalAtHitPoint, m.RefractionIndex)
+	refractedDirection, reflectionRatio := ComputeRefraction(incidentDirection, normalAtHitPoint, m.refractionIndex)
 	reflectedDirection := incidentDirection.Reflect(normalAtHitPoint)
 
 	// Transparent material reflects a portion of the incoming light

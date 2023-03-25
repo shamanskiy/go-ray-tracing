@@ -11,11 +11,12 @@ import (
 )
 
 var anyDirection = core.NewVec3(10, 20, 30)
+var anyColor = color.Red
 var hitPoint = core.NewVec3(0, 1, 2)
 var normalAtHitPoint = core.NewVec3(0, 1, 0)
 
 func TestDiffusive_ShouldReflectRayInNormalDirection_WhenNotRandom(t *testing.T) {
-	material := materials.NewDiffusive(color.Red, random.NewFakeRandomGenerator())
+	material := materials.NewDiffusive(anyColor, random.NewFakeRandomGenerator())
 
 	reflection := material.Reflect(anyDirection, hitPoint, normalAtHitPoint)
 
@@ -27,7 +28,7 @@ func TestDiffusive_ShouldReflectRayInNormalDirection_WhenNotRandom(t *testing.T)
 }
 
 func TestDiffusive_ShouldReflectRayWithinUnitSphereOfNormal_WhenRandom(t *testing.T) {
-	material := materials.NewDiffusive(color.Red, random.NewRandomGenerator())
+	material := materials.NewDiffusive(anyColor, random.NewRandomGenerator())
 
 	reflection := material.Reflect(anyDirection, hitPoint, normalAtHitPoint)
 
