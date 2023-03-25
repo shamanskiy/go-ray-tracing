@@ -34,5 +34,4 @@ go test ./...
 
 ## ToDo
 
-- dependency inversion for random
 - dependency inversion for scene in camera.render

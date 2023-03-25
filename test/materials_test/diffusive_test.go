@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDiffusive_NoRandom(t *testing.T) {
+func TestDiffusive_ShouldReflectRayInNormalDirection_WhenNotRandom(t *testing.T) {
 	materialColor := color.Red
 	randomizer := random.NewFakeRandomGenerator()
 	material := materials.NewDiffusive(materialColor, randomizer)
@@ -21,10 +21,7 @@ func TestDiffusive_NoRandom(t *testing.T) {
 		Point:  core.NewVec3(0.0, 1.0, 2.0),
 		Normal: core.NewVec3(0.0, 0.0, 1.0),
 	}
-	t.Logf("Given a diffusive material %v, a ray %v, a hit record %v,\n", material, ray, hit)
-	t.Log("and a DISABLED randomizer,")
 
-	t.Log("  we can reflect the ray off the material and expect a predictable result:")
 	reflection := material.Reflect(ray, hit)
 
 	expected := materials.Reflection{
@@ -35,7 +32,7 @@ func TestDiffusive_NoRandom(t *testing.T) {
 }
 
 func TestDiffusive_Random(t *testing.T) {
-	randomizer := random.NewFakeRandomGenerator()
+	randomizer := random.NewRandomGenerator()
 	material := materials.NewDiffusive(color.Red, randomizer)
 	ray := core.NewRay(core.NewVec3(1.0, 2.0, 3.0), core.NewVec3(4.0, 5.0, 6.0))
 	hit := objects.HitRecord{
