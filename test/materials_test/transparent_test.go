@@ -20,22 +20,22 @@ func TestTransparent_RefractionIndexCantBeLessThanOne(t *testing.T) {
 
 func TestRefract_OutsideToInside_Glass(t *testing.T) {
 	normal := core.NewVec3(0., 1., 0.)
-	refractionIndex := core.Real(1.5)
+	refractor := materials.RefractionCalculator{1.5}
 
 	incidentVector := core.NewVec3(1., -1., 0.)
-	refractedDirection, reflectionRatio := materials.ComputeRefraction(incidentVector, normal, refractionIndex)
+	refractedDirection, reflectionRatio := refractor.Refract(incidentVector, normal)
 
 	test.AssertInDeltaVec3(t, core.NewVec3(0.666666, -1.247219, 0), *refractedDirection, core.Tolerance)
 	assert.InDelta(t, 0.04207, reflectionRatio, core.Tolerance)
 
 	incidentVector = core.NewVec3(1., -0.1, 0.)
-	refractedDirection, reflectionRatio = materials.ComputeRefraction(incidentVector, normal, refractionIndex)
+	refractedDirection, reflectionRatio = refractor.Refract(incidentVector, normal)
 
 	test.AssertInDeltaVec3(t, core.NewVec3(0.666666, -0.752034, 0), *refractedDirection, core.Tolerance)
 	assert.InDelta(t, 0.60843, reflectionRatio, core.Tolerance)
 
 	incidentVector = core.NewVec3(1., -0.01, 0.)
-	refractedDirection, reflectionRatio = materials.ComputeRefraction(incidentVector, normal, refractionIndex)
+	refractedDirection, reflectionRatio = refractor.Refract(incidentVector, normal)
 
 	test.AssertInDeltaVec3(t, core.NewVec3(0.666666, -0.745423, 0), *refractedDirection, core.Tolerance)
 	assert.InDelta(t, 0.95295, reflectionRatio, core.Tolerance)
@@ -43,11 +43,11 @@ func TestRefract_OutsideToInside_Glass(t *testing.T) {
 
 func TestRefract_OutsideToInside_Air(t *testing.T) {
 	normal := core.NewVec3(0., 1., 0.)
-	refractionIndex := core.Real(1.)
+	refractor := materials.RefractionCalculator{1.}
 
 	incidentVector := core.NewVec3(1., -1., 0.)
 
-	refractedDirection, reflectionRatio := materials.ComputeRefraction(incidentVector, normal, refractionIndex)
+	refractedDirection, reflectionRatio := refractor.Refract(incidentVector, normal)
 
 	test.AssertInDeltaVec3(t, core.NewVec3(1, -1, 0), *refractedDirection, core.Tolerance)
 	assert.InDelta(t, 0.002155, reflectionRatio, core.Tolerance)
@@ -55,11 +55,11 @@ func TestRefract_OutsideToInside_Air(t *testing.T) {
 
 func TestRefract_InsideToOutside_Glass(t *testing.T) {
 	normal := core.NewVec3(0., 1., 0.)
-	refractionIndex := core.Real(1.5)
+	refractor := materials.RefractionCalculator{1.5}
 
 	incidentVector := core.NewVec3(3, 4, 0.)
 
-	refractedDirection, reflectionRatio := materials.ComputeRefraction(incidentVector, normal, refractionIndex)
+	refractedDirection, reflectionRatio := refractor.Refract(incidentVector, normal)
 
 	test.AssertInDeltaVec3(t, core.NewVec3(4.5, 2.179448, 0), *refractedDirection, core.Tolerance)
 	assert.InDelta(t, 0.0948391, reflectionRatio, core.Tolerance)
@@ -67,39 +67,39 @@ func TestRefract_InsideToOutside_Glass(t *testing.T) {
 
 func TestRefract_InsideToOutside_Air(t *testing.T) {
 	normal := core.NewVec3(0., 1., 0.)
-	refractionIndex := core.Real(1.)
+	refractor := materials.RefractionCalculator{1.}
 
 	incidentVector := core.NewVec3(3, 4, 0.)
 
-	refractedDirection, reflectionRatio := materials.ComputeRefraction(incidentVector, normal, refractionIndex)
+	refractedDirection, reflectionRatio := refractor.Refract(incidentVector, normal)
 	test.AssertInDeltaVec3(t, core.NewVec3(3, 4, 0), *refractedDirection, core.Tolerance)
 	assert.InDelta(t, 0.00032, reflectionRatio, core.Tolerance)
 }
 
 func TestRefract_InsideToOutside_Glass_ShouldFullyReflect_AngleTooBig(t *testing.T) {
 	normal := core.NewVec3(0., 1., 0.)
-	refractionIndex := core.Real(1.5)
+	refractor := materials.RefractionCalculator{1.5}
 
 	incidentVector := core.NewVec3(1., 1., 0.)
 
-	refractedDirection, reflectionRatio := materials.ComputeRefraction(incidentVector, normal, refractionIndex)
+	refractedDirection, reflectionRatio := refractor.Refract(incidentVector, normal)
 	assert.Nil(t, refractedDirection)
 	assert.InDelta(t, 1, reflectionRatio, core.Tolerance)
 }
 
 func TestSchlickLaw(t *testing.T) {
-	refractionIndex := core.Real(1.5)
+	refractor := materials.RefractionCalculator{1.5}
 
 	cosIn := core.Real(1.0)
-	reflectionRatio := materials.SchlickLaw(cosIn, refractionIndex)
+	reflectionRatio := refractor.SchlickLaw(cosIn)
 	assert.InDelta(t, 0.04, reflectionRatio, core.Tolerance)
 
 	cosIn = core.Real(0.0)
-	reflectionRatio = materials.SchlickLaw(cosIn, refractionIndex)
+	reflectionRatio = refractor.SchlickLaw(cosIn)
 	assert.InDelta(t, 1, reflectionRatio, core.Tolerance)
 
 	cosIn = core.Real(0.5)
-	reflectionRatio = materials.SchlickLaw(cosIn, refractionIndex)
+	reflectionRatio = refractor.SchlickLaw(cosIn)
 	assert.InDelta(t, 0.07, reflectionRatio, core.Tolerance)
 }
 
