@@ -7,6 +7,7 @@ import (
 
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
+	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
 	"github.com/chewxy/math32"
 	"github.com/schollz/progressbar/v3"
 )
@@ -49,10 +50,12 @@ type Camera struct {
 	PixelHeight    int
 	sampling       int
 	maxReflections int
+
+	randomizer random.RandomGenerator
 }
 
-func NewCamera(settings *CameraSettings) *Camera {
-	camera := Camera{}
+func NewCamera(settings *CameraSettings, randomizer random.RandomGenerator) *Camera {
+	camera := Camera{randomizer: randomizer}
 
 	camera.PixelHeight = settings.ImagePixelHeight
 	camera.PixelWidth = int(core.Real(settings.ImagePixelHeight) * settings.AspectRatio)
@@ -92,11 +95,11 @@ func (c *Camera) createProgressBar() *progressbar.ProgressBar {
 }
 
 func (c *Camera) IndexToU(index int) core.Real {
-	return (core.Real(index) + core.Random().From01()) / core.Real(c.PixelWidth)
+	return (core.Real(index) + c.randomizer.Real()) / core.Real(c.PixelWidth)
 }
 
 func (c *Camera) IndexToV(index int) core.Real {
-	return (core.Real(index) + core.Random().From01()) / core.Real(c.PixelHeight)
+	return (core.Real(index) + c.randomizer.Real()) / core.Real(c.PixelHeight)
 }
 
 func (c *Camera) Render(scene *Scene) *image.RGBA {

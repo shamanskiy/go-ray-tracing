@@ -3,19 +3,21 @@ package materials
 import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
+	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
 	"github.com/Shamanskiy/go-ray-tracer/src/objects"
 	"github.com/chewxy/math32"
 )
 
 type Transparent struct {
 	RefractionIndex core.Real
+	randomizer      random.RandomGenerator
 }
 
-func NewTransparent(refractionIndex core.Real) Transparent {
+func NewTransparent(refractionIndex core.Real, randomizer random.RandomGenerator) Transparent {
 	if refractionIndex < 1. {
 		refractionIndex = 1.
 	}
-	return Transparent{RefractionIndex: refractionIndex}
+	return Transparent{RefractionIndex: refractionIndex, randomizer: randomizer}
 }
 
 // Transparent materials reflect a portion of incoming light.
@@ -75,7 +77,7 @@ func (m Transparent) Reflect(ray core.Ray, hit objects.HitRecord) *Reflection {
 	reflectedDirection := ray.Direction().Reflect(hit.Normal)
 
 	// Transparent material reflects a portion of the incoming light
-	if refractedDirection != nil && core.Random().From01() > reflectionRatio {
+	if refractedDirection != nil && m.randomizer.Real() > reflectionRatio {
 		refractedRay := core.NewRay(hit.Point, *refractedDirection)
 		return &Reflection{refractedRay, color.White}
 	} else {

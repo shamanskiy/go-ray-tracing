@@ -5,6 +5,7 @@ import (
 
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
+	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
 	"github.com/Shamanskiy/go-ray-tracer/src/materials"
 	"github.com/Shamanskiy/go-ray-tracer/src/objects"
 	"github.com/Shamanskiy/go-ray-tracer/src/render"
@@ -56,7 +57,8 @@ func TestScene_Empty(t *testing.T) {
 func TestScene_HitClosetObject(t *testing.T) {
 	leftSphere := objects.Sphere{core.NewVec3(-6.0, 0.0, 0.0), 2.0}
 	rightSphere := objects.Sphere{core.NewVec3(0.0, 0.0, 0.0), 2.0}
-	material := materials.NewDiffusive(color.Black)
+	randomizer := random.NewFakeRandomGenerator()
+	material := materials.NewDiffusive(color.Black, randomizer)
 	t.Logf("Given a scene with two spheres %v and %v,\n", leftSphere, rightSphere)
 	scene := render.Scene{}
 	scene.Add(leftSphere, material)
@@ -84,7 +86,8 @@ func TestScene_TestRay_SingleSphere(t *testing.T) {
 	scene := render.Scene{SkyColorBottom: skyColor, SkyColorTop: skyColor}
 	sphere := objects.Sphere{core.NewVec3(0.0, 0.0, 0.0), 1.0}
 	sphereColor := color.Blue
-	material := materials.NewDiffusive(sphereColor)
+	randomizer := random.NewFakeRandomGenerator()
+	material := materials.NewDiffusive(sphereColor, randomizer)
 	scene.Add(sphere, material)
 
 	hitRay := core.NewRay(core.NewVec3(4.0, 0.0, 0.0), core.NewVec3(-1.0, 0.0, 0.0))
@@ -108,13 +111,10 @@ func TestScene_NumberOfReflectionsExceeded(t *testing.T) {
 	t.Log("two red spheres,")
 	sphereA := objects.Sphere{core.NewVec3(0.0, 0.0, 0.0), 1.0}
 	sphereB := objects.Sphere{core.NewVec3(4.0, 0.0, 0.0), 1.0}
-	material := materials.NewDiffusive(color.Red)
+	randomizer := random.NewFakeRandomGenerator()
+	material := materials.NewDiffusive(color.Red, randomizer)
 	scene.Add(sphereA, material)
 	scene.Add(sphereB, material)
-
-	t.Log("and a disabled randomizer,")
-	core.Random().Disable()
-	defer core.Random().Enable()
 
 	ray := core.NewRay(core.NewVec3(2.0, 0.0, 0.0), core.NewVec3(1.0, 0.0, 0.0))
 	t.Log("  a ray colinear with the line between the spheres' centers")
@@ -130,14 +130,12 @@ func TestScene_TwoReflections(t *testing.T) {
 	t.Log("Given a scene with a white skybox,")
 	skyColor := color.White
 	scene := render.Scene{SkyColorBottom: skyColor, SkyColorTop: skyColor}
-	t.Log("a disabled randomizer,")
-	core.Random().Disable()
-	defer core.Random().Enable()
 
 	sphereA := objects.Sphere{core.NewVec3(0.0, 0.0, 0.0), 1.0}
 	sphereB := objects.Sphere{core.NewVec3(4.0, 3.0, 0.0), 1.0}
 	sphereColor := color.New(0.2, 0.4, 0.6)
-	material := materials.NewDiffusive(sphereColor)
+	randomizer := random.NewFakeRandomGenerator()
+	material := materials.NewDiffusive(sphereColor, randomizer)
 	scene.Add(sphereA, material)
 	scene.Add(sphereB, material)
 	t.Logf("and two spheres %v and %v with diffusive color %v,\n",

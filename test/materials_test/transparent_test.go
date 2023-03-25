@@ -5,6 +5,7 @@ import (
 
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
+	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
 	"github.com/Shamanskiy/go-ray-tracer/src/materials"
 	"github.com/Shamanskiy/go-ray-tracer/src/objects"
 	"github.com/Shamanskiy/go-ray-tracer/test"
@@ -13,13 +14,14 @@ import (
 
 func TestTransparent_RefactionIndexLimits(t *testing.T) {
 	t.Log("When we construct a transparent material,")
+	randomizer := random.NewFakeRandomGenerator()
 
 	t.Log("  if we pass a refractive index less than 1, e.g. 0, the index is set to 1:")
-	material := materials.NewTransparent(0.0)
+	material := materials.NewTransparent(0.0, randomizer)
 	assert.EqualValues(t, 1, material.RefractionIndex)
 
 	t.Log("  if we pass a refractive index equal or greater than 0.001, e.g. 1.5, the index is set to 1.5:")
-	material = materials.NewTransparent(1.5)
+	material = materials.NewTransparent(1.5, randomizer)
 	assert.EqualValues(t, 1.5, material.RefractionIndex)
 }
 
@@ -109,7 +111,8 @@ func TestSchlickLaw(t *testing.T) {
 }
 
 func TestTransparent_RayGetsRefractedOrReflected(t *testing.T) {
-	material := materials.NewTransparent(1.5)
+	randomizer := random.NewFakeRandomGenerator()
+	material := materials.NewTransparent(1.5, randomizer)
 	ray := core.NewRay(core.NewVec3(0.0, 0.0, 3.0), core.NewVec3(1.0, -1.0, 0.0))
 	hit := objects.HitRecord{
 		Param:  1.0,
@@ -133,7 +136,8 @@ func TestTransparent_RayGetsRefractedOrReflected(t *testing.T) {
 }
 
 func TestTransparent_ShouldFullyReflect_WhenIncidenceAngleTooLarge(t *testing.T) {
-	material := materials.NewTransparent(1.5)
+	randomizer := random.NewFakeRandomGenerator()
+	material := materials.NewTransparent(1.5, randomizer)
 	ray := core.NewRay(core.NewVec3(0.0, 0.0, 3.0), core.NewVec3(1.0, 1.0, 0.0))
 	hit := objects.HitRecord{
 		Param:  1.0,

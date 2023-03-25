@@ -5,6 +5,7 @@ import (
 
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
+	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
 	"github.com/Shamanskiy/go-ray-tracer/src/materials"
 	"github.com/Shamanskiy/go-ray-tracer/src/objects"
 	"github.com/stretchr/testify/assert"
@@ -12,7 +13,8 @@ import (
 
 func TestDiffusive_NoRandom(t *testing.T) {
 	materialColor := color.Red
-	material := materials.NewDiffusive(materialColor)
+	randomizer := random.NewFakeRandomGenerator()
+	material := materials.NewDiffusive(materialColor, randomizer)
 	ray := core.NewRay(core.NewVec3(1.0, 2.0, 3.0), core.NewVec3(4.0, 5.0, 6.0))
 	hit := objects.HitRecord{
 		Param:  1.0,
@@ -21,8 +23,6 @@ func TestDiffusive_NoRandom(t *testing.T) {
 	}
 	t.Logf("Given a diffusive material %v, a ray %v, a hit record %v,\n", material, ray, hit)
 	t.Log("and a DISABLED randomizer,")
-	core.Random().Disable()
-	defer core.Random().Enable()
 
 	t.Log("  we can reflect the ray off the material and expect a predictable result:")
 	reflection := material.Reflect(ray, hit)
@@ -35,7 +35,8 @@ func TestDiffusive_NoRandom(t *testing.T) {
 }
 
 func TestDiffusive_Random(t *testing.T) {
-	material := materials.NewDiffusive(color.Red)
+	randomizer := random.NewFakeRandomGenerator()
+	material := materials.NewDiffusive(color.Red, randomizer)
 	ray := core.NewRay(core.NewVec3(1.0, 2.0, 3.0), core.NewVec3(4.0, 5.0, 6.0))
 	hit := objects.HitRecord{
 		Param:  1.0,

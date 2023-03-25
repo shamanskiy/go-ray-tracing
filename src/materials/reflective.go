@@ -3,31 +3,41 @@ package materials
 import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
+	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
 	"github.com/Shamanskiy/go-ray-tracer/src/objects"
 )
 
 type Reflective struct {
-	color     color.Color
-	fuzziness core.Real
+	color      color.Color
+	fuzziness  core.Real
+	randomizer random.RandomGenerator
 }
 
-func NewReflective(color color.Color) Reflective {
-	return Reflective{color, 0}
+func NewReflective(color color.Color, randomizer random.RandomGenerator) Reflective {
+	return Reflective{
+		color:      color,
+		fuzziness:  0,
+		randomizer: randomizer,
+	}
 }
 
-func NewReflectiveFuzzy(color color.Color, fuzziness core.Real) Reflective {
+func NewReflectiveFuzzy(color color.Color, fuzziness core.Real, randomizer random.RandomGenerator) Reflective {
 	if fuzziness < 0 {
 		fuzziness = 0
 	}
 	if fuzziness > 1 {
 		fuzziness = 1
 	}
-	return Reflective{color, fuzziness}
+	return Reflective{
+		color:      color,
+		fuzziness:  fuzziness,
+		randomizer: randomizer,
+	}
 }
 
 func (r Reflective) Reflect(ray core.Ray, hit objects.HitRecord) *Reflection {
 	reflectedDirection := ray.Direction().Normalize().Reflect(hit.Normal)
-	fuzzyPerturbation := core.Random().VecInUnitSphere().Mul(r.fuzziness)
+	fuzzyPerturbation := r.randomizer.Vec3InUnitSphere().Mul(r.fuzziness)
 	reflectedDirection = reflectedDirection.Add(fuzzyPerturbation)
 
 	if reflectedDirection.Dot(hit.Normal) > 0 {

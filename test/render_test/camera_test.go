@@ -6,6 +6,7 @@ import (
 
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
+	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
 	"github.com/Shamanskiy/go-ray-tracer/src/render"
 	"github.com/Shamanskiy/go-ray-tracer/test"
 	"github.com/stretchr/testify/assert"
@@ -14,9 +15,9 @@ import (
 func TestCamera_Default(t *testing.T) {
 	t.Log("Default camera without randomness")
 	settings := render.DefaultCameraSettings()
-	camera := render.NewCamera(&settings)
-	core.Random().Disable()
-	defer core.Random().Enable()
+	randomizer := random.NewFakeRandomGenerator()
+
+	camera := render.NewCamera(&settings, randomizer)
 
 	assert.Equal(t, settings.LookFrom, camera.Origin)
 
@@ -42,9 +43,9 @@ func TestCamera_Custom(t *testing.T) {
 	settings := render.DefaultCameraSettings()
 	settings.LookAt = core.NewVec3(3, 0, 4)
 	settings.AspectRatio = 1
-	camera := render.NewCamera(&settings)
-	core.Random().Disable()
-	defer core.Random().Enable()
+	randomizer := random.NewFakeRandomGenerator()
+
+	camera := render.NewCamera(&settings, randomizer)
 
 	test.AssertInDeltaVec3(t, settings.LookFrom, camera.Origin, core.Tolerance)
 
@@ -64,10 +65,9 @@ func TestCamera_indexToU(t *testing.T) {
 	settings := render.DefaultCameraSettings()
 	settings.ImagePixelHeight = 100
 	settings.AspectRatio = 2.0
-	camera := render.NewCamera(&settings)
+	randomizer := random.NewFakeRandomGenerator()
 
-	core.Random().Disable()
-	defer core.Random().Enable()
+	camera := render.NewCamera(&settings, randomizer)
 
 	assert.Equal(t, 100, camera.PixelHeight)
 	assert.Equal(t, 200, camera.PixelWidth)
@@ -91,7 +91,8 @@ func TestCamera_RenderEmptyScene(t *testing.T) {
 	settings.ImagePixelHeight = imageSize
 	settings.AspectRatio = 1
 	settings.Antialiasing = 1
-	camera := render.NewCamera(&settings)
+	randomizer := random.NewFakeRandomGenerator()
+	camera := render.NewCamera(&settings, randomizer)
 
 	t.Logf("  the rendered image should be a %vx%v white square:\n", imageSize, imageSize)
 	renderedImage := camera.Render(&scene)

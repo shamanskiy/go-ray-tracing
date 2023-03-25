@@ -27,6 +27,10 @@ func New(r, g, b core.Real) Color {
 	return Color{vec: mgl32.Vec3{r, g, b}}
 }
 
+func FromVec3(vec core.Vec3) Color {
+	return New(vec.X(), vec.Y(), vec.Z())
+}
+
 func (c Color) R() core.Real {
 	return c.vec.X()
 }

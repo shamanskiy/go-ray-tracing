@@ -5,13 +5,15 @@ import (
 
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
+	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
 	"github.com/Shamanskiy/go-ray-tracer/src/materials"
 	"github.com/Shamanskiy/go-ray-tracer/src/objects"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestReflective_Reflected(t *testing.T) {
-	material := materials.NewReflective(color.Red)
+	randomizer := random.NewFakeRandomGenerator()
+	material := materials.NewReflective(color.Red, randomizer)
 	ray := core.NewRay(core.NewVec3(-3.0, 5.0, 3.0), core.NewVec3(4.0, -3.0, 0.0))
 	hit := objects.HitRecord{
 		Param:  1.0,
@@ -32,7 +34,8 @@ func TestReflective_Reflected(t *testing.T) {
 }
 
 func TestReflective_NotReflected(t *testing.T) {
-	material := materials.NewReflective(color.Red)
+	randomizer := random.NewFakeRandomGenerator()
+	material := materials.NewReflective(color.Red, randomizer)
 	ray := core.NewRay(core.NewVec3(-3.0, -1.0, 3.0), core.NewVec3(4.0, 3.0, 0.0))
 	hit := objects.HitRecord{
 		Param:  1.0,
@@ -51,7 +54,8 @@ func TestReflective_NotReflected(t *testing.T) {
 func TestRefective_WithFuzziness(t *testing.T) {
 	fuzziness := float32(0.5)
 	materialColor := color.Red
-	material := materials.NewReflectiveFuzzy(materialColor, 0.5)
+	randomizer := random.NewFakeRandomGenerator()
+	material := materials.NewReflectiveFuzzy(materialColor, 0.5, randomizer)
 	ray := core.NewRay(core.NewVec3(-3.0, 5.0, 3.0), core.NewVec3(4.0, -3.0, 0.0))
 	hit := objects.HitRecord{
 		Param:  1.0,

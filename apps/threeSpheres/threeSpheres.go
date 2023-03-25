@@ -9,31 +9,34 @@ import (
 
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
+	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
 	"github.com/Shamanskiy/go-ray-tracer/src/materials"
 	"github.com/Shamanskiy/go-ray-tracer/src/objects"
 	"github.com/Shamanskiy/go-ray-tracer/src/render"
 )
+
+var randomizer = random.NewRandomGenerator()
 
 func makeScene() *render.Scene {
 	scene := render.Scene{SkyColorTop: color.SkyBlue, SkyColorBottom: color.White}
 
 	// matt green ball
 	scene.Add(objects.Sphere{Center: core.NewVec3(0, 0, -1), Radius: 0.5},
-		materials.NewDiffusive(color.Red))
+		materials.NewDiffusive(color.Red, randomizer))
 
 	// mirrow ball
 	scene.Add(objects.Sphere{Center: core.NewVec3(1, 0, -1), Radius: 0.5},
-		materials.NewReflectiveFuzzy(color.Golden, 0.1))
+		materials.NewReflectiveFuzzy(color.Golden, 0.1, randomizer))
 
 	// glass shell
 	scene.Add(objects.Sphere{Center: core.NewVec3(-1, 0, -1), Radius: 0.5},
-		materials.NewTransparent(1.5))
+		materials.NewTransparent(1.5, randomizer))
 	scene.Add(objects.Sphere{Center: core.NewVec3(-1, 0, -1), Radius: -0.4},
-		materials.NewTransparent(1.5))
+		materials.NewTransparent(1.5, randomizer))
 
 	// Huge sphere = floor
 	scene.Add(objects.Sphere{Center: core.NewVec3(0, -100.5, -1), Radius: 100},
-		materials.NewDiffusive(color.GrayMedium))
+		materials.NewDiffusive(color.GrayMedium, randomizer))
 
 	return &scene
 }
@@ -46,7 +49,7 @@ func makeCamera() *render.Camera {
 	settings.LookFrom = core.NewVec3(0, 0, 0.15)
 	settings.LookAt = core.NewVec3(0, 0, -1)
 
-	camera := render.NewCamera(&settings)
+	camera := render.NewCamera(&settings, randomizer)
 
 	return camera
 }
