@@ -4,7 +4,6 @@ import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
-	"github.com/Shamanskiy/go-ray-tracer/src/objects"
 )
 
 type Diffusive struct {
@@ -20,7 +19,7 @@ func (d Diffusive) Color() color.Color {
 	return d.color
 }
 
-func (d Diffusive) Reflect(ray core.Ray, hit objects.HitRecord) *Reflection {
-	reflectedDirection := hit.Normal.Add(d.randomizer.Vec3InUnitSphere())
-	return &Reflection{core.NewRay(hit.Point, reflectedDirection), d.color}
+func (d Diffusive) Reflect(incidentDirection, hitPoint, normalAtHitPoint core.Vec3) *Reflection {
+	reflectedDirection := normalAtHitPoint.Add(d.randomizer.Vec3InUnitSphere())
+	return &Reflection{core.NewRay(hitPoint, reflectedDirection), d.color}
 }

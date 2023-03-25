@@ -113,14 +113,14 @@ func TestSchlickLaw(t *testing.T) {
 func TestTransparent_RayGetsRefractedOrReflected(t *testing.T) {
 	randomizer := random.NewFakeRandomGenerator()
 	material := materials.NewTransparent(1.5, randomizer)
-	ray := core.NewRay(core.NewVec3(0.0, 0.0, 3.0), core.NewVec3(1.0, -1.0, 0.0))
+	incidentDirection := core.NewVec3(1.0, -1.0, 0.0)
 	hit := objects.HitRecord{
 		Param:  1.0,
 		Point:  core.NewVec3(1.0, 2.0, 3.0),
 		Normal: core.NewVec3(0.0, 1.0, 0.0),
 	}
 
-	reflection := material.Reflect(ray, hit)
+	reflection := material.Reflect(incidentDirection, hit.Point, hit.Normal)
 
 	assert.NotNil(t, reflection)
 	assert.Equal(t, color.White, reflection.Attenuation)
@@ -138,14 +138,14 @@ func TestTransparent_RayGetsRefractedOrReflected(t *testing.T) {
 func TestTransparent_ShouldFullyReflect_WhenIncidenceAngleTooLarge(t *testing.T) {
 	randomizer := random.NewFakeRandomGenerator()
 	material := materials.NewTransparent(1.5, randomizer)
-	ray := core.NewRay(core.NewVec3(0.0, 0.0, 3.0), core.NewVec3(1.0, 1.0, 0.0))
+	incidentDirection := core.NewVec3(1.0, 1.0, 0.0)
 	hit := objects.HitRecord{
 		Param:  1.0,
 		Point:  core.NewVec3(1.0, 2.0, 3.0),
 		Normal: core.NewVec3(0.0, 1.0, 0.0),
 	}
 
-	reflection := material.Reflect(ray, hit)
+	reflection := material.Reflect(incidentDirection, hit.Point, hit.Normal)
 
 	assert.NotNil(t, reflection)
 	assert.Equal(t, color.White, reflection.Attenuation)

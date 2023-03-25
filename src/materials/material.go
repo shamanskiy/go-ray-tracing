@@ -3,7 +3,6 @@ package materials
 import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
-	"github.com/Shamanskiy/go-ray-tracer/src/objects"
 )
 
 type Reflection struct {
@@ -12,5 +11,5 @@ type Reflection struct {
 }
 
 type Material interface {
-	Reflect(ray core.Ray, hit objects.HitRecord) *Reflection
+	Reflect(incidentDirection, hitPoint, normalAtHitPoint core.Vec3) *Reflection
 }

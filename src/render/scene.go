@@ -38,7 +38,7 @@ func (s *Scene) Add(object objects.Object, material materials.Material) {
 func (s *Scene) testRay(ray core.Ray, depth int) color.Color {
 	hit, objectIndex := s.HitClosestObject(ray, 0.0001)
 	if hit != nil {
-		reflection := s.materials[objectIndex].Reflect(ray, *hit)
+		reflection := s.materials[objectIndex].Reflect(ray.Direction(), hit.Point, hit.Normal)
 		if reflection != nil && depth < 10 {
 			reflectedRayColor := s.testRay(reflection.Ray, depth+1)
 			return reflectedRayColor.MulColor(reflection.Attenuation)

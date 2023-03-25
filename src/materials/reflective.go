@@ -4,7 +4,6 @@ import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
-	"github.com/Shamanskiy/go-ray-tracer/src/objects"
 )
 
 type Reflective struct {
@@ -43,13 +42,13 @@ func NewReflectiveFuzzy(color color.Color, fuzziness core.Real, randomizer rando
 	}
 }
 
-func (r Reflective) Reflect(ray core.Ray, hit objects.HitRecord) *Reflection {
-	reflectedDirection := ray.Direction().Normalize().Reflect(hit.Normal)
+func (r Reflective) Reflect(incidentDirection, hitPoint, normalAtHitPoint core.Vec3) *Reflection {
+	reflectedDirection := incidentDirection.Normalize().Reflect(normalAtHitPoint)
 	fuzzyPerturbation := r.randomizer.Vec3InUnitSphere().Mul(r.fuzziness)
 	reflectedDirection = reflectedDirection.Add(fuzzyPerturbation)
 
-	if reflectedDirection.Dot(hit.Normal) > 0 {
-		return &Reflection{core.NewRay(hit.Point, reflectedDirection), r.color}
+	if reflectedDirection.Dot(normalAtHitPoint) > 0 {
+		return &Reflection{core.NewRay(hitPoint, reflectedDirection), r.color}
 	} else {
 		return nil
 	}
