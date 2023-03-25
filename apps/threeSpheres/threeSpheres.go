@@ -19,7 +19,7 @@ func makeScene() *render.Scene {
 
 	// matt green ball
 	scene.Add(objects.Sphere{Center: core.NewVec3(0, 0, -1), Radius: 0.5},
-		materials.Diffusive{color.Red})
+		materials.NewDiffusive(color.Red))
 
 	// mirrow ball
 	scene.Add(objects.Sphere{Center: core.NewVec3(1, 0, -1), Radius: 0.5},
@@ -33,7 +33,7 @@ func makeScene() *render.Scene {
 
 	// Huge sphere = floor
 	scene.Add(objects.Sphere{Center: core.NewVec3(0, -100.5, -1), Radius: 100},
-		materials.Diffusive{color.GrayMedium})
+		materials.NewDiffusive(color.GrayMedium))
 
 	return &scene
 }

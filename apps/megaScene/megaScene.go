@@ -40,7 +40,7 @@ func genRandomMaterial() materials.Material {
 	randomVec := core.Random().Vec3From01()
 	randomColor := color.New(randomVec.X(), randomVec.Y(), randomVec.Z())
 	if materialChoice < 0.7 {
-		return materials.Diffusive{randomColor}
+		return materials.NewDiffusive(randomColor)
 	} else if materialChoice < 0.9 {
 		metallicColor := color.New(1., 1., 1.).Add(randomColor).Mul(0.5)
 		fuzziness := 0.1 * core.Random().From01()
@@ -55,11 +55,11 @@ func makeScene() *render.Scene {
 
 	// Huge sphere = floor
 	scene.Add(objects.Sphere{Center: core.NewVec3(0.0, -1000., 0.0), Radius: 1000.0},
-		materials.Diffusive{color.GrayMedium})
+		materials.NewDiffusive(color.GrayMedium))
 
 	// Three main spheres
 	sphereRed := objects.Sphere{Center: core.NewVec3(-2.5, 1.0, 1), Radius: 1.0}
-	scene.Add(sphereRed, materials.Diffusive{color.Red})
+	scene.Add(sphereRed, materials.NewDiffusive(color.Red))
 	sphereGlass := objects.Sphere{Center: core.NewVec3(0.0, 1.0, 0.15), Radius: 1.0}
 	scene.Add(sphereGlass, materials.NewTransparent(1.5))
 	sphereMirror := objects.Sphere{Center: core.NewVec3(2.5, 1.0, 0.0), Radius: 1.0}

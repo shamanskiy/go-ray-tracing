@@ -121,7 +121,7 @@ func TestTransparent_RayGetsRefractedOrReflected(t *testing.T) {
 
 	assert.NotNil(t, reflection)
 	assert.Equal(t, color.White, reflection.Attenuation)
-	assert.Equal(t, hit.Point, reflection.Ray.Origin)
+	assert.Equal(t, hit.Point, reflection.Ray.Origin())
 
 	refractedDirection := core.NewVec3(0.666666, -1.247219, 0)
 	reflectedDirection := core.NewVec3(1.0, 1.0, 0.0)
@@ -145,6 +145,6 @@ func TestTransparent_ShouldFullyReflect_WhenIncidenceAngleTooLarge(t *testing.T)
 
 	assert.NotNil(t, reflection)
 	assert.Equal(t, color.White, reflection.Attenuation)
-	assert.Equal(t, core.NewVec3(1.0, -1.0, 0.0), reflection.Ray.Direction)
-	assert.Equal(t, hit.Point, reflection.Ray.Origin)
+	assert.Equal(t, core.NewVec3(1.0, -1.0, 0.0), reflection.Ray.Direction())
+	assert.Equal(t, hit.Point, reflection.Ray.Origin())
 }

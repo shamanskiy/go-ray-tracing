@@ -11,7 +11,8 @@ import (
 )
 
 func TestDiffusive_NoRandom(t *testing.T) {
-	material := materials.Diffusive{color.Red}
+	materialColor := color.Red
+	material := materials.NewDiffusive(materialColor)
 	ray := core.NewRay(core.NewVec3(1.0, 2.0, 3.0), core.NewVec3(4.0, 5.0, 6.0))
 	hit := objects.HitRecord{
 		Param:  1.0,
@@ -28,13 +29,13 @@ func TestDiffusive_NoRandom(t *testing.T) {
 
 	expected := materials.Reflection{
 		Ray:         core.NewRay(hit.Point, hit.Normal),
-		Attenuation: material.Color}
+		Attenuation: materialColor}
 
 	assert.Equal(t, expected, *reflection)
 }
 
 func TestDiffusive_Random(t *testing.T) {
-	material := materials.Diffusive{color.Red}
+	material := materials.NewDiffusive(color.Red)
 	ray := core.NewRay(core.NewVec3(1.0, 2.0, 3.0), core.NewVec3(4.0, 5.0, 6.0))
 	hit := objects.HitRecord{
 		Param:  1.0,
@@ -52,9 +53,9 @@ func TestDiffusive_Random(t *testing.T) {
 	randomPerturbation := reflection.Ray.Direction().Sub(hit.Normal).Len()
 	if randomPerturbation < 1.0 {
 		t.Logf("\tPASSED: reflection direction %v, perturbation %v",
-			reflection.Ray.Direction, randomPerturbation)
+			reflection.Ray.Direction(), randomPerturbation)
 	} else {
 		t.Fatalf("\tPASSED: reflection direction %v, perturbation %v",
-			reflection.Ray.Direction, randomPerturbation)
+			reflection.Ray.Direction(), randomPerturbation)
 	}
 }

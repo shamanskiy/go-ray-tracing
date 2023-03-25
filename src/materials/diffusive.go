@@ -7,10 +7,14 @@ import (
 )
 
 type Diffusive struct {
-	Color color.Color
+	color color.Color
+}
+
+func NewDiffusive(color color.Color) Diffusive {
+	return Diffusive{color}
 }
 
 func (d Diffusive) Reflect(ray core.Ray, hit objects.HitRecord) *Reflection {
 	reflectedDirection := hit.Normal.Add(core.Random().VecInUnitSphere())
-	return &Reflection{core.NewRay(hit.Point, reflectedDirection), d.Color}
+	return &Reflection{core.NewRay(hit.Point, reflectedDirection), d.color}
 }

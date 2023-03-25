@@ -56,21 +56,21 @@ func TestScene_Empty(t *testing.T) {
 func TestScene_HitClosetObject(t *testing.T) {
 	leftSphere := objects.Sphere{core.NewVec3(-6.0, 0.0, 0.0), 2.0}
 	rightSphere := objects.Sphere{core.NewVec3(0.0, 0.0, 0.0), 2.0}
-	material := materials.Diffusive{color.Black}
+	material := materials.NewDiffusive(color.Black)
 	t.Logf("Given a scene with two spheres %v and %v,\n", leftSphere, rightSphere)
 	scene := render.Scene{}
 	scene.Add(leftSphere, material)
 	scene.Add(rightSphere, material)
 
 	hitRay := core.NewRay(core.NewVec3(4.0, 0.0, 0.0), core.NewVec3(-1.0, 0.0, 0.0))
-	t.Logf("  a ray with origin %v and direction %v should hit the right sphere:\n", hitRay.Origin, hitRay.Direction)
+	t.Logf("  a ray with origin %v and direction %v should hit the right sphere:\n", hitRay.Origin(), hitRay.Direction())
 	hitRecord, objectIndex := scene.HitClosestObject(hitRay, 0.001)
 
 	expectedHit := objects.HitRecord{Param: 2.0, Point: core.NewVec3(2.0, 0.0, 0.0), Normal: core.NewVec3(1.0, 0.0, 0.0)}
 	assert.Equal(t, expectedHit, *hitRecord)
 	assert.Equal(t, 1, objectIndex)
 
-	t.Logf("  a ray with origin %v, direction %v and minimum parameter 7.0 should hit the left sphere:\n", hitRay.Origin, hitRay.Direction)
+	t.Logf("  a ray with origin %v, direction %v and minimum parameter 7.0 should hit the left sphere:\n", hitRay.Origin(), hitRay.Direction())
 	hitRecord, objectIndex = scene.HitClosestObject(hitRay, 7.0)
 
 	expectedHit = objects.HitRecord{Param: 8.0, Point: core.NewVec3(-4.0, 0.0, 0.0), Normal: core.NewVec3(1.0, 0.0, 0.0)}
@@ -84,17 +84,17 @@ func TestScene_TestRay_SingleSphere(t *testing.T) {
 	scene := render.Scene{SkyColorBottom: skyColor, SkyColorTop: skyColor}
 	sphere := objects.Sphere{core.NewVec3(0.0, 0.0, 0.0), 1.0}
 	sphereColor := color.Blue
-	material := materials.Diffusive{sphereColor}
+	material := materials.NewDiffusive(sphereColor)
 	scene.Add(sphere, material)
 
 	hitRay := core.NewRay(core.NewVec3(4.0, 0.0, 0.0), core.NewVec3(-1.0, 0.0, 0.0))
-	t.Logf("  a ray with origin %v and direction %v should return blue color:\n", hitRay.Origin, hitRay.Direction)
+	t.Logf("  a ray with origin %v and direction %v should return blue color:\n", hitRay.Origin(), hitRay.Direction())
 	rayColor := scene.TestRay(hitRay)
 	expectedColor := sphereColor
 	assert.Equal(t, expectedColor, rayColor)
 
 	hitRay = core.NewRay(core.NewVec3(4.0, 0.0, 0.0), core.NewVec3(0.0, 1.0, 0.0))
-	t.Logf("  a ray with origin %v and direction %v should return white color:\n", hitRay.Origin, hitRay.Direction)
+	t.Logf("  a ray with origin %v and direction %v should return white color:\n", hitRay.Origin(), hitRay.Direction())
 	rayColor = scene.TestRay(hitRay)
 	expectedColor = skyColor
 
@@ -108,7 +108,7 @@ func TestScene_NumberOfReflectionsExceeded(t *testing.T) {
 	t.Log("two red spheres,")
 	sphereA := objects.Sphere{core.NewVec3(0.0, 0.0, 0.0), 1.0}
 	sphereB := objects.Sphere{core.NewVec3(4.0, 0.0, 0.0), 1.0}
-	material := materials.Diffusive{color.Red}
+	material := materials.NewDiffusive(color.Red)
 	scene.Add(sphereA, material)
 	scene.Add(sphereB, material)
 
@@ -137,7 +137,7 @@ func TestScene_TwoReflections(t *testing.T) {
 	sphereA := objects.Sphere{core.NewVec3(0.0, 0.0, 0.0), 1.0}
 	sphereB := objects.Sphere{core.NewVec3(4.0, 3.0, 0.0), 1.0}
 	sphereColor := color.New(0.2, 0.4, 0.6)
-	material := materials.Diffusive{sphereColor}
+	material := materials.NewDiffusive(sphereColor)
 	scene.Add(sphereA, material)
 	scene.Add(sphereB, material)
 	t.Logf("and two spheres %v and %v with diffusive color %v,\n",
