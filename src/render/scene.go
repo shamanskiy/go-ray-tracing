@@ -18,7 +18,7 @@ type Scene struct {
 func (s *Scene) HitClosestObject(ray core.Ray, minParam core.Real) (hit *objects.HitRecord, objectIndex int) {
 
 	for i := range s.objects {
-		tempHit := s.objects[i].HitWithMin(ray, minParam)
+		tempHit := s.objects[i].Hit(ray, minParam)
 		if tempHit != nil {
 			if hit == nil || (hit != nil && hit.Param > tempHit.Param) {
 				hit = tempHit

@@ -11,49 +11,32 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDiffusive_ShouldReflectRayInNormalDirection_WhenNotRandom(t *testing.T) {
-	materialColor := color.Red
-	randomizer := random.NewFakeRandomGenerator()
-	material := materials.NewDiffusive(materialColor, randomizer)
-	ray := core.NewRay(core.NewVec3(1.0, 2.0, 3.0), core.NewVec3(4.0, 5.0, 6.0))
-	hit := objects.HitRecord{
-		Param:  1.0,
-		Point:  core.NewVec3(0.0, 1.0, 2.0),
-		Normal: core.NewVec3(0.0, 0.0, 1.0),
-	}
+var ray = core.NewRay(core.NewVec3(1, 2, 3), core.NewVec3(4, 5, 6))
+var hitRecord = objects.HitRecord{
+	Param:  1,
+	Point:  core.NewVec3(0, 1, 2),
+	Normal: core.NewVec3(0, 0, 1),
+}
 
-	reflection := material.Reflect(ray, hit)
+func TestDiffusive_ShouldReflectRayInNormalDirection_WhenNotRandom(t *testing.T) {
+	material := materials.NewDiffusive(color.Red, random.NewFakeRandomGenerator())
+
+	reflection := material.Reflect(ray, hitRecord)
 
 	expected := materials.Reflection{
-		Ray:         core.NewRay(hit.Point, hit.Normal),
-		Attenuation: materialColor}
-
+		Ray:         core.NewRay(hitRecord.Point, hitRecord.Normal),
+		Attenuation: material.Color(),
+	}
 	assert.Equal(t, expected, *reflection)
 }
 
-func TestDiffusive_Random(t *testing.T) {
-	randomizer := random.NewRandomGenerator()
-	material := materials.NewDiffusive(color.Red, randomizer)
-	ray := core.NewRay(core.NewVec3(1.0, 2.0, 3.0), core.NewVec3(4.0, 5.0, 6.0))
-	hit := objects.HitRecord{
-		Param:  1.0,
-		Point:  core.NewVec3(0.0, 1.0, 2.0),
-		Normal: core.NewVec3(0.0, 0.0, 1.0),
-	}
-	t.Logf("Given a diffusive material %v, a ray %v, a hit record %v,\n", material, ray, hit)
-	t.Log("and an ENABLED randomizer,")
+func TestDiffusive_ShouldReflectRayWithinUnitSphereOfNormal_WhenRandom(t *testing.T) {
+	material := materials.NewDiffusive(color.Red, random.NewRandomGenerator())
 
-	t.Log("  the direction of the reflected the ray is random")
-	reflection := material.Reflect(ray, hit)
-	t.Logf("  but it should be within a unit sphere of the surface normal %v:\n", hit.Normal)
+	reflection := material.Reflect(ray, hitRecord)
 
-	assert.NotNil(t, reflection)
-	randomPerturbation := reflection.Ray.Direction().Sub(hit.Normal).Len()
-	if randomPerturbation < 1.0 {
-		t.Logf("\tPASSED: reflection direction %v, perturbation %v",
-			reflection.Ray.Direction(), randomPerturbation)
-	} else {
-		t.Fatalf("\tPASSED: reflection direction %v, perturbation %v",
-			reflection.Ray.Direction(), randomPerturbation)
-	}
+	randomPerturbation := reflection.Ray.Direction().Sub(hitRecord.Normal).Len()
+	assert.Less(t, randomPerturbation, core.Real(1))
+	assert.Equal(t, material.Color(), reflection.Attenuation)
+	assert.Equal(t, hitRecord.Point, reflection.Ray.Origin())
 }

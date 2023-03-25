@@ -11,41 +11,33 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestReflective_Reflected(t *testing.T) {
-	randomizer := random.NewFakeRandomGenerator()
-	material := materials.NewReflective(color.Red, randomizer)
-	ray := core.NewRay(core.NewVec3(-3.0, 5.0, 3.0), core.NewVec3(4.0, -3.0, 0.0))
+func TestReflective_ShouldReflectRayAroundNormal_WhenNotFuzzy(t *testing.T) {
+	material := materials.NewReflective(color.Red, random.NewRandomGenerator())
+	ray := core.NewRay(core.NewVec3(-3, 5, 3), core.NewVec3(4, -3, 0))
 	hit := objects.HitRecord{
-		Param:  1.0,
-		Point:  core.NewVec3(1.0, 2.0, 3.0),
-		Normal: core.NewVec3(0.0, 1.0, 0.0),
+		Param:  1,
+		Point:  core.NewVec3(1, 2, 3),
+		Normal: core.NewVec3(0, 1, 0),
 	}
-	t.Logf("Given a reflective material with color %v and zero fuzziness\n", color.Red)
-	t.Logf("a ray %v and a hit record %v,\n", ray, hit)
 
-	t.Log("  we can reflect the ray off the material and expect a predictable result:")
 	reflection := material.Reflect(ray, hit)
 
 	expected := materials.Reflection{
-		Ray:         core.NewRay(hit.Point, core.NewVec3(0.8, 0.6, 0.0)),
-		Attenuation: color.Red}
-
+		Ray:         core.NewRay(hit.Point, core.NewVec3(4, 3, 0).Normalize()),
+		Attenuation: material.Color(),
+	}
 	assert.Equal(t, expected, *reflection)
 }
 
-func TestReflective_NotReflected(t *testing.T) {
-	randomizer := random.NewFakeRandomGenerator()
-	material := materials.NewReflective(color.Red, randomizer)
-	ray := core.NewRay(core.NewVec3(-3.0, -1.0, 3.0), core.NewVec3(4.0, 3.0, 0.0))
+func TestReflective_ShouldNotReflect_WhenRay(t *testing.T) {
+	material := materials.NewReflective(color.Red, random.NewRandomGenerator())
+	ray := core.NewRay(core.NewVec3(-3, -1, 3), core.NewVec3(4, 3, 0))
 	hit := objects.HitRecord{
-		Param:  1.0,
-		Point:  core.NewVec3(1.0, 2.0, 3.0),
-		Normal: core.NewVec3(0.0, 1.0, 0.0),
+		Param:  1,
+		Point:  core.NewVec3(1, 2, 3),
+		Normal: core.NewVec3(0, 1, 0),
 	}
-	t.Logf("Given a reflective material with color %v and zero fuzziness\n", color.Red)
-	t.Logf("a ray %v and a hit record %v,\n", ray, hit)
 
-	t.Log("  we should get no reflection as the ray comes from under the surface:")
 	reflection := material.Reflect(ray, hit)
 
 	assert.Nil(t, reflection)
@@ -58,9 +50,9 @@ func TestRefective_WithFuzziness(t *testing.T) {
 	material := materials.NewReflectiveFuzzy(materialColor, 0.5, randomizer)
 	ray := core.NewRay(core.NewVec3(-3.0, 5.0, 3.0), core.NewVec3(4.0, -3.0, 0.0))
 	hit := objects.HitRecord{
-		Param:  1.0,
-		Point:  core.NewVec3(1.0, 2.0, 3.0),
-		Normal: core.NewVec3(0.0, 1.0, 0.0),
+		Param:  1,
+		Point:  core.NewVec3(1, 2, 3),
+		Normal: core.NewVec3(0, 1, 0),
 	}
 	t.Logf("Given a reflective material with color %v and fuzziness %v,\n", materialColor, fuzziness)
 	t.Logf("a ray %v and a hit record %v,\n", ray, hit)

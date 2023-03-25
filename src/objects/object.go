@@ -9,6 +9,5 @@ type HitRecord struct {
 }
 
 type Object interface {
-	Hit(ray core.Ray) *HitRecord
-	HitWithMin(ray core.Ray, minParam core.Real) *HitRecord
+	Hit(ray core.Ray, minParam core.Real) *HitRecord
 }

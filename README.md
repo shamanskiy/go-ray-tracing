@@ -35,3 +35,4 @@ go test ./...
 ## ToDo
 
 - dependency inversion for scene in camera.render
+- test scene with fake objects and materials
