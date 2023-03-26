@@ -8,64 +8,39 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSphere_FirstHit(t *testing.T) {
-	sphere := objects.Sphere{core.NewVec3(0.0, 0.0, 0.0), 2.0}
-	t.Logf("Given a sphere with center at %v and radius %v,\n", sphere.Center, sphere.Radius)
+func TestSphere_ShouldReturnTwoDistinctHits_IfRayIntersectsSphere(t *testing.T) {
+	sphere := objects.Sphere{core.NewVec3(0, 0, 0), 2.0}
+	ray := core.NewRay(core.NewVec3(4, 0, 0), core.NewVec3(-1, 0, 0))
 
-	hitRay := core.NewRay(core.NewVec3(4.0, 0.0, 0.0), core.NewVec3(-1.0, 0.0, 0.0))
-	t.Logf("  we can test if a ray with origin %v and direction %v hits the sphere:\n", hitRay.Origin(), hitRay.Direction())
-	hitRecord := sphere.Hit(hitRay, 0.)
-	expected := objects.HitRecord{Param: 2.0, Point: core.NewVec3(2.0, 0.0, 0.0), Normal: core.NewVec3(1.0, 0.0, 0.0)}
+	hits := sphere.TestRay(ray)
 
-	assert.Equal(t, expected, *hitRecord)
+	assert.Equal(t, []core.Real{2, 6}, hits)
 }
 
-func TestSphere_SecondHit(t *testing.T) {
-	sphere := objects.Sphere{core.NewVec3(0.0, 0.0, 0.0), 2.0}
-	t.Logf("Given a sphere with center at %v and radius %v,\n", sphere.Center, sphere.Radius)
+func TestSphere_ShouldReturnOneHitTwice_IfRayTouchesSphere(t *testing.T) {
+	sphere := objects.Sphere{core.NewVec3(0, 0, 0), 2.0}
+	ray := core.NewRay(core.NewVec3(4, 2, 0), core.NewVec3(-1, 0, 0))
 
-	hitRay := core.NewRay(core.NewVec3(4.0, 0.0, 0.0), core.NewVec3(-1.0, 0.0, 0.0))
-	t.Logf("  we can test if a ray with origin %v and direction %v hits the sphere with minimum parameter 3.0:\n",
-		hitRay.Origin(), hitRay.Direction())
-	hitRecord := sphere.Hit(hitRay, 3.0)
+	hits := sphere.TestRay(ray)
 
-	expected := objects.HitRecord{Param: 6.0, Point: core.NewVec3(-2.0, 0.0, 0.0), Normal: core.NewVec3(-1.0, 0.0, 0.0)}
-
-	assert.Equal(t, expected, *hitRecord)
+	assert.Equal(t, []core.Real{4, 4}, hits)
 }
 
-func TestSphere_TangentHit(t *testing.T) {
-	sphere := objects.Sphere{core.NewVec3(0.0, 0.0, 0.0), 2.0}
-	t.Logf("Given a sphere with center at %v and radius %v,\n", sphere.Center, sphere.Radius)
+func TestSphere_ShouldReturnNoHits_IfRayDoesNotIntersectSphere(t *testing.T) {
+	sphere := objects.Sphere{core.NewVec3(0, 0, 0), 2.0}
+	ray := core.NewRay(core.NewVec3(4, 4, 0), core.NewVec3(-1, 0, 0))
 
-	hitRay := core.NewRay(core.NewVec3(4.0, 2.0, 0.0), core.NewVec3(-1.0, 0.0, 0.0))
-	t.Logf("  we can test if a ray with origin %v and direction %v hits the sphere:\n", hitRay.Origin(), hitRay.Direction())
-	hitRecord := sphere.Hit(hitRay, 0.)
+	hits := sphere.TestRay(ray)
 
-	expected := objects.HitRecord{Param: 4.0, Point: core.NewVec3(0.0, 2.0, 0.0), Normal: core.NewVec3(0.0, 1.0, 0.0)}
-
-	assert.Equal(t, expected, *hitRecord)
+	assert.Empty(t, hits)
 }
 
-func TestSphere_NoHit_RayParamIsTooLarge(t *testing.T) {
-	sphere := objects.Sphere{core.NewVec3(0.0, 0.0, 0.0), 2.0}
-	t.Logf("Given a sphere with center at %v and radius %v,\n", sphere.Center, sphere.Radius)
+func TestSphere_ShouldEvaluateHit(t *testing.T) {
+	sphere := objects.Sphere{core.NewVec3(0, 0, 0), 2.0}
+	ray := core.NewRay(core.NewVec3(4, 0, 0), core.NewVec3(-1, 0, 0))
 
-	hitRay := core.NewRay(core.NewVec3(4.0, 0.0, 0.0), core.NewVec3(1.0, 0.0, 0.0))
-	t.Logf("  we can test if a ray with origin %v and direction %v hits the sphere with minimum parameter 7.0:\n",
-		hitRay.Origin(), hitRay.Direction())
-	hitRecord := sphere.Hit(hitRay, 7.0)
+	hitRecord := sphere.EvaluateHit(ray, 2)
 
-	assert.Nil(t, hitRecord)
-}
-
-func TestSphere_NoHit_RayMisses(t *testing.T) {
-	sphere := objects.Sphere{core.NewVec3(0.0, 0.0, 0.0), 2.0}
-	t.Logf("Given a sphere with center at %v and radius %v,\n", sphere.Center, sphere.Radius)
-
-	hitRay := core.NewRay(core.NewVec3(4.0, 0.0, 0.0), core.NewVec3(0.0, 1.0, 0.0))
-	t.Logf("  we can test if a ray with origin %v and direction %v hits the sphere:\n", hitRay.Origin(), hitRay.Direction())
-	hitRecord := sphere.Hit(hitRay, 0.)
-
-	assert.Nil(t, hitRecord)
+	assert.Equal(t, core.NewVec3(2, 0, 0), hitRecord.Point)
+	assert.Equal(t, core.NewVec3(1, 0, 0), hitRecord.Normal)
 }

@@ -9,7 +9,7 @@ type Sphere struct {
 	Radius core.Real
 }
 
-func (s Sphere) Hit(ray core.Ray, minParam core.Real) *HitRecord {
+func (s Sphere) TestRay(ray core.Ray) []core.Real {
 	centerToOrigin := ray.Origin().Sub(s.Center)
 
 	a := ray.Direction().Dot(ray.Direction())
@@ -18,20 +18,14 @@ func (s Sphere) Hit(ray core.Ray, minParam core.Real) *HitRecord {
 	solution := core.SolveQuadEquation(a, b, c)
 
 	if solution.NoSolution {
-		return nil
+		return []core.Real{}
 	}
 
-	if solution.Left >= minParam {
-		hitPoint := ray.Eval(solution.Left)
-		hitNormal := hitPoint.Sub(s.Center).Mul(1 / s.Radius)
-		return &HitRecord{solution.Left, hitPoint, hitNormal}
-	}
+	return []core.Real{solution.Left, solution.Right}
+}
 
-	if solution.Right >= minParam {
-		hitPoint := ray.Eval(solution.Right)
-		hitNormal := hitPoint.Sub(s.Center).Mul(1 / s.Radius)
-		return &HitRecord{solution.Right, hitPoint, hitNormal}
-	}
-
-	return nil
+func (s Sphere) EvaluateHit(ray core.Ray, hitParam core.Real) HitRecord {
+	hitPoint := ray.Eval(hitParam)
+	hitNormal := hitPoint.Sub(s.Center).Div(s.Radius)
+	return HitRecord{hitPoint, hitNormal}
 }

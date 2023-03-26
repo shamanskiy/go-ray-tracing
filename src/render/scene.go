@@ -16,18 +16,27 @@ type Scene struct {
 }
 
 func (s *Scene) HitClosestObject(ray core.Ray, minParam core.Real) (hit *objects.HitRecord, objectIndex int) {
+	noHitYet := true
+	closestHitParam := core.Inf()
 
 	for i := range s.objects {
-		tempHit := s.objects[i].Hit(ray, minParam)
-		if tempHit != nil {
-			if hit == nil || (hit != nil && hit.Param > tempHit.Param) {
-				hit = tempHit
+		hits := s.objects[i].TestRay(ray)
+		for _, hitParam := range hits {
+			if hitParam >= minParam && hitParam < closestHitParam {
+				closestHitParam = hitParam
 				objectIndex = i
+				noHitYet = false
+				break
 			}
 		}
 	}
 
-	return hit, objectIndex
+	if noHitYet {
+		return nil, 0
+	} else {
+		closestHitRecord := s.objects[objectIndex].EvaluateHit(ray, closestHitParam)
+		return &closestHitRecord, objectIndex
+	}
 }
 
 func (s *Scene) Add(object objects.Object, material materials.Material) {

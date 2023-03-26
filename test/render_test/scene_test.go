@@ -68,14 +68,16 @@ func TestScene_HitClosetObject(t *testing.T) {
 	t.Logf("  a ray with origin %v and direction %v should hit the right sphere:\n", hitRay.Origin(), hitRay.Direction())
 	hitRecord, objectIndex := scene.HitClosestObject(hitRay, 0.001)
 
-	expectedHit := objects.HitRecord{Param: 2.0, Point: core.NewVec3(2.0, 0.0, 0.0), Normal: core.NewVec3(1.0, 0.0, 0.0)}
+	// expectedHit := objects.HitRecord{Param: 2.0, Point: core.NewVec3(2.0, 0.0, 0.0), Normal: core.NewVec3(1.0, 0.0, 0.0)}
+	expectedHit := objects.HitRecord{Point: core.NewVec3(2.0, 0.0, 0.0), Normal: core.NewVec3(1.0, 0.0, 0.0)}
 	assert.Equal(t, expectedHit, *hitRecord)
 	assert.Equal(t, 1, objectIndex)
 
 	t.Logf("  a ray with origin %v, direction %v and minimum parameter 7.0 should hit the left sphere:\n", hitRay.Origin(), hitRay.Direction())
 	hitRecord, objectIndex = scene.HitClosestObject(hitRay, 7.0)
 
-	expectedHit = objects.HitRecord{Param: 8.0, Point: core.NewVec3(-4.0, 0.0, 0.0), Normal: core.NewVec3(1.0, 0.0, 0.0)}
+	expectedHit = objects.HitRecord{Point: core.NewVec3(-4.0, 0.0, 0.0), Normal: core.NewVec3(1.0, 0.0, 0.0)}
+	// expectedHit = objects.HitRecord{Param: 8.0, Point: core.NewVec3(-4.0, 0.0, 0.0), Normal: core.NewVec3(1.0, 0.0, 0.0)}
 	assert.Equal(t, expectedHit, *hitRecord)
 	assert.Equal(t, 0, objectIndex)
 }
