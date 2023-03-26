@@ -47,7 +47,7 @@ func genRandomMaterial() materials.Material {
 		fuzziness := 0.1 * randomizer.Real()
 		return materials.NewReflectiveFuzzy(metallicColor, fuzziness, randomizer)
 	} else {
-		return materials.NewTransparent(1.5, randomizer)
+		return materials.NewTransparent(1.5, color.White, randomizer)
 	}
 }
 
@@ -62,7 +62,7 @@ func makeScene() *render.Scene {
 	sphereRed := objects.Sphere{Center: core.NewVec3(-2.5, 1.0, 1), Radius: 1.0}
 	scene.Add(sphereRed, materials.NewDiffusive(color.Red, randomizer))
 	sphereGlass := objects.Sphere{Center: core.NewVec3(0.0, 1.0, 0.15), Radius: 1.0}
-	scene.Add(sphereGlass, materials.NewTransparent(1.5, randomizer))
+	scene.Add(sphereGlass, materials.NewTransparent(1.5, color.White, randomizer))
 	sphereMirror := objects.Sphere{Center: core.NewVec3(2.5, 1.0, 0.0), Radius: 1.0}
 	scene.Add(sphereMirror, materials.NewReflectiveFuzzy(color.GrayLight, 0.03, randomizer))
 

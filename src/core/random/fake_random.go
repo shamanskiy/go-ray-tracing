@@ -3,6 +3,7 @@ package random
 import "github.com/Shamanskiy/go-ray-tracer/src/core"
 
 type FakeRandomGenerator struct {
+	RealValue core.Real
 }
 
 func NewFakeRandomGenerator() FakeRandomGenerator {
@@ -10,7 +11,7 @@ func NewFakeRandomGenerator() FakeRandomGenerator {
 }
 
 func (f FakeRandomGenerator) Real() core.Real {
-	return 0
+	return f.RealValue
 }
 
 func (f FakeRandomGenerator) Vec3() core.Vec3 {

@@ -1,4 +1,4 @@
-package materials
+package materials_test
 
 import (
 	"testing"
@@ -12,9 +12,8 @@ import (
 func TestReflective_ShouldReflectRayAroundNormal_WhenNotFuzzy(t *testing.T) {
 	material := materials.NewReflective(anyColor, random.NewRandomGenerator())
 	incidentDirection := core.NewVec3(4, -3, 0)
-	normalAtHitPoint := core.NewVec3(0, 1, 0)
 
-	reflection := material.Reflect(incidentDirection, hitPoint, normalAtHitPoint)
+	reflection := material.Reflect(incidentDirection, hitPoint, normalAtHitPointUp)
 
 	expected := materials.Reflection{
 		Ray:         core.NewRay(hitPoint, core.NewVec3(4, 3, 0).Normalize()),
@@ -26,9 +25,8 @@ func TestReflective_ShouldReflectRayAroundNormal_WhenNotFuzzy(t *testing.T) {
 func TestReflective_ShouldNotReflect_WhenRayParallelToSurface(t *testing.T) {
 	material := materials.NewReflective(anyColor, random.NewRandomGenerator())
 	incidentDirection := core.NewVec3(4, 0, 0)
-	normalAtHitPoint := core.NewVec3(0, 1, 0)
 
-	reflection := material.Reflect(incidentDirection, hitPoint, normalAtHitPoint)
+	reflection := material.Reflect(incidentDirection, hitPoint, normalAtHitPointUp)
 
 	assert.Nil(t, reflection)
 }
@@ -36,9 +34,8 @@ func TestReflective_ShouldNotReflect_WhenRayParallelToSurface(t *testing.T) {
 func TestReflective_ShouldNotReflect_WhenRaysNormalComponentCoalignedWithNormal(t *testing.T) {
 	material := materials.NewReflective(anyColor, random.NewRandomGenerator())
 	incidentDirection := core.NewVec3(4, 3, 0)
-	normalAtHitPoint := core.NewVec3(0, 1, 0)
 
-	reflection := material.Reflect(incidentDirection, hitPoint, normalAtHitPoint)
+	reflection := material.Reflect(incidentDirection, hitPoint, normalAtHitPointUp)
 
 	assert.Nil(t, reflection)
 }
@@ -46,9 +43,8 @@ func TestReflective_ShouldNotReflect_WhenRaysNormalComponentCoalignedWithNormal(
 func TestRefective_WithFuzziness(t *testing.T) {
 	material := materials.NewReflectiveFuzzy(anyColor, 0.5, random.NewRandomGenerator())
 	incidentDirection := core.NewVec3(4, -3, 0)
-	normalAtHitPoint := core.NewVec3(0, 1, 0)
 
-	reflection := material.Reflect(incidentDirection, hitPoint, normalAtHitPoint)
+	reflection := material.Reflect(incidentDirection, hitPoint, normalAtHitPointUp)
 
 	expectedMeanDirection := core.NewVec3(4, 3, 0).Normalize()
 	randomPerturbation := reflection.Ray.Direction().Sub(expectedMeanDirection).Len()

@@ -1,4 +1,4 @@
-package materials
+package materials_test
 
 import (
 	"testing"
@@ -13,15 +13,15 @@ import (
 var anyDirection = core.NewVec3(10, 20, 30)
 var anyColor = color.Red
 var hitPoint = core.NewVec3(0, 1, 2)
-var normalAtHitPoint = core.NewVec3(0, 1, 0)
+var normalAtHitPointUp = core.NewVec3(0, 1, 0)
 
 func TestDiffusive_ShouldReflectRayInNormalDirection_WhenNotRandom(t *testing.T) {
 	material := materials.NewDiffusive(anyColor, random.NewFakeRandomGenerator())
 
-	reflection := material.Reflect(anyDirection, hitPoint, normalAtHitPoint)
+	reflection := material.Reflect(anyDirection, hitPoint, normalAtHitPointUp)
 
 	expected := materials.Reflection{
-		Ray:         core.NewRay(hitPoint, normalAtHitPoint),
+		Ray:         core.NewRay(hitPoint, normalAtHitPointUp),
 		Attenuation: material.Color(),
 	}
 	assert.Equal(t, expected, *reflection)
@@ -30,9 +30,9 @@ func TestDiffusive_ShouldReflectRayInNormalDirection_WhenNotRandom(t *testing.T)
 func TestDiffusive_ShouldReflectRayWithinUnitSphereOfNormal_WhenRandom(t *testing.T) {
 	material := materials.NewDiffusive(anyColor, random.NewRandomGenerator())
 
-	reflection := material.Reflect(anyDirection, hitPoint, normalAtHitPoint)
+	reflection := material.Reflect(anyDirection, hitPoint, normalAtHitPointUp)
 
-	randomPerturbation := reflection.Ray.Direction().Sub(normalAtHitPoint).Len()
+	randomPerturbation := reflection.Ray.Direction().Sub(normalAtHitPointUp).Len()
 	assert.Less(t, randomPerturbation, core.Real(1))
 	assert.Equal(t, material.Color(), reflection.Attenuation)
 	assert.Equal(t, hitPoint, reflection.Ray.Origin())

@@ -30,9 +30,9 @@ func makeScene() *render.Scene {
 
 	// glass shell
 	scene.Add(objects.Sphere{Center: core.NewVec3(-1, 0, -1), Radius: 0.5},
-		materials.NewTransparent(1.5, randomizer))
+		materials.NewTransparent(1.5, color.White, randomizer))
 	scene.Add(objects.Sphere{Center: core.NewVec3(-1, 0, -1), Radius: -0.4},
-		materials.NewTransparent(1.5, randomizer))
+		materials.NewTransparent(1.5, color.White, randomizer))
 
 	// Huge sphere = floor
 	scene.Add(objects.Sphere{Center: core.NewVec3(0, -100.5, -1), Radius: 100},
