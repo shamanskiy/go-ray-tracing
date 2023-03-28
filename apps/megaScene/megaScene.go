@@ -8,6 +8,7 @@ import (
 	"image/png"
 	"os"
 
+	"github.com/Shamanskiy/go-ray-tracer/src/background"
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
@@ -52,7 +53,11 @@ func genRandomMaterial() materials.Material {
 }
 
 func makeScene() *render.Scene {
-	scene := render.Scene{SkyColorTop: color.SkyBlue, SkyColorBottom: color.White}
+	background := background.VerticalGradient{
+		BottomColor: color.White,
+		TopColor:    color.SkyBlue,
+	}
+	scene := render.NewScene(background)
 
 	// Huge sphere = floor
 	scene.Add(objects.Sphere{Center: core.NewVec3(0.0, -1000., 0.0), Radius: 1000.0},
@@ -81,7 +86,7 @@ func makeScene() *render.Scene {
 		}
 	}
 
-	return &scene
+	return scene
 }
 
 func makeCamera() *render.Camera {

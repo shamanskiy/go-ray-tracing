@@ -20,3 +20,7 @@ func TestColor_WhiteToRGBA(t *testing.T) {
 func TestColor_GrayToRGBA(t *testing.T) {
 	assert.Equal(t, rgba.RGBA{181, 181, 181, 255}, color.GrayMedium.ToRGBA())
 }
+
+func TestColor_Interpolate(t *testing.T) {
+	assert.Equal(t, color.GrayMedium, color.Interpolate(color.Black, color.White, 0.5))
+}

@@ -1,18 +1,23 @@
 package render
 
 import (
+	"github.com/Shamanskiy/go-ray-tracer/src/background"
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/materials"
 	"github.com/Shamanskiy/go-ray-tracer/src/objects"
-	"github.com/chewxy/math32"
 )
 
 type Scene struct {
-	objects        []objects.Object
-	materials      []materials.Material
-	SkyColorTop    color.Color
-	SkyColorBottom color.Color
+	objects    []objects.Object
+	materials  []materials.Material
+	background background.Background
+}
+
+func NewScene(background background.Background) *Scene {
+	return &Scene{
+		background: background,
+	}
 }
 
 func (s *Scene) HitClosestObject(ray core.Ray, minParam core.Real) (hit *objects.HitRecord, objectIndex int) {
@@ -56,25 +61,9 @@ func (s *Scene) testRay(ray core.Ray, depth int) color.Color {
 		}
 	}
 
-	return s.computeSkyColor(ray)
+	return s.background.ColorRay(ray)
 }
 
 func (s *Scene) TestRay(ray core.Ray) color.Color {
 	return s.testRay(ray, 0)
-}
-
-func (s *Scene) computeSkyColor(ray core.Ray) color.Color {
-	unit_direction := ray.Direction().Normalize()
-
-	var t float32
-	// check for zero length vector
-	if math32.IsNaN(unit_direction.X()) {
-		t = 0.5
-	} else {
-		t = 0.5 * (unit_direction.Y() + 1.0)
-	}
-
-	A := s.SkyColorBottom.Mul(1.0 - t)
-	B := s.SkyColorTop.Mul(t)
-	return A.Add(B)
 }

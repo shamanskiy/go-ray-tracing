@@ -4,6 +4,7 @@ import (
 	rgba "image/color"
 	"testing"
 
+	"github.com/Shamanskiy/go-ray-tracer/src/background"
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
@@ -83,7 +84,7 @@ func TestCamera_indexToU(t *testing.T) {
 
 func TestCamera_RenderEmptyScene(t *testing.T) {
 	t.Log("Given an empty scene with white background")
-	scene := render.Scene{SkyColorTop: color.White, SkyColorBottom: color.White}
+	scene := render.NewScene(background.NewFlatColor(color.White))
 
 	imageSize := 2
 	t.Logf("and a camera with %vx%v resolution,\n", imageSize, imageSize)
@@ -95,7 +96,7 @@ func TestCamera_RenderEmptyScene(t *testing.T) {
 	camera := render.NewCamera(&settings, randomizer)
 
 	t.Logf("  the rendered image should be a %vx%v white square:\n", imageSize, imageSize)
-	renderedImage := camera.Render(&scene)
+	renderedImage := camera.Render(scene)
 
 	assert.Equal(t, imageSize, renderedImage.Bounds().Size().X)
 	assert.Equal(t, imageSize, renderedImage.Bounds().Size().Y)

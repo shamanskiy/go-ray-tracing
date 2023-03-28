@@ -3,6 +3,7 @@ package render
 import (
 	"testing"
 
+	"github.com/Shamanskiy/go-ray-tracer/src/background"
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
@@ -13,45 +14,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestScene_Default(t *testing.T) {
-	t.Log("Given a default empty scene,")
-	scene := render.Scene{}
-	expected := color.Black
-
-	ray := core.NewRay(core.NewVec3(0, 0, 0), core.NewVec3(0, 0, 0))
-	t.Logf("  ray %v tests black:\n", ray)
-	color := scene.TestRay(ray)
-	assert.Equal(t, expected, color)
-
-	ray = core.NewRay(core.NewVec3(1, 2, 3), core.NewVec3(4, 5, 6))
-	t.Logf("  and any other ray, too, for example %v:\n", ray)
-	color = scene.TestRay(ray)
-	assert.Equal(t, expected, color)
-}
-
 func TestScene_Empty(t *testing.T) {
-	skyBottom, skyTop := color.Red, color.Blue
-	scene := render.Scene{SkyColorBottom: skyBottom, SkyColorTop: skyTop}
-	t.Logf("Given an empty scene with bottom sky color %v and top sky color %v,\n",
-		skyBottom, skyTop)
+	scene := render.NewScene(background.NewFlatColor(color.White))
 
 	ray := core.NewRay(core.NewVec3(0, 0, 0), core.NewVec3(0, -1, 0))
-	t.Logf("  down-facing ray %v should return the bottom color:\n", ray)
-	color := scene.TestRay(ray)
-	expected := skyBottom
-	assert.Equal(t, expected, color)
+	rayColor := scene.TestRay(ray)
 
-	ray = core.NewRay(core.NewVec3(0, 0, 0), core.NewVec3(0, 1, 0))
-	t.Logf("  up-facing ray %v should return the top color:\n", ray)
-	color = scene.TestRay(ray)
-	expected = skyTop
-	assert.Equal(t, expected, color)
-
-	ray = core.NewRay(core.NewVec3(0, 0, 0), core.NewVec3(1, 0, 0))
-	t.Logf("  horizontal ray %v should return the blend color:\n", ray)
-	color = scene.TestRay(ray)
-	expected = skyTop.Add(skyBottom).Mul(0.5)
-	assert.Equal(t, expected, color)
+	assert.Equal(t, color.White, rayColor)
 }
 
 func TestScene_HitClosetObject(t *testing.T) {
@@ -85,7 +54,7 @@ func TestScene_HitClosetObject(t *testing.T) {
 func TestScene_TestRay_SingleSphere(t *testing.T) {
 	t.Log("Given a scene with a blue sphere and a white skybox,")
 	skyColor := color.White
-	scene := render.Scene{SkyColorBottom: skyColor, SkyColorTop: skyColor}
+	scene := render.NewScene(background.NewFlatColor(skyColor))
 	sphere := objects.Sphere{core.NewVec3(0.0, 0.0, 0.0), 1.0}
 	sphereColor := color.Blue
 	randomizer := random.NewFakeRandomGenerator()
@@ -109,7 +78,7 @@ func TestScene_TestRay_SingleSphere(t *testing.T) {
 func TestScene_NumberOfReflectionsExceeded(t *testing.T) {
 	t.Log("Given a scene with a white skybox,")
 	skyColor := color.White
-	scene := render.Scene{SkyColorBottom: skyColor, SkyColorTop: skyColor}
+	scene := render.NewScene(background.NewFlatColor(skyColor))
 	t.Log("two red spheres,")
 	sphereA := objects.Sphere{core.NewVec3(0.0, 0.0, 0.0), 1.0}
 	sphereB := objects.Sphere{core.NewVec3(4.0, 0.0, 0.0), 1.0}
@@ -131,7 +100,7 @@ func TestScene_NumberOfReflectionsExceeded(t *testing.T) {
 func TestScene_TwoReflections(t *testing.T) {
 	t.Log("Given a scene with a white skybox,")
 	skyColor := color.White
-	scene := render.Scene{SkyColorBottom: skyColor, SkyColorTop: skyColor}
+	scene := render.NewScene(background.NewFlatColor(skyColor))
 
 	sphereA := objects.Sphere{core.NewVec3(0.0, 0.0, 0.0), 1.0}
 	sphereB := objects.Sphere{core.NewVec3(4.0, 3.0, 0.0), 1.0}

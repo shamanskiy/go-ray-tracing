@@ -7,6 +7,7 @@ import (
 	"image/png"
 	"os"
 
+	"github.com/Shamanskiy/go-ray-tracer/src/background"
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
@@ -18,7 +19,11 @@ import (
 var randomizer = random.NewRandomGenerator()
 
 func makeScene() *render.Scene {
-	scene := render.Scene{SkyColorTop: color.SkyBlue, SkyColorBottom: color.White}
+	background := background.VerticalGradient{
+		BottomColor: color.White,
+		TopColor:    color.SkyBlue,
+	}
+	scene := render.NewScene(background)
 
 	// matt green ball
 	scene.Add(objects.Sphere{Center: core.NewVec3(0, 0, -1), Radius: 0.5},
@@ -38,7 +43,7 @@ func makeScene() *render.Scene {
 	scene.Add(objects.Sphere{Center: core.NewVec3(0, -100.5, -1), Radius: 100},
 		materials.NewDiffusive(color.GrayMedium, randomizer))
 
-	return &scene
+	return scene
 }
 
 func makeCamera() *render.Camera {

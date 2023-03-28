@@ -70,3 +70,7 @@ func toZero255(x core.Real) uint8 {
 func gammaCorrection(input core.Real) core.Real {
 	return math32.Sqrt(input)
 }
+
+func Interpolate(A, B Color, t core.Real) Color {
+	return A.Mul(1 - t).Add(B.Mul(t))
+}
