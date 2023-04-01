@@ -35,6 +35,15 @@ func TestSphere_ShouldReturnNoHits_IfRayDoesNotIntersectSphere(t *testing.T) {
 	assert.Empty(t, hits)
 }
 
+func TestSphere_ShouldReturnNoHits_IfRayPointDirectlyAgainstSphere(t *testing.T) {
+	sphere := objects.NewSphere(core.NewVec3(0, 0, 0), 2)
+	ray := core.NewRay(core.NewVec3(4, 0, 0), core.NewVec3(1, 0, 0))
+
+	hits := sphere.TestRay(ray)
+
+	assert.Empty(t, hits)
+}
+
 func TestSphere_ShouldEvaluateHit(t *testing.T) {
 	sphere := objects.NewSphere(core.NewVec3(0, 0, 0), 2)
 	ray := core.NewRay(core.NewVec3(4, 0, 0), core.NewVec3(-1, 0, 0))

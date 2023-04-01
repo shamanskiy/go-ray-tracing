@@ -1,15 +1,8 @@
 package core
 
 import (
-	"github.com/chewxy/math32"
 	"github.com/go-gl/mathgl/mgl32"
 )
-
-type Real = float32
-
-func Inf() Real {
-	return math32.Inf(1)
-}
 
 type Vec3 struct {
 	vec mgl32.Vec3

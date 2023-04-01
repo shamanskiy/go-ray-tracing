@@ -2,6 +2,7 @@ package objects
 
 import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
+	"github.com/Shamanskiy/go-ray-tracer/src/core/slices"
 )
 
 type Sphere struct {
@@ -28,7 +29,10 @@ func (s Sphere) TestRay(ray core.Ray) []core.Real {
 		return []core.Real{}
 	}
 
-	return []core.Real{solution.Left, solution.Right}
+	solutions := []core.Real{solution.Left, solution.Right}
+	return slices.Filter(solutions, func(value core.Real) bool {
+		return value >= 0
+	})
 }
 
 func (s Sphere) EvaluateHit(ray core.Ray, hitParam core.Real) HitRecord {
