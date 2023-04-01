@@ -21,8 +21,8 @@ var randomizer = random.NewRandomGenerator()
 
 func tooCloseToBigSpheres(sphere objects.Sphere, bigSpheres []objects.Sphere) bool {
 	for _, bigSphere := range bigSpheres {
-		distance := sphere.Center.Sub(bigSphere.Center).Len()
-		if distance < 1.05*sphere.Radius+bigSphere.Radius {
+		distance := sphere.Center().Sub(bigSphere.Center()).Len()
+		if distance < 1.05*sphere.Radius()+bigSphere.Radius() {
 			return true
 		}
 	}
@@ -35,7 +35,7 @@ func genRandomSmallSphere(i, j int) objects.Sphere {
 		0.2,
 		core.Real(j)+0.8*randomizer.Real(),
 	)
-	return objects.Sphere{Center: center, Radius: 0.2}
+	return objects.NewSphere(center, 0.2)
 }
 
 func genRandomMaterial() materials.Material {
@@ -53,22 +53,19 @@ func genRandomMaterial() materials.Material {
 }
 
 func makeScene() *render.Scene {
-	background := background.VerticalGradient{
-		BottomColor: color.White,
-		TopColor:    color.SkyBlue,
-	}
+	background := background.NewVerticalGradient(color.White, color.SkyBlue)
 	scene := render.NewScene(background)
 
 	// Huge sphere = floor
-	scene.Add(objects.Sphere{Center: core.NewVec3(0.0, -1000., 0.0), Radius: 1000.0},
+	scene.Add(objects.NewSphere(core.NewVec3(0.0, -1000., 0.0), 1000),
 		materials.NewDiffusive(color.GrayMedium, randomizer))
 
 	// Three main spheres
-	sphereRed := objects.Sphere{Center: core.NewVec3(-2.5, 1.0, 1), Radius: 1.0}
+	sphereRed := objects.NewSphere(core.NewVec3(-2.5, 1.0, 1), 1)
 	scene.Add(sphereRed, materials.NewDiffusive(color.Red, randomizer))
-	sphereGlass := objects.Sphere{Center: core.NewVec3(0.0, 1.0, 0.15), Radius: 1.0}
+	sphereGlass := objects.NewSphere(core.NewVec3(0.0, 1.0, 0.15), 1)
 	scene.Add(sphereGlass, materials.NewTransparent(1.5, color.White, randomizer))
-	sphereMirror := objects.Sphere{Center: core.NewVec3(2.5, 1.0, 0.0), Radius: 1.0}
+	sphereMirror := objects.NewSphere(core.NewVec3(2.5, 1.0, 0.0), 1)
 	scene.Add(sphereMirror, materials.NewReflectiveFuzzy(color.GrayLight, 0.03, randomizer))
 
 	// Little spheres randomly offset from a regular grid

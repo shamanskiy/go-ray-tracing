@@ -9,7 +9,7 @@ import (
 )
 
 func TestSphere_ShouldReturnTwoDistinctHits_IfRayIntersectsSphere(t *testing.T) {
-	sphere := objects.Sphere{core.NewVec3(0, 0, 0), 2.0}
+	sphere := objects.NewSphere(core.NewVec3(0, 0, 0), 2)
 	ray := core.NewRay(core.NewVec3(4, 0, 0), core.NewVec3(-1, 0, 0))
 
 	hits := sphere.TestRay(ray)
@@ -18,7 +18,7 @@ func TestSphere_ShouldReturnTwoDistinctHits_IfRayIntersectsSphere(t *testing.T) 
 }
 
 func TestSphere_ShouldReturnOneHitTwice_IfRayTouchesSphere(t *testing.T) {
-	sphere := objects.Sphere{core.NewVec3(0, 0, 0), 2.0}
+	sphere := objects.NewSphere(core.NewVec3(0, 0, 0), 2)
 	ray := core.NewRay(core.NewVec3(4, 2, 0), core.NewVec3(-1, 0, 0))
 
 	hits := sphere.TestRay(ray)
@@ -27,7 +27,7 @@ func TestSphere_ShouldReturnOneHitTwice_IfRayTouchesSphere(t *testing.T) {
 }
 
 func TestSphere_ShouldReturnNoHits_IfRayDoesNotIntersectSphere(t *testing.T) {
-	sphere := objects.Sphere{core.NewVec3(0, 0, 0), 2.0}
+	sphere := objects.NewSphere(core.NewVec3(0, 0, 0), 2)
 	ray := core.NewRay(core.NewVec3(4, 4, 0), core.NewVec3(-1, 0, 0))
 
 	hits := sphere.TestRay(ray)
@@ -36,7 +36,7 @@ func TestSphere_ShouldReturnNoHits_IfRayDoesNotIntersectSphere(t *testing.T) {
 }
 
 func TestSphere_ShouldEvaluateHit(t *testing.T) {
-	sphere := objects.Sphere{core.NewVec3(0, 0, 0), 2.0}
+	sphere := objects.NewSphere(core.NewVec3(0, 0, 0), 2)
 	ray := core.NewRay(core.NewVec3(4, 0, 0), core.NewVec3(-1, 0, 0))
 
 	hitRecord := sphere.EvaluateHit(ray, 2)

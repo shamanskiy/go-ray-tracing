@@ -14,18 +14,54 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestScene_Empty(t *testing.T) {
-	scene := render.NewScene(background.NewFlatColor(color.White))
+var anyPoint = core.NewVec3(999, 666, 333)
+var anyDirection = core.NewVec3(1, 2, 3)
+var anyObjectColor = color.Red
+var anyOtherObjectColor = color.Green
+var anyBackgroundColor = color.Blue
 
-	ray := core.NewRay(core.NewVec3(0, 0, 0), core.NewVec3(0, -1, 0))
+func TestScene_ShouldReturnBackgroundColor_IfSceneEmpty(t *testing.T) {
+	flatColor := background.NewFlatColor(anyBackgroundColor)
+	scene := render.NewScene(flatColor)
+	ray := core.NewRay(anyPoint, anyDirection)
+
 	rayColor := scene.TestRay(ray)
 
-	assert.Equal(t, color.White, rayColor)
+	assert.Equal(t, flatColor.Color(), rayColor)
+}
+
+func TestScene_ShouldReturnObjectColorMixedWithBackgroundColor_IfObjectHitOnce(t *testing.T) {
+	background := background.NewFlatColor(anyBackgroundColor)
+	scene := render.NewScene(background)
+	sphere := objects.NewSphere(core.NewVec3(0, 0, 0), 1)
+	material := materials.NewDiffusive(anyObjectColor, random.NewRandomGenerator())
+	scene.Add(sphere, material)
+	ray := core.NewRay(core.NewVec3(2, 0, 0), core.NewVec3(-1, 0, 0))
+
+	rayColor := scene.TestRay(ray)
+
+	assert.Equal(t, material.Color().MulColor(background.Color()), rayColor)
+}
+
+func TestScene_ShouldHitClosestObject(t *testing.T) {
+	background := background.NewFlatColor(anyBackgroundColor)
+	scene := render.NewScene(background)
+	sphere1 := objects.NewSphere(core.NewVec3(0, 0, 0), 1)
+	material1 := materials.NewDiffusive(anyObjectColor, random.NewRandomGenerator())
+	scene.Add(sphere1, material1)
+	sphere2 := objects.NewSphere(core.NewVec3(-10, 0, 0), 1)
+	material2 := materials.NewDiffusive(anyOtherObjectColor, random.NewRandomGenerator())
+	ray := core.NewRay(core.NewVec3(2, 0, 0), core.NewVec3(-1, 0, 0))
+	scene.Add(sphere2, material2)
+
+	rayColor := scene.TestRay(ray)
+
+	assert.Equal(t, material1.Color().MulColor(background.Color()), rayColor)
 }
 
 func TestScene_HitClosetObject(t *testing.T) {
-	leftSphere := objects.Sphere{core.NewVec3(-6.0, 0.0, 0.0), 2.0}
-	rightSphere := objects.Sphere{core.NewVec3(0.0, 0.0, 0.0), 2.0}
+	leftSphere := objects.NewSphere(core.NewVec3(-6.0, 0.0, 0.0), 2)
+	rightSphere := objects.NewSphere(core.NewVec3(0.0, 0.0, 0.0), 2)
 	randomizer := random.NewFakeRandomGenerator()
 	material := materials.NewDiffusive(color.Black, randomizer)
 	t.Logf("Given a scene with two spheres %v and %v,\n", leftSphere, rightSphere)
@@ -35,7 +71,8 @@ func TestScene_HitClosetObject(t *testing.T) {
 
 	hitRay := core.NewRay(core.NewVec3(4.0, 0.0, 0.0), core.NewVec3(-1.0, 0.0, 0.0))
 	t.Logf("  a ray with origin %v and direction %v should hit the right sphere:\n", hitRay.Origin(), hitRay.Direction())
-	hitRecord, objectIndex := scene.HitClosestObject(hitRay, 0.001)
+	scene.SetMinRayHitParameter(0.001)
+	hitRecord, objectIndex := scene.HitClosestObject(hitRay)
 
 	// expectedHit := objects.HitRecord{Param: 2.0, Point: core.NewVec3(2.0, 0.0, 0.0), Normal: core.NewVec3(1.0, 0.0, 0.0)}
 	expectedHit := objects.HitRecord{Point: core.NewVec3(2.0, 0.0, 0.0), Normal: core.NewVec3(1.0, 0.0, 0.0)}
@@ -43,7 +80,8 @@ func TestScene_HitClosetObject(t *testing.T) {
 	assert.Equal(t, 1, objectIndex)
 
 	t.Logf("  a ray with origin %v, direction %v and minimum parameter 7.0 should hit the left sphere:\n", hitRay.Origin(), hitRay.Direction())
-	hitRecord, objectIndex = scene.HitClosestObject(hitRay, 7.0)
+	scene.SetMinRayHitParameter(7.0)
+	hitRecord, objectIndex = scene.HitClosestObject(hitRay)
 
 	expectedHit = objects.HitRecord{Point: core.NewVec3(-4.0, 0.0, 0.0), Normal: core.NewVec3(1.0, 0.0, 0.0)}
 	// expectedHit = objects.HitRecord{Param: 8.0, Point: core.NewVec3(-4.0, 0.0, 0.0), Normal: core.NewVec3(1.0, 0.0, 0.0)}
@@ -55,7 +93,7 @@ func TestScene_TestRay_SingleSphere(t *testing.T) {
 	t.Log("Given a scene with a blue sphere and a white skybox,")
 	skyColor := color.White
 	scene := render.NewScene(background.NewFlatColor(skyColor))
-	sphere := objects.Sphere{core.NewVec3(0.0, 0.0, 0.0), 1.0}
+	sphere := objects.NewSphere(core.NewVec3(0.0, 0.0, 0.0), 1)
 	sphereColor := color.Blue
 	randomizer := random.NewFakeRandomGenerator()
 	material := materials.NewDiffusive(sphereColor, randomizer)
@@ -80,8 +118,8 @@ func TestScene_NumberOfReflectionsExceeded(t *testing.T) {
 	skyColor := color.White
 	scene := render.NewScene(background.NewFlatColor(skyColor))
 	t.Log("two red spheres,")
-	sphereA := objects.Sphere{core.NewVec3(0.0, 0.0, 0.0), 1.0}
-	sphereB := objects.Sphere{core.NewVec3(4.0, 0.0, 0.0), 1.0}
+	sphereA := objects.NewSphere(core.NewVec3(0.0, 0.0, 0.0), 1)
+	sphereB := objects.NewSphere(core.NewVec3(4.0, 0.0, 0.0), 1)
 	randomizer := random.NewFakeRandomGenerator()
 	material := materials.NewDiffusive(color.Red, randomizer)
 	scene.Add(sphereA, material)
@@ -102,8 +140,8 @@ func TestScene_TwoReflections(t *testing.T) {
 	skyColor := color.White
 	scene := render.NewScene(background.NewFlatColor(skyColor))
 
-	sphereA := objects.Sphere{core.NewVec3(0.0, 0.0, 0.0), 1.0}
-	sphereB := objects.Sphere{core.NewVec3(4.0, 3.0, 0.0), 1.0}
+	sphereA := objects.NewSphere(core.NewVec3(0.0, 0.0, 0.0), 1)
+	sphereB := objects.NewSphere(core.NewVec3(4.0, 3.0, 0.0), 1)
 	sphereColor := color.New(0.2, 0.4, 0.6)
 	randomizer := random.NewFakeRandomGenerator()
 	material := materials.NewDiffusive(sphereColor, randomizer)

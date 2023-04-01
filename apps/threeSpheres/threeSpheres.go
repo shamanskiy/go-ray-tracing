@@ -19,28 +19,25 @@ import (
 var randomizer = random.NewRandomGenerator()
 
 func makeScene() *render.Scene {
-	background := background.VerticalGradient{
-		BottomColor: color.White,
-		TopColor:    color.SkyBlue,
-	}
+	background := background.NewVerticalGradient(color.White, color.SkyBlue)
 	scene := render.NewScene(background)
 
 	// matt green ball
-	scene.Add(objects.Sphere{Center: core.NewVec3(0, 0, -1), Radius: 0.5},
+	scene.Add(objects.NewSphere(core.NewVec3(0, 0, -1), 0.5),
 		materials.NewDiffusive(color.Red, randomizer))
 
 	// mirrow ball
-	scene.Add(objects.Sphere{Center: core.NewVec3(1, 0, -1), Radius: 0.5},
+	scene.Add(objects.NewSphere(core.NewVec3(1, 0, -1), 0.5),
 		materials.NewReflectiveFuzzy(color.Golden, 0.1, randomizer))
 
 	// glass shell
-	scene.Add(objects.Sphere{Center: core.NewVec3(-1, 0, -1), Radius: 0.5},
+	scene.Add(objects.NewSphere(core.NewVec3(-1, 0, -1), 0.5),
 		materials.NewTransparent(1.5, color.White, randomizer))
-	scene.Add(objects.Sphere{Center: core.NewVec3(-1, 0, -1), Radius: -0.4},
+	scene.Add(objects.NewSphere(core.NewVec3(-1, 0, -1), -0.4),
 		materials.NewTransparent(1.5, color.White, randomizer))
 
 	// Huge sphere = floor
-	scene.Add(objects.Sphere{Center: core.NewVec3(0, -100.5, -1), Radius: 100},
+	scene.Add(objects.NewSphere(core.NewVec3(0, -100.5, -1), 100),
 		materials.NewDiffusive(color.GrayMedium, randomizer))
 
 	return scene

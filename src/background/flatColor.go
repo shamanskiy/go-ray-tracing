@@ -18,3 +18,7 @@ func NewFlatColor(color color.Color) FlatColor {
 func (c FlatColor) ColorRay(ray core.Ray) color.Color {
 	return c.color
 }
+
+func (c FlatColor) Color() color.Color {
+	return c.color
+}

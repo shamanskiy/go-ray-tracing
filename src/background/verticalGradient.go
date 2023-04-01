@@ -10,8 +10,15 @@ import (
 )
 
 type VerticalGradient struct {
-	TopColor    color.Color
-	BottomColor color.Color
+	topColor    color.Color
+	bottomColor color.Color
+}
+
+func NewVerticalGradient(bottomColor, topColor color.Color) VerticalGradient {
+	return VerticalGradient{
+		topColor:    topColor,
+		bottomColor: bottomColor,
+	}
 }
 
 func (g VerticalGradient) ColorRay(ray core.Ray) color.Color {
@@ -23,5 +30,13 @@ func (g VerticalGradient) ColorRay(ray core.Ray) color.Color {
 
 	t := 0.5 * (normalizedDirection.Y() + 1.0)
 
-	return color.Interpolate(g.BottomColor, g.TopColor, t)
+	return color.Interpolate(g.bottomColor, g.topColor, t)
+}
+
+func (g VerticalGradient) BottomColor() color.Color {
+	return g.bottomColor
+}
+
+func (g VerticalGradient) TopColor() color.Color {
+	return g.topColor
 }
