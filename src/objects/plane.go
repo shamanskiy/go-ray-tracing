@@ -17,6 +17,10 @@ func NewPlane(origin, normal core.Vec3) Plane {
 	}
 }
 
+func (p Plane) Normal() core.Vec3 {
+	return p.normal
+}
+
 // R = A + Bt
 // Plane: dot(X-Origin, N) = 0
 // t = dot(Origin-A,N) / dot(B,N)
@@ -35,8 +39,16 @@ func (p Plane) TestRay(ray core.Ray) (hitParams []core.Real) {
 }
 
 func (p Plane) EvaluateHit(ray core.Ray, hitParam core.Real) HitRecord {
+	positiveSide := ray.Direction().Dot(p.normal) < 0
+	var normal core.Vec3
+	if positiveSide {
+		normal = p.normal
+	} else {
+		normal = p.normal.Mul(-1)
+	}
+
 	return HitRecord{
 		Point:  ray.Eval(hitParam),
-		Normal: p.normal,
+		Normal: normal,
 	}
 }
