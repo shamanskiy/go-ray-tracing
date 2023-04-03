@@ -30,9 +30,7 @@ func (s Sphere) TestRay(ray core.Ray) []core.Real {
 	}
 
 	solutions := []core.Real{solution.Left, solution.Right}
-	return slices.Filter(solutions, func(value core.Real) bool {
-		return value >= 0
-	})
+	return slices.Filter(solutions, slices.GreaterOrEqualThan(core.Real(0.)))
 }
 
 func (s Sphere) EvaluateHit(ray core.Ray, hitParam core.Real) HitRecord {

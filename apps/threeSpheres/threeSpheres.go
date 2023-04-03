@@ -36,10 +36,9 @@ func makeScene() *render.Scene {
 	scene.Add(objects.NewSphere(core.NewVec3(-1, 0, -1), -0.4),
 		materials.NewTransparent(1.5, color.White, randomizer))
 
-	// Huge sphere = floor
-	scene.Add(objects.NewSphere(core.NewVec3(0, -100.5, -1), 100),
+	// floor
+	scene.Add(objects.NewPlane(core.NewVec3(0, -0.5, 0), core.NewVec3(0, 1, 0)),
 		materials.NewDiffusive(color.GrayMedium, randomizer))
-
 	return scene
 }
 
