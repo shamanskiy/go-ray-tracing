@@ -1,43 +1,14 @@
 package camera
 
 import (
-	"image"
-
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
+	"github.com/Shamanskiy/go-ray-tracer/src/render/image"
 	"github.com/Shamanskiy/go-ray-tracer/src/render/log"
 	"github.com/Shamanskiy/go-ray-tracer/src/render/scene"
 	"github.com/chewxy/math32"
 )
-
-type CameraSettings struct {
-	VerticalFOV      core.Real
-	AspectRatio      core.Real
-	ImagePixelHeight int
-
-	LookFrom core.Vec3
-	LookAt   core.Vec3
-	GlobalUp core.Vec3
-
-	Antialiasing int
-
-	ProgressChan chan<- int
-
-	//float lensRadius{0.0};
-}
-
-func DefaultCameraSettings() CameraSettings {
-	return CameraSettings{
-		VerticalFOV:      90,
-		AspectRatio:      2.,
-		ImagePixelHeight: 360,
-		LookFrom:         core.NewVec3(0., 0., 0.),
-		LookAt:           core.NewVec3(0., 0., -1.),
-		GlobalUp:         core.NewVec3(0., 1., 0.),
-		Antialiasing:     4,
-	}
-}
 
 type Camera struct {
 	Origin          core.Vec3
@@ -83,13 +54,6 @@ func NewCamera(settings *CameraSettings, randomizer random.RandomGenerator) *Cam
 	return &camera
 }
 
-func (c *Camera) createImage() *image.RGBA {
-	upLeft := image.Point{0, 0}
-	lowRight := image.Point{c.PixelWidth, c.PixelHeight}
-
-	return image.NewRGBA(image.Rectangle{upLeft, lowRight})
-}
-
 func (c *Camera) IndexToU(index int) core.Real {
 	return (core.Real(index) + c.randomizer.Real()) / core.Real(c.PixelWidth)
 }
@@ -98,9 +62,9 @@ func (c *Camera) IndexToV(index int) core.Real {
 	return (core.Real(index) + c.randomizer.Real()) / core.Real(c.PixelHeight)
 }
 
-func (c *Camera) Render(scene scene.Scene) *image.RGBA {
+func (c *Camera) Render(scene scene.Scene) *image.Image {
 	defer log.TimeExecution("rendering")()
-	img := c.createImage()
+	img := image.NewImage(c.PixelWidth, c.PixelHeight)
 
 	for x := 0; x < c.PixelWidth; x++ {
 		c.reportProgress(x+1, c.PixelWidth)
@@ -115,7 +79,7 @@ func (c *Camera) Render(scene scene.Scene) *image.RGBA {
 				pixelColor = pixelColor.Add(rayColor)
 			}
 			pixelColor = pixelColor.Div(core.Real(c.sampling))
-			img.Set(x, y, pixelColor.ToRGBA())
+			img.SetPixelColor(x, y, pixelColor)
 		}
 	}
 

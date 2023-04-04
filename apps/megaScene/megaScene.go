@@ -4,8 +4,6 @@
 package main
 
 import (
-	"image"
-	"image/png"
 	"os"
 
 	"github.com/Shamanskiy/go-ray-tracer/src/background"
@@ -15,6 +13,7 @@ import (
 	"github.com/Shamanskiy/go-ray-tracer/src/geometries"
 	"github.com/Shamanskiy/go-ray-tracer/src/materials"
 	"github.com/Shamanskiy/go-ray-tracer/src/render/camera"
+	"github.com/Shamanskiy/go-ray-tracer/src/render/image"
 	"github.com/Shamanskiy/go-ray-tracer/src/render/log"
 	"github.com/Shamanskiy/go-ray-tracer/src/render/scene"
 )
@@ -58,7 +57,7 @@ func makeScene() scene.Scene {
 	scene := scene.New(background)
 
 	// Huge sphere = floor
-	scene.Add(geometries.NewSphere(core.NewVec3(0.0, -1000., 0.0), 1000),
+	scene.Add(geometries.NewPlane(core.NewVec3(0, 0, 0), core.NewVec3(0, 1, 0)),
 		materials.NewDiffusive(color.GrayMedium, randomizer))
 
 	// Three main spheres
@@ -75,8 +74,8 @@ func makeScene() scene.Scene {
 	for i := -gridSize; i < gridSize; i++ {
 		for j := -gridSize; j < gridSize; j++ {
 			sphere := genRandomSmallSphere(i, j)
-			if tooCloseToBigSpheres(sphere, bigSpheres) {
-				continue
+			for tooCloseToBigSpheres(sphere, bigSpheres) {
+				sphere = genRandomSmallSphere(i, j)
 			}
 
 			material := genRandomMaterial()
@@ -102,16 +101,15 @@ func makeCamera() *camera.Camera {
 	return camera
 }
 
-func saveImage(img *image.RGBA, filename string) {
-	defer log.TimeExecution("save image")()
-	f, _ := os.Create(filename)
-	defer f.Close()
-	png.Encode(f, img)
+func saveImage(image *image.Image, filename string) {
+	file, _ := os.Create(filename)
+	defer file.Close()
+	image.SaveAsPNG(file)
 }
 
 func main() {
 	scene := makeScene()
 	camera := makeCamera()
-	img := camera.Render(scene)
-	saveImage(img, "megaScene.png")
+	image := camera.Render(scene)
+	saveImage(image, "megaScene.png")
 }

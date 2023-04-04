@@ -1,0 +1,51 @@
+package image
+
+import (
+	"fmt"
+	"image"
+	"image/png"
+	"io"
+
+	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
+	"github.com/Shamanskiy/go-ray-tracer/src/render/log"
+)
+
+type Image struct {
+	pixels [][]color.Color
+}
+
+func NewImage(width, height int) *Image {
+	if width <= 0 || height <= 0 {
+		panic(fmt.Errorf("new image: invalid size:  width %d, height %d", width, height))
+	}
+
+	pixels := make([][]color.Color, width)
+	for column := range pixels {
+		pixels[column] = make([]color.Color, height)
+	}
+	return &Image{pixels: pixels}
+}
+
+func (i *Image) SetPixelColor(x, y int, color color.Color) {
+	i.pixels[x][y] = color
+}
+
+func (i *Image) PixelColor(x, y int) color.Color {
+	return i.pixels[x][y]
+}
+
+func (i *Image) SaveAsPNG(writer io.Writer) {
+	defer log.TimeExecution("save image")()
+
+	upLeft := image.Point{0, 0}
+	lowRight := image.Point{len(i.pixels), len(i.pixels[0])}
+	rgbaImage := image.NewRGBA(image.Rectangle{upLeft, lowRight})
+
+	for x, column := range i.pixels {
+		for y := range column {
+			rgbaImage.Set(x, y, i.PixelColor(x, y).ToRGBA())
+		}
+	}
+
+	png.Encode(writer, rgbaImage)
+}
