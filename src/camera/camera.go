@@ -68,7 +68,6 @@ func (c *Camera) Render(scene scene.Scene) *image.Image {
 
 	for x := 0; x < c.PixelWidth; x++ {
 		c.reportProgress(x+1, c.PixelWidth)
-
 		for y := 0; y < c.PixelHeight; y++ {
 			var pixelColor color.Color
 			for s := 0; s < c.sampling; s++ {

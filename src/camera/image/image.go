@@ -27,18 +27,14 @@ func (i *Image) SetPixelColor(x, y int, color color.Color) {
 	i.pixels[x][y] = color
 }
 
-func (i *Image) PixelColor(x, y int) color.Color {
-	return i.pixels[x][y]
-}
-
 func (i *Image) ConvertToRGBA() *image.RGBA {
 	upLeft := image.Point{0, 0}
 	lowRight := image.Point{len(i.pixels), len(i.pixels[0])}
 	rgbaImage := image.NewRGBA(image.Rectangle{upLeft, lowRight})
 
 	for x, column := range i.pixels {
-		for y := range column {
-			rgbaImage.Set(x, y, i.PixelColor(x, y).ToRGBA())
+		for y, color := range column {
+			rgbaImage.Set(x, y, color.ToRGBA())
 		}
 	}
 

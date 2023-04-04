@@ -1,6 +1,7 @@
 package image_test
 
 import (
+	rgba "image/color"
 	"testing"
 
 	"github.com/Shamanskiy/go-ray-tracer/src/camera/image"
@@ -9,15 +10,19 @@ import (
 )
 
 const (
-	IMAGE_WIDTH  = 5
-	IMAGE_HEIGHT = 4
+	IMAGE_WIDTH  = 2
+	IMAGE_HEIGHT = 1
 )
 
-func TestImage_ShouldSetPixelColor(t *testing.T) {
+func TestImage_ShouldConvertToRGBA(t *testing.T) {
 	image := image.NewImage(IMAGE_WIDTH, IMAGE_HEIGHT)
-	pixelColor := color.Red
+	image.SetPixelColor(0, 0, color.Red)
+	image.SetPixelColor(1, 0, color.Blue)
 
-	image.SetPixelColor(4, 3, pixelColor)
+	rgbaImage := image.ConvertToRGBA()
 
-	assert.Equal(t, pixelColor, image.PixelColor(4, 3))
+	assert.Equal(t, IMAGE_WIDTH, rgbaImage.Bounds().Max.X)
+	assert.Equal(t, IMAGE_HEIGHT, rgbaImage.Bounds().Max.Y)
+	assert.Equal(t, rgba.RGBA{255, 0, 0, 255}, rgba.Black, rgbaImage.At(0, 0))
+	assert.Equal(t, rgba.RGBA{0, 0, 255, 255}, rgbaImage.At(1, 0))
 }
