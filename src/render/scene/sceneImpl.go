@@ -1,4 +1,4 @@
-package render
+package scene
 
 import (
 	"github.com/Shamanskiy/go-ray-tracer/src/background"
@@ -15,7 +15,7 @@ const (
 	DEFAULT_MAX_RAY_REFLECTIONS int       = 10
 )
 
-type Scene struct {
+type SceneImpl struct {
 	objects    []geometries.Geometry
 	materials  []materials.Material
 	background background.Background
@@ -24,8 +24,8 @@ type Scene struct {
 	maxRayReflections int       // prevents infinite ray bouncing between parallel walls
 }
 
-func NewScene(background background.Background, settings ...SceneSetting) *Scene {
-	scene := &Scene{
+func New(background background.Background, settings ...SceneImplSetting) *SceneImpl {
+	scene := &SceneImpl{
 		background:        background,
 		minHitParam:       DEFAULT_MIN_HIT_PARAM,
 		maxRayReflections: DEFAULT_MAX_RAY_REFLECTIONS,
@@ -38,16 +38,16 @@ func NewScene(background background.Background, settings ...SceneSetting) *Scene
 	return scene
 }
 
-func (s *Scene) Add(object geometries.Geometry, material materials.Material) {
+func (s *SceneImpl) Add(object geometries.Geometry, material materials.Material) {
 	s.objects = append(s.objects, object)
 	s.materials = append(s.materials, material)
 }
 
-func (s *Scene) TestRay(ray core.Ray) color.Color {
+func (s *SceneImpl) TestRay(ray core.Ray) color.Color {
 	return s.testRay(ray, 0)
 }
 
-func (s *Scene) testRay(ray core.Ray, reflectionDepth int) color.Color {
+func (s *SceneImpl) testRay(ray core.Ray, reflectionDepth int) color.Color {
 	objectHit := s.hitClosestObject(ray)
 	if objectHit.noHit() {
 		return s.background.ColorRay(ray)
@@ -75,7 +75,7 @@ func (hit objectHit) noHit() bool {
 	return hit.location == nil
 }
 
-func (s *Scene) hitClosestObject(ray core.Ray) objectHit {
+func (s *SceneImpl) hitClosestObject(ray core.Ray) objectHit {
 	closestHit := core.Inf()
 	var objectIndex int
 

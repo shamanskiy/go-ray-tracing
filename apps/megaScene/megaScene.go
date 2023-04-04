@@ -14,7 +14,9 @@ import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
 	"github.com/Shamanskiy/go-ray-tracer/src/geometries"
 	"github.com/Shamanskiy/go-ray-tracer/src/materials"
-	"github.com/Shamanskiy/go-ray-tracer/src/render"
+	"github.com/Shamanskiy/go-ray-tracer/src/render/camera"
+	"github.com/Shamanskiy/go-ray-tracer/src/render/log"
+	"github.com/Shamanskiy/go-ray-tracer/src/render/scene"
 )
 
 var randomizer = random.NewRandomGenerator()
@@ -51,9 +53,9 @@ func genRandomMaterial() materials.Material {
 	}
 }
 
-func makeScene() *render.Scene {
+func makeScene() scene.Scene {
 	background := background.NewVerticalGradient(color.White, color.SkyBlue)
-	scene := render.NewScene(background)
+	scene := scene.New(background)
 
 	// Huge sphere = floor
 	scene.Add(geometries.NewSphere(core.NewVec3(0.0, -1000., 0.0), 1000),
@@ -85,21 +87,23 @@ func makeScene() *render.Scene {
 	return scene
 }
 
-func makeCamera() *render.Camera {
-	settings := render.DefaultCameraSettings()
+func makeCamera() *camera.Camera {
+	settings := camera.DefaultCameraSettings()
 	settings.AspectRatio = 16. / 9.
 	settings.ImagePixelHeight = 300
 	settings.Antialiasing = 10
 	settings.LookFrom = core.NewVec3(3.5, 1.35, 1.9)
 	settings.LookAt = core.NewVec3(3., 1.25, 1.5)
 	settings.VerticalFOV = 75
+	settings.ProgressChan = log.ProgressBar(100, "rendering")
 
-	camera := render.NewCamera(&settings, randomizer)
+	camera := camera.NewCamera(&settings, randomizer)
 
 	return camera
 }
 
 func saveImage(img *image.RGBA, filename string) {
+	defer log.TimeExecution("save image")()
 	f, _ := os.Create(filename)
 	defer f.Close()
 	png.Encode(f, img)

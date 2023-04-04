@@ -1,15 +1,14 @@
-package render
+package camera
 
 import (
 	"image"
-	"log"
-	"time"
 
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
+	"github.com/Shamanskiy/go-ray-tracer/src/render/log"
+	"github.com/Shamanskiy/go-ray-tracer/src/render/scene"
 	"github.com/chewxy/math32"
-	"github.com/schollz/progressbar/v3"
 )
 
 type CameraSettings struct {
@@ -21,8 +20,9 @@ type CameraSettings struct {
 	LookAt   core.Vec3
 	GlobalUp core.Vec3
 
-	Antialiasing      int
-	MaxRayReflections int
+	Antialiasing int
+
+	ProgressChan chan<- int
 
 	//float lensRadius{0.0};
 }
@@ -49,7 +49,8 @@ type Camera struct {
 	PixelHeight int
 	sampling    int
 
-	randomizer random.RandomGenerator
+	randomizer   random.RandomGenerator
+	progressChan chan<- int
 }
 
 func NewCamera(settings *CameraSettings, randomizer random.RandomGenerator) *Camera {
@@ -77,6 +78,8 @@ func NewCamera(settings *CameraSettings, randomizer random.RandomGenerator) *Cam
 	originToCorner := up.Mul(halfHeight).Sub(right.Mul(halfWidth)).Sub(back).Mul(focusDistance)
 	camera.upperLeftCorner = camera.Origin.Add(originToCorner)
 
+	camera.progressChan = settings.ProgressChan
+
 	return &camera
 }
 
@@ -87,10 +90,6 @@ func (c *Camera) createImage() *image.RGBA {
 	return image.NewRGBA(image.Rectangle{upLeft, lowRight})
 }
 
-func (c *Camera) createProgressBar() *progressbar.ProgressBar {
-	return progressbar.Default(int64(c.PixelWidth), "rendering")
-}
-
 func (c *Camera) IndexToU(index int) core.Real {
 	return (core.Real(index) + c.randomizer.Real()) / core.Real(c.PixelWidth)
 }
@@ -99,13 +98,13 @@ func (c *Camera) IndexToV(index int) core.Real {
 	return (core.Real(index) + c.randomizer.Real()) / core.Real(c.PixelHeight)
 }
 
-func (c *Camera) Render(scene *Scene) *image.RGBA {
+func (c *Camera) Render(scene scene.Scene) *image.RGBA {
+	defer log.TimeExecution("rendering")()
 	img := c.createImage()
-	bar := c.createProgressBar()
 
-	start := time.Now()
 	for x := 0; x < c.PixelWidth; x++ {
-		bar.Add(1)
+		c.reportProgress(x+1, c.PixelWidth)
+
 		for y := 0; y < c.PixelHeight; y++ {
 			var pixelColor color.Color
 			for s := 0; s < c.sampling; s++ {
@@ -119,8 +118,6 @@ func (c *Camera) Render(scene *Scene) *image.RGBA {
 			img.Set(x, y, pixelColor.ToRGBA())
 		}
 	}
-	elapsed := time.Since(start)
-	log.Printf("Rendering took %s", elapsed)
 
 	return img
 }
@@ -130,4 +127,17 @@ func (c *Camera) GetRay(u, v core.Real) core.Ray {
 	ray := core.NewRay(c.Origin, rayDirection)
 
 	return ray
+}
+
+func (c *Camera) reportProgress(currentColumn, imageWith int) {
+	if c.progressChan == nil {
+		return
+	}
+
+	progress := int(float64(currentColumn) / float64(imageWith) * 100)
+	c.progressChan <- progress
+
+	if currentColumn == imageWith {
+		close(c.progressChan)
+	}
 }

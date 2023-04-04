@@ -1,4 +1,4 @@
-package render
+package scene_test
 
 import (
 	"testing"
@@ -9,7 +9,7 @@ import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
 	"github.com/Shamanskiy/go-ray-tracer/src/geometries"
 	"github.com/Shamanskiy/go-ray-tracer/src/materials"
-	"github.com/Shamanskiy/go-ray-tracer/src/render"
+	"github.com/Shamanskiy/go-ray-tracer/src/render/scene"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -21,7 +21,7 @@ var BACKGROUND_COLOR = color.Blue
 var randomizer = random.NewRandomGenerator()
 
 func TestScene_ShouldReturnBackgroundColor_IfSceneEmpty(t *testing.T) {
-	scene := render.NewScene(flatBackground())
+	scene := scene.New(flatBackground())
 	ray := core.NewRay(anyPoint, anyDirection)
 
 	rayColor := scene.TestRay(ray)
@@ -30,7 +30,7 @@ func TestScene_ShouldReturnBackgroundColor_IfSceneEmpty(t *testing.T) {
 }
 
 func TestScene_ShouldReturnObjectColorMixedWithBackgroundColor_IfObjectHitOnce(t *testing.T) {
-	scene := render.NewScene(flatBackground())
+	scene := scene.New(flatBackground())
 	scene = addUnitSphere(scene, OBJECT_COLOR)
 	ray := core.NewRay(core.NewVec3(2, 0, 0), core.NewVec3(-1, 0, 0))
 
@@ -41,7 +41,7 @@ func TestScene_ShouldReturnObjectColorMixedWithBackgroundColor_IfObjectHitOnce(t
 }
 
 func TestScene_ShouldHitClosestObject(t *testing.T) {
-	scene := render.NewScene(flatBackground())
+	scene := scene.New(flatBackground())
 	scene = addUnitSphere(scene, OBJECT_COLOR)
 	scene = addUnitSphere(scene, OTHER_OBJECT_COLOR, core.NewVec3(-10, 0, 0))
 	ray := core.NewRay(core.NewVec3(2, 0, 0), core.NewVec3(-1, 0, 0))
@@ -52,7 +52,7 @@ func TestScene_ShouldHitClosestObject(t *testing.T) {
 }
 
 func TestScene_ShouldReflectOfFirstObjectAndHitSecondObject(t *testing.T) {
-	scene := render.NewScene(flatBackground())
+	scene := scene.New(flatBackground())
 	scene = addReflectiveXYAngle(scene)
 	ray := core.NewRay(core.NewVec3(2, 1, 0), core.NewVec3(-1, -1, 0))
 
@@ -63,7 +63,7 @@ func TestScene_ShouldReflectOfFirstObjectAndHitSecondObject(t *testing.T) {
 }
 
 func TestScene_ShouldHitOnlySecondPlane_BecauseOfMiniminHitRayParameter(t *testing.T) {
-	scene := render.NewScene(flatBackground(), render.MinRayHitParameter(2))
+	scene := scene.New(flatBackground(), scene.MinRayHitParameter(2))
 	scene = addReflectiveXYAngle(scene)
 	ray := core.NewRay(core.NewVec3(2, 1, 0), core.NewVec3(-1, -1, 0))
 
@@ -74,7 +74,7 @@ func TestScene_ShouldHitOnlySecondPlane_BecauseOfMiniminHitRayParameter(t *testi
 }
 
 func TestScene_ShouldColorRayBlack_IfMaxNumberOfReflectionsExceeded(t *testing.T) {
-	scene := render.NewScene(flatBackground(), render.MaxRayReflections(1))
+	scene := scene.New(flatBackground(), scene.MaxRayReflections(1))
 	scene = addReflectiveXYAngle(scene)
 	ray := core.NewRay(core.NewVec3(2, 1, 0), core.NewVec3(-1, -1, 0))
 
@@ -88,7 +88,7 @@ func flatBackground() background.Background {
 	return background.NewFlatColor(BACKGROUND_COLOR)
 }
 
-func addReflectiveXYAngle(scene *render.Scene) *render.Scene {
+func addReflectiveXYAngle(scene *scene.SceneImpl) *scene.SceneImpl {
 	plane1 := geometries.NewPlane(core.NewVec3(0, 0, 0), core.NewVec3(0, 1, 0))
 	material1 := materials.NewReflective(OBJECT_COLOR, randomizer)
 	scene.Add(plane1, material1)
@@ -98,7 +98,7 @@ func addReflectiveXYAngle(scene *render.Scene) *render.Scene {
 	return scene
 }
 
-func addUnitSphere(scene *render.Scene, materialColor color.Color, translation ...core.Vec3) *render.Scene {
+func addUnitSphere(scene *scene.SceneImpl, materialColor color.Color, translation ...core.Vec3) *scene.SceneImpl {
 	center := core.NewVec3(0, 0, 0)
 	for _, vec := range translation {
 		center = center.Add(vec)

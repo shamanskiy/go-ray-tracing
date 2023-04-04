@@ -1,4 +1,4 @@
-package render
+package camera_test
 
 import (
 	rgba "image/color"
@@ -8,17 +8,18 @@ import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
-	"github.com/Shamanskiy/go-ray-tracer/src/render"
+	"github.com/Shamanskiy/go-ray-tracer/src/render/camera"
+	"github.com/Shamanskiy/go-ray-tracer/src/render/scene"
 	"github.com/Shamanskiy/go-ray-tracer/test"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestCamera_Default(t *testing.T) {
 	t.Log("Default camera without randomness")
-	settings := render.DefaultCameraSettings()
+	settings := camera.DefaultCameraSettings()
 	randomizer := random.NewFakeRandomGenerator()
 
-	camera := render.NewCamera(&settings, randomizer)
+	camera := camera.NewCamera(&settings, randomizer)
 
 	assert.Equal(t, settings.LookFrom, camera.Origin)
 
@@ -41,12 +42,12 @@ func TestCamera_Default(t *testing.T) {
 
 func TestCamera_Custom(t *testing.T) {
 	t.Log("Camera with custom settings without randomness")
-	settings := render.DefaultCameraSettings()
+	settings := camera.DefaultCameraSettings()
 	settings.LookAt = core.NewVec3(3, 0, 4)
 	settings.AspectRatio = 1
 	randomizer := random.NewFakeRandomGenerator()
 
-	camera := render.NewCamera(&settings, randomizer)
+	camera := camera.NewCamera(&settings, randomizer)
 
 	test.AssertInDeltaVec3(t, settings.LookFrom, camera.Origin, core.Tolerance)
 
@@ -63,12 +64,12 @@ func TestCamera_Custom(t *testing.T) {
 
 func TestCamera_indexToU(t *testing.T) {
 	t.Log("Camera with 100 px height and 1:1 aspect ratio")
-	settings := render.DefaultCameraSettings()
+	settings := camera.DefaultCameraSettings()
 	settings.ImagePixelHeight = 100
 	settings.AspectRatio = 2.0
 	randomizer := random.NewFakeRandomGenerator()
 
-	camera := render.NewCamera(&settings, randomizer)
+	camera := camera.NewCamera(&settings, randomizer)
 
 	assert.Equal(t, 100, camera.PixelHeight)
 	assert.Equal(t, 200, camera.PixelWidth)
@@ -84,16 +85,16 @@ func TestCamera_indexToU(t *testing.T) {
 
 func TestCamera_RenderEmptyScene(t *testing.T) {
 	t.Log("Given an empty scene with white background")
-	scene := render.NewScene(background.NewFlatColor(color.White))
+	scene := scene.New(background.NewFlatColor(color.White))
 
 	imageSize := 2
 	t.Logf("and a camera with %vx%v resolution,\n", imageSize, imageSize)
-	settings := render.DefaultCameraSettings()
+	settings := camera.DefaultCameraSettings()
 	settings.ImagePixelHeight = imageSize
 	settings.AspectRatio = 1
 	settings.Antialiasing = 1
 	randomizer := random.NewFakeRandomGenerator()
-	camera := render.NewCamera(&settings, randomizer)
+	camera := camera.NewCamera(&settings, randomizer)
 
 	t.Logf("  the rendered image should be a %vx%v white square:\n", imageSize, imageSize)
 	renderedImage := camera.Render(scene)
