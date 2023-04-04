@@ -3,6 +3,7 @@ package objects
 import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/slices"
+	"github.com/Shamanskiy/go-ray-tracer/src/core/slices/filters"
 )
 
 type Plane struct {
@@ -33,7 +34,7 @@ func (p Plane) TestRay(ray core.Ray) (hitParams []core.Real) {
 	rayPlaneDistance := p.origin.Sub(ray.Origin()).Dot(p.normal)
 	t := []core.Real{rayPlaneDistance / dotBN}
 
-	return slices.Filter(t, slices.GreaterOrEqualThan(core.Real(0.)))
+	return slices.Filter(t, filters.GreaterOrEqualThan(core.Real(0.)))
 }
 
 func (p Plane) EvaluateHit(ray core.Ray, hitParam core.Real) HitRecord {

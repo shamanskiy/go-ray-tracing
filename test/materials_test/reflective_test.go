@@ -16,8 +16,8 @@ func TestReflective_ShouldReflectRayAroundNormal_WhenNotFuzzy(t *testing.T) {
 	reflection := material.Reflect(incidentDirection, hitPoint, normalAtHitPointUp)
 
 	expected := materials.Reflection{
-		Ray:         core.NewRay(hitPoint, core.NewVec3(4, 3, 0).Normalize()),
-		Attenuation: material.Color(),
+		Ray:   core.NewRay(hitPoint, core.NewVec3(4, 3, 0).Normalize()),
+		Color: material.Color(),
 	}
 	assert.Equal(t, expected, *reflection)
 }

@@ -6,8 +6,8 @@ import (
 )
 
 type Reflection struct {
-	Ray         core.Ray
-	Attenuation color.Color
+	Ray   core.Ray
+	Color color.Color
 }
 
 type Material interface {

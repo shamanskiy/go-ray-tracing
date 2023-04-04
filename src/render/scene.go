@@ -7,6 +7,7 @@ import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/slices"
+	"github.com/Shamanskiy/go-ray-tracer/src/core/slices/filters"
 	"github.com/Shamanskiy/go-ray-tracer/src/materials"
 	"github.com/Shamanskiy/go-ray-tracer/src/objects"
 )
@@ -84,7 +85,7 @@ func (s *Scene) testRay(ray core.Ray, depth int) color.Color {
 	}
 
 	reflectedRayColor := s.testRay(reflection.Ray, depth+1)
-	return reflectedRayColor.MulColor(reflection.Attenuation)
+	return reflectedRayColor.MulColor(reflection.Color)
 }
 
 func (s *Scene) hitClosestObject(ray core.Ray) (hit *objects.HitRecord, objectIndex int) {
@@ -92,7 +93,7 @@ func (s *Scene) hitClosestObject(ray core.Ray) (hit *objects.HitRecord, objectIn
 
 	for currentObjectIndex := range s.objects {
 		hits := s.objects[currentObjectIndex].TestRay(ray)
-		firstHit := slices.FindFirstLargerOrEqualThan(hits, s.minHitParam)
+		firstHit := slices.FindFirst(hits, filters.GreaterOrEqualThan(s.minHitParam))
 
 		if firstHit == nil {
 			continue

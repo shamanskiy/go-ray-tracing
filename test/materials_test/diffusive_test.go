@@ -21,8 +21,8 @@ func TestDiffusive_ShouldReflectRayInNormalDirection_WhenNotRandom(t *testing.T)
 	reflection := material.Reflect(anyDirection, hitPoint, normalAtHitPointUp)
 
 	expected := materials.Reflection{
-		Ray:         core.NewRay(hitPoint, normalAtHitPointUp),
-		Attenuation: material.Color(),
+		Ray:   core.NewRay(hitPoint, normalAtHitPointUp),
+		Color: material.Color(),
 	}
 	assert.Equal(t, expected, *reflection)
 }
@@ -34,6 +34,6 @@ func TestDiffusive_ShouldReflectRayWithinUnitSphereOfNormal_WhenRandom(t *testin
 
 	randomPerturbation := reflection.Ray.Direction().Sub(normalAtHitPointUp).Len()
 	assert.Less(t, randomPerturbation, core.Real(1))
-	assert.Equal(t, material.Color(), reflection.Attenuation)
+	assert.Equal(t, material.Color(), reflection.Color)
 	assert.Equal(t, hitPoint, reflection.Ray.Origin())
 }

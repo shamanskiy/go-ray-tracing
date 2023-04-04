@@ -29,7 +29,7 @@ func TestTransparent_ShouldReturnRefractedRay_WhenRandomReturnsOne(t *testing.T)
 
 	test.AssertInDeltaVec3(t, refractedDirection, reflection.Ray.Direction(), core.Tolerance)
 	assert.Equal(t, hitPoint, reflection.Ray.Origin())
-	assert.Equal(t, material.Color(), reflection.Attenuation)
+	assert.Equal(t, material.Color(), reflection.Color)
 }
 
 func TestTransparent_ShouldReturnReflectedRay_WhenRandomReturnsZero(t *testing.T) {
@@ -41,7 +41,7 @@ func TestTransparent_ShouldReturnReflectedRay_WhenRandomReturnsZero(t *testing.T
 
 	assert.Equal(t, reflectedDirection, reflection.Ray.Direction())
 	assert.Equal(t, hitPoint, reflection.Ray.Origin())
-	assert.Equal(t, material.Color(), reflection.Attenuation)
+	assert.Equal(t, material.Color(), reflection.Color)
 }
 
 func TestTransparent_ShouldReturnRefractedOrReflectedRay_WhenRandomEnabled(t *testing.T) {
@@ -52,7 +52,7 @@ func TestTransparent_ShouldReturnRefractedOrReflectedRay_WhenRandomEnabled(t *te
 	assert.True(t, reflection.Ray.Direction().InDelta(reflectedDirection, core.Tolerance) ||
 		reflection.Ray.Direction().InDelta(refractedDirection, core.Tolerance))
 	assert.Equal(t, hitPoint, reflection.Ray.Origin())
-	assert.Equal(t, material.Color(), reflection.Attenuation)
+	assert.Equal(t, material.Color(), reflection.Color)
 }
 
 func TestTransparent_ShouldReturnReflectedRay_WhenRayExitsMaterialAtTooLargeAngle(t *testing.T) {
@@ -64,5 +64,5 @@ func TestTransparent_ShouldReturnReflectedRay_WhenRayExitsMaterialAtTooLargeAngl
 	reflectedDirection := core.NewVec3(1, -1, 0)
 	assert.Equal(t, reflectedDirection, reflection.Ray.Direction())
 	assert.Equal(t, hitPoint, reflection.Ray.Origin())
-	assert.Equal(t, material.Color(), reflection.Attenuation)
+	assert.Equal(t, material.Color(), reflection.Color)
 }

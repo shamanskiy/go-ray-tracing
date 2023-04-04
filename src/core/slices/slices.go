@@ -12,17 +12,11 @@ func Filter[T any](slice []T, filter func(T) bool) []T {
 	return filteredSlice
 }
 
-func FindFirstLargerOrEqualThan[T constraints.Ordered](slice []T, value T) *T {
+func FindFirst[T constraints.Ordered](slice []T, filter func(T) bool) *T {
 	for _, element := range slice {
-		if element >= value {
+		if filter(element) {
 			return &element
 		}
 	}
 	return nil
-}
-
-func GreaterOrEqualThan[T constraints.Ordered](value T) func(T) bool {
-	return func(x T) bool {
-		return x >= value
-	}
 }
