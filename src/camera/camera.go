@@ -1,12 +1,12 @@
 package camera
 
 import (
+	"github.com/Shamanskiy/go-ray-tracer/src/camera/image"
+	"github.com/Shamanskiy/go-ray-tracer/src/camera/log"
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
-	"github.com/Shamanskiy/go-ray-tracer/src/render/image"
-	"github.com/Shamanskiy/go-ray-tracer/src/render/log"
-	"github.com/Shamanskiy/go-ray-tracer/src/render/scene"
+	"github.com/Shamanskiy/go-ray-tracer/src/scene"
 	"github.com/chewxy/math32"
 )
 

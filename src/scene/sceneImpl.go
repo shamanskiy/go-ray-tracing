@@ -1,13 +1,13 @@
 package scene
 
 import (
-	"github.com/Shamanskiy/go-ray-tracer/src/background"
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/slices"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/slices/filters"
-	"github.com/Shamanskiy/go-ray-tracer/src/geometries"
-	"github.com/Shamanskiy/go-ray-tracer/src/materials"
+	"github.com/Shamanskiy/go-ray-tracer/src/scene/background"
+	"github.com/Shamanskiy/go-ray-tracer/src/scene/geometries"
+	"github.com/Shamanskiy/go-ray-tracer/src/scene/materials"
 )
 
 const (

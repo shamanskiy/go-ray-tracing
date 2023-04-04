@@ -3,8 +3,8 @@ package image_test
 import (
 	"testing"
 
+	"github.com/Shamanskiy/go-ray-tracer/src/camera/image"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
-	"github.com/Shamanskiy/go-ray-tracer/src/render/image"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -3,12 +3,12 @@ package camera_test
 import (
 	"testing"
 
-	"github.com/Shamanskiy/go-ray-tracer/src/background"
+	"github.com/Shamanskiy/go-ray-tracer/src/camera"
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
-	"github.com/Shamanskiy/go-ray-tracer/src/render/camera"
-	"github.com/Shamanskiy/go-ray-tracer/src/render/scene"
+	"github.com/Shamanskiy/go-ray-tracer/src/scene"
+	"github.com/Shamanskiy/go-ray-tracer/src/scene/background"
 	"github.com/Shamanskiy/go-ray-tracer/test"
 	"github.com/stretchr/testify/assert"
 )

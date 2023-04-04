@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
-	"github.com/Shamanskiy/go-ray-tracer/src/materials"
+	"github.com/Shamanskiy/go-ray-tracer/src/scene/materials"
 	"github.com/Shamanskiy/go-ray-tracer/test"
 	"github.com/stretchr/testify/assert"
 )

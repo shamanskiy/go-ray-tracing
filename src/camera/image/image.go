@@ -6,8 +6,8 @@ import (
 	"image/png"
 	"io"
 
+	"github.com/Shamanskiy/go-ray-tracer/src/camera/log"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
-	"github.com/Shamanskiy/go-ray-tracer/src/render/log"
 )
 
 type Image struct {
