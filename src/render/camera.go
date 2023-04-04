@@ -29,14 +29,13 @@ type CameraSettings struct {
 
 func DefaultCameraSettings() CameraSettings {
 	return CameraSettings{
-		VerticalFOV:       90,
-		AspectRatio:       2.,
-		ImagePixelHeight:  360,
-		LookFrom:          core.NewVec3(0., 0., 0.),
-		LookAt:            core.NewVec3(0., 0., -1.),
-		GlobalUp:          core.NewVec3(0., 1., 0.),
-		Antialiasing:      4,
-		MaxRayReflections: 10,
+		VerticalFOV:      90,
+		AspectRatio:      2.,
+		ImagePixelHeight: 360,
+		LookFrom:         core.NewVec3(0., 0., 0.),
+		LookAt:           core.NewVec3(0., 0., -1.),
+		GlobalUp:         core.NewVec3(0., 1., 0.),
+		Antialiasing:     4,
 	}
 }
 
@@ -46,10 +45,9 @@ type Camera struct {
 	horizontalSpan  core.Vec3
 	verticalSpan    core.Vec3
 
-	PixelWidth     int
-	PixelHeight    int
-	sampling       int
-	maxReflections int
+	PixelWidth  int
+	PixelHeight int
+	sampling    int
 
 	randomizer random.RandomGenerator
 }
@@ -60,7 +58,6 @@ func NewCamera(settings *CameraSettings, randomizer random.RandomGenerator) *Cam
 	camera.PixelHeight = settings.ImagePixelHeight
 	camera.PixelWidth = int(core.Real(settings.ImagePixelHeight) * settings.AspectRatio)
 	camera.sampling = settings.Antialiasing
-	camera.maxReflections = settings.MaxRayReflections
 
 	camera.Origin = settings.LookFrom
 	verticalFOV_rad := settings.VerticalFOV * math32.Pi / 180

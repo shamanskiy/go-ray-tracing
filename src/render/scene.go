@@ -11,40 +11,57 @@ import (
 	"github.com/Shamanskiy/go-ray-tracer/src/objects"
 )
 
+const (
+	DEFAULT_MIN_HIT_PARAM       core.Real = 0.0001
+	DEFAULT_MAX_RAY_REFLECTIONS int       = 10
+)
+
 type Scene struct {
 	objects    []objects.Object
 	materials  []materials.Material
 	background background.Background
 
-	minHitParam        core.Real // prevents black acne
-	maxReflectionDepth int       // prevents infinite ray bouncing between parallel walls
+	minHitParam       core.Real // prevents black acne
+	maxRayReflections int       // prevents infinite ray bouncing between parallel walls
 }
 
-func NewScene(background background.Background) *Scene {
-	return &Scene{
-		background:         background,
-		minHitParam:        0.0001,
-		maxReflectionDepth: 10,
+type SceneSetting func(*Scene)
+
+func MinRayHitParameter(minHitParam core.Real) SceneSetting {
+	if minHitParam < 0 {
+		panic(fmt.Errorf("invalid min ray hit parameter: %v", minHitParam))
 	}
+	return func(scene *Scene) {
+		scene.minHitParam = minHitParam
+	}
+}
+
+func MaxRayReflections(maxReflections int) SceneSetting {
+	if maxReflections < 0 {
+		panic(fmt.Errorf("invalid max ray reflections: %d", maxReflections))
+	}
+	return func(scene *Scene) {
+		scene.maxRayReflections = maxReflections
+	}
+}
+
+func NewScene(background background.Background, settings ...SceneSetting) *Scene {
+	scene := &Scene{
+		background:        background,
+		minHitParam:       DEFAULT_MIN_HIT_PARAM,
+		maxRayReflections: DEFAULT_MAX_RAY_REFLECTIONS,
+	}
+
+	for _, setting := range settings {
+		setting(scene)
+	}
+
+	return scene
 }
 
 func (s *Scene) Add(object objects.Object, material materials.Material) {
 	s.objects = append(s.objects, object)
 	s.materials = append(s.materials, material)
-}
-
-func (s *Scene) SetMinRayHitParameter(minHitParam core.Real) {
-	if minHitParam < 0 {
-		panic(fmt.Errorf("invalid min ray hit parameter: %v", minHitParam))
-	}
-	s.minHitParam = minHitParam
-}
-
-func (s *Scene) SetMaxReflectionDepth(maxReflectionDepth int) {
-	if maxReflectionDepth < 0 {
-		panic(fmt.Errorf("invalid max reflection depth: %d", maxReflectionDepth))
-	}
-	s.maxReflectionDepth = maxReflectionDepth
 }
 
 func (s *Scene) TestRay(ray core.Ray) color.Color {
@@ -57,7 +74,7 @@ func (s *Scene) testRay(ray core.Ray, depth int) color.Color {
 		return s.background.ColorRay(ray)
 	}
 
-	if depth >= s.maxReflectionDepth {
+	if depth >= s.maxRayReflections {
 		return color.Black
 	}
 
