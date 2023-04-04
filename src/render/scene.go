@@ -1,15 +1,13 @@
 package render
 
 import (
-	"fmt"
-
 	"github.com/Shamanskiy/go-ray-tracer/src/background"
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/slices"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/slices/filters"
+	"github.com/Shamanskiy/go-ray-tracer/src/geometries"
 	"github.com/Shamanskiy/go-ray-tracer/src/materials"
-	"github.com/Shamanskiy/go-ray-tracer/src/objects"
 )
 
 const (
@@ -18,32 +16,12 @@ const (
 )
 
 type Scene struct {
-	objects    []objects.Object
+	objects    []geometries.Geometry
 	materials  []materials.Material
 	background background.Background
 
 	minHitParam       core.Real // prevents black acne
 	maxRayReflections int       // prevents infinite ray bouncing between parallel walls
-}
-
-type SceneSetting func(*Scene)
-
-func MinRayHitParameter(minHitParam core.Real) SceneSetting {
-	if minHitParam < 0 {
-		panic(fmt.Errorf("invalid min ray hit parameter: %v", minHitParam))
-	}
-	return func(scene *Scene) {
-		scene.minHitParam = minHitParam
-	}
-}
-
-func MaxRayReflections(maxReflections int) SceneSetting {
-	if maxReflections < 0 {
-		panic(fmt.Errorf("invalid max ray reflections: %d", maxReflections))
-	}
-	return func(scene *Scene) {
-		scene.maxRayReflections = maxReflections
-	}
 }
 
 func NewScene(background background.Background, settings ...SceneSetting) *Scene {
@@ -60,7 +38,7 @@ func NewScene(background background.Background, settings ...SceneSetting) *Scene
 	return scene
 }
 
-func (s *Scene) Add(object objects.Object, material materials.Material) {
+func (s *Scene) Add(object geometries.Geometry, material materials.Material) {
 	s.objects = append(s.objects, object)
 	s.materials = append(s.materials, material)
 }
@@ -69,27 +47,37 @@ func (s *Scene) TestRay(ray core.Ray) color.Color {
 	return s.testRay(ray, 0)
 }
 
-func (s *Scene) testRay(ray core.Ray, depth int) color.Color {
-	hit, objectIndex := s.hitClosestObject(ray)
-	if hit == nil {
+func (s *Scene) testRay(ray core.Ray, reflectionDepth int) color.Color {
+	objectHit := s.hitClosestObject(ray)
+	if objectHit.noHit() {
 		return s.background.ColorRay(ray)
 	}
 
-	if depth >= s.maxRayReflections {
+	if reflectionDepth >= s.maxRayReflections {
 		return color.Black
 	}
 
-	reflection := s.materials[objectIndex].Reflect(ray.Direction(), hit.Point, hit.Normal)
+	reflection := objectHit.material.Reflect(ray.Direction(), objectHit.location.Point, objectHit.location.Normal)
 	if reflection == nil {
 		return color.Black
 	}
 
-	reflectedRayColor := s.testRay(reflection.Ray, depth+1)
+	reflectedRayColor := s.testRay(reflection.Ray, reflectionDepth+1)
 	return reflectedRayColor.MulColor(reflection.Color)
 }
 
-func (s *Scene) hitClosestObject(ray core.Ray) (hit *objects.HitRecord, objectIndex int) {
+type objectHit struct {
+	location *geometries.HitPoint
+	material materials.Material
+}
+
+func (hit objectHit) noHit() bool {
+	return hit.location == nil
+}
+
+func (s *Scene) hitClosestObject(ray core.Ray) objectHit {
 	closestHit := core.Inf()
+	var objectIndex int
 
 	for currentObjectIndex := range s.objects {
 		hits := s.objects[currentObjectIndex].TestRay(ray)
@@ -106,9 +94,12 @@ func (s *Scene) hitClosestObject(ray core.Ray) (hit *objects.HitRecord, objectIn
 	}
 
 	if closestHit == core.Inf() {
-		return nil, 0
+		return objectHit{}
 	} else {
-		closestHitRecord := s.objects[objectIndex].EvaluateHit(ray, closestHit)
-		return &closestHitRecord, objectIndex
+		closestHitPoint := s.objects[objectIndex].EvaluateHit(ray, closestHit)
+		return objectHit{
+			location: &closestHitPoint,
+			material: s.materials[objectIndex],
+		}
 	}
 }

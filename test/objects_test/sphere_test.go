@@ -4,12 +4,12 @@ import (
 	"testing"
 
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
-	"github.com/Shamanskiy/go-ray-tracer/src/objects"
+	"github.com/Shamanskiy/go-ray-tracer/src/geometries"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestSphere_ShouldReturnTwoDistinctHits_IfRayIntersectsSphere(t *testing.T) {
-	sphere := objects.NewSphere(core.NewVec3(0, 0, 0), 2)
+	sphere := geometries.NewSphere(core.NewVec3(0, 0, 0), 2)
 	ray := core.NewRay(core.NewVec3(4, 0, 0), core.NewVec3(-1, 0, 0))
 
 	hits := sphere.TestRay(ray)
@@ -18,7 +18,7 @@ func TestSphere_ShouldReturnTwoDistinctHits_IfRayIntersectsSphere(t *testing.T) 
 }
 
 func TestSphere_ShouldReturnOneHitTwice_IfRayTouchesSphere(t *testing.T) {
-	sphere := objects.NewSphere(core.NewVec3(0, 0, 0), 2)
+	sphere := geometries.NewSphere(core.NewVec3(0, 0, 0), 2)
 	ray := core.NewRay(core.NewVec3(4, 2, 0), core.NewVec3(-1, 0, 0))
 
 	hits := sphere.TestRay(ray)
@@ -27,7 +27,7 @@ func TestSphere_ShouldReturnOneHitTwice_IfRayTouchesSphere(t *testing.T) {
 }
 
 func TestSphere_ShouldReturnNoHits_IfRayDoesNotIntersectSphere(t *testing.T) {
-	sphere := objects.NewSphere(core.NewVec3(0, 0, 0), 2)
+	sphere := geometries.NewSphere(core.NewVec3(0, 0, 0), 2)
 	ray := core.NewRay(core.NewVec3(4, 4, 0), core.NewVec3(-1, 0, 0))
 
 	hits := sphere.TestRay(ray)
@@ -36,7 +36,7 @@ func TestSphere_ShouldReturnNoHits_IfRayDoesNotIntersectSphere(t *testing.T) {
 }
 
 func TestSphere_ShouldReturnNoHits_IfRayPointDirectlyAgainstSphere(t *testing.T) {
-	sphere := objects.NewSphere(core.NewVec3(0, 0, 0), 2)
+	sphere := geometries.NewSphere(core.NewVec3(0, 0, 0), 2)
 	ray := core.NewRay(core.NewVec3(4, 0, 0), core.NewVec3(1, 0, 0))
 
 	hits := sphere.TestRay(ray)
@@ -45,7 +45,7 @@ func TestSphere_ShouldReturnNoHits_IfRayPointDirectlyAgainstSphere(t *testing.T)
 }
 
 func TestSphere_ShouldEvaluateHit(t *testing.T) {
-	sphere := objects.NewSphere(core.NewVec3(0, 0, 0), 2)
+	sphere := geometries.NewSphere(core.NewVec3(0, 0, 0), 2)
 	ray := core.NewRay(core.NewVec3(4, 0, 0), core.NewVec3(-1, 0, 0))
 
 	hitRecord := sphere.EvaluateHit(ray, 2)

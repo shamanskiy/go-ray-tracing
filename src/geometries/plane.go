@@ -1,4 +1,4 @@
-package objects
+package geometries
 
 import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
@@ -37,7 +37,7 @@ func (p Plane) TestRay(ray core.Ray) (hitParams []core.Real) {
 	return slices.Filter(t, filters.GreaterOrEqualThan(core.Real(0.)))
 }
 
-func (p Plane) EvaluateHit(ray core.Ray, hitParam core.Real) HitRecord {
+func (p Plane) EvaluateHit(ray core.Ray, hitParam core.Real) HitPoint {
 	positiveSide := ray.Direction().Dot(p.normal) < 0
 	var normal core.Vec3
 	if positiveSide {
@@ -46,7 +46,7 @@ func (p Plane) EvaluateHit(ray core.Ray, hitParam core.Real) HitRecord {
 		normal = p.normal.Mul(-1)
 	}
 
-	return HitRecord{
+	return HitPoint{
 		Point:  ray.Eval(hitParam),
 		Normal: normal,
 	}

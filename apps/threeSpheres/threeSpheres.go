@@ -11,8 +11,8 @@ import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
+	"github.com/Shamanskiy/go-ray-tracer/src/geometries"
 	"github.com/Shamanskiy/go-ray-tracer/src/materials"
-	"github.com/Shamanskiy/go-ray-tracer/src/objects"
 	"github.com/Shamanskiy/go-ray-tracer/src/render"
 )
 
@@ -23,21 +23,21 @@ func makeScene() *render.Scene {
 	scene := render.NewScene(background)
 
 	// matt green ball
-	scene.Add(objects.NewSphere(core.NewVec3(0, 0, -1), 0.5),
+	scene.Add(geometries.NewSphere(core.NewVec3(0, 0, -1), 0.5),
 		materials.NewDiffusive(color.Red, randomizer))
 
 	// mirrow ball
-	scene.Add(objects.NewSphere(core.NewVec3(1, 0, -1), 0.5),
+	scene.Add(geometries.NewSphere(core.NewVec3(1, 0, -1), 0.5),
 		materials.NewReflectiveFuzzy(color.Golden, 0.1, randomizer))
 
 	// glass shell
-	scene.Add(objects.NewSphere(core.NewVec3(-1, 0, -1), 0.5),
+	scene.Add(geometries.NewSphere(core.NewVec3(-1, 0, -1), 0.5),
 		materials.NewTransparent(1.5, color.White, randomizer))
-	scene.Add(objects.NewSphere(core.NewVec3(-1, 0, -1), -0.4),
+	scene.Add(geometries.NewSphere(core.NewVec3(-1, 0, -1), -0.4),
 		materials.NewTransparent(1.5, color.White, randomizer))
 
 	// floor
-	scene.Add(objects.NewPlane(core.NewVec3(0, -0.5, 0), core.NewVec3(0, 1, 0)),
+	scene.Add(geometries.NewPlane(core.NewVec3(0, -0.5, 0), core.NewVec3(0, 1, 0)),
 		materials.NewDiffusive(color.GrayMedium, randomizer))
 	return scene
 }

@@ -7,8 +7,8 @@ import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
+	"github.com/Shamanskiy/go-ray-tracer/src/geometries"
 	"github.com/Shamanskiy/go-ray-tracer/src/materials"
-	"github.com/Shamanskiy/go-ray-tracer/src/objects"
 	"github.com/Shamanskiy/go-ray-tracer/src/render"
 	"github.com/stretchr/testify/assert"
 )
@@ -89,10 +89,10 @@ func flatBackground() background.Background {
 }
 
 func addReflectiveXYAngle(scene *render.Scene) *render.Scene {
-	plane1 := objects.NewPlane(core.NewVec3(0, 0, 0), core.NewVec3(0, 1, 0))
+	plane1 := geometries.NewPlane(core.NewVec3(0, 0, 0), core.NewVec3(0, 1, 0))
 	material1 := materials.NewReflective(OBJECT_COLOR, randomizer)
 	scene.Add(plane1, material1)
-	plane2 := objects.NewPlane(core.NewVec3(0, 0, 0), core.NewVec3(1, 0, 0))
+	plane2 := geometries.NewPlane(core.NewVec3(0, 0, 0), core.NewVec3(1, 0, 0))
 	material2 := materials.NewReflective(OTHER_OBJECT_COLOR, randomizer)
 	scene.Add(plane2, material2)
 	return scene
@@ -104,7 +104,7 @@ func addUnitSphere(scene *render.Scene, materialColor color.Color, translation .
 		center = center.Add(vec)
 	}
 
-	sphere := objects.NewSphere(center, 1)
+	sphere := geometries.NewSphere(center, 1)
 	material := materials.NewDiffusive(materialColor, randomizer)
 	scene.Add(sphere, material)
 	return scene

@@ -12,14 +12,14 @@ import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
+	"github.com/Shamanskiy/go-ray-tracer/src/geometries"
 	"github.com/Shamanskiy/go-ray-tracer/src/materials"
-	"github.com/Shamanskiy/go-ray-tracer/src/objects"
 	"github.com/Shamanskiy/go-ray-tracer/src/render"
 )
 
 var randomizer = random.NewRandomGenerator()
 
-func tooCloseToBigSpheres(sphere objects.Sphere, bigSpheres []objects.Sphere) bool {
+func tooCloseToBigSpheres(sphere geometries.Sphere, bigSpheres []geometries.Sphere) bool {
 	for _, bigSphere := range bigSpheres {
 		distance := sphere.Center().Sub(bigSphere.Center()).Len()
 		if distance < 1.05*sphere.Radius()+bigSphere.Radius() {
@@ -29,13 +29,13 @@ func tooCloseToBigSpheres(sphere objects.Sphere, bigSpheres []objects.Sphere) bo
 	return false
 }
 
-func genRandomSmallSphere(i, j int) objects.Sphere {
+func genRandomSmallSphere(i, j int) geometries.Sphere {
 	center := core.NewVec3(
 		core.Real(i)+0.8*randomizer.Real(),
 		0.2,
 		core.Real(j)+0.8*randomizer.Real(),
 	)
-	return objects.NewSphere(center, 0.2)
+	return geometries.NewSphere(center, 0.2)
 }
 
 func genRandomMaterial() materials.Material {
@@ -57,20 +57,20 @@ func makeScene() *render.Scene {
 	scene := render.NewScene(background)
 
 	// Huge sphere = floor
-	scene.Add(objects.NewSphere(core.NewVec3(0.0, -1000., 0.0), 1000),
+	scene.Add(geometries.NewSphere(core.NewVec3(0.0, -1000., 0.0), 1000),
 		materials.NewDiffusive(color.GrayMedium, randomizer))
 
 	// Three main spheres
-	sphereRed := objects.NewSphere(core.NewVec3(-2.5, 1.0, 1), 1)
+	sphereRed := geometries.NewSphere(core.NewVec3(-2.5, 1.0, 1), 1)
 	scene.Add(sphereRed, materials.NewDiffusive(color.Red, randomizer))
-	sphereGlass := objects.NewSphere(core.NewVec3(0.0, 1.0, 0.15), 1)
+	sphereGlass := geometries.NewSphere(core.NewVec3(0.0, 1.0, 0.15), 1)
 	scene.Add(sphereGlass, materials.NewTransparent(1.5, color.White, randomizer))
-	sphereMirror := objects.NewSphere(core.NewVec3(2.5, 1.0, 0.0), 1)
+	sphereMirror := geometries.NewSphere(core.NewVec3(2.5, 1.0, 0.0), 1)
 	scene.Add(sphereMirror, materials.NewReflectiveFuzzy(color.GrayLight, 0.03, randomizer))
 
 	// Little spheres randomly offset from a regular grid
 	gridSize := 11
-	bigSpheres := []objects.Sphere{sphereRed, sphereGlass, sphereMirror}
+	bigSpheres := []geometries.Sphere{sphereRed, sphereGlass, sphereMirror}
 	for i := -gridSize; i < gridSize; i++ {
 		for j := -gridSize; j < gridSize; j++ {
 			sphere := genRandomSmallSphere(i, j)

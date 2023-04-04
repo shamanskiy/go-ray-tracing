@@ -1,4 +1,4 @@
-package objects
+package geometries
 
 import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
@@ -34,10 +34,10 @@ func (s Sphere) TestRay(ray core.Ray) []core.Real {
 	return slices.Filter(solutions, filters.GreaterOrEqualThan(core.Real(0.)))
 }
 
-func (s Sphere) EvaluateHit(ray core.Ray, hitParam core.Real) HitRecord {
+func (s Sphere) EvaluateHit(ray core.Ray, hitParam core.Real) HitPoint {
 	hitPoint := ray.Eval(hitParam)
 	hitNormal := hitPoint.Sub(s.center).Div(s.radius)
-	return HitRecord{hitPoint, hitNormal}
+	return HitPoint{hitPoint, hitNormal}
 }
 
 func (s Sphere) Center() core.Vec3 {
