@@ -32,11 +32,3 @@ func (g VerticalGradient) ColorRay(ray core.Ray) color.Color {
 
 	return color.Interpolate(g.bottomColor, g.topColor, t)
 }
-
-func (g VerticalGradient) BottomColor() color.Color {
-	return g.bottomColor
-}
-
-func (g VerticalGradient) TopColor() color.Color {
-	return g.topColor
-}

@@ -15,10 +15,6 @@ func NewDiffusive(color color.Color, randomizer random.RandomGenerator) Diffusiv
 	return Diffusive{color, randomizer}
 }
 
-func (d Diffusive) Color() color.Color {
-	return d.color
-}
-
 func (d Diffusive) Reflect(incidentDirection, hitPoint, normalAtHitPoint core.Vec3) *Reflection {
 	reflectedDirection := normalAtHitPoint.Add(d.randomizer.Vec3InUnitSphere())
 	return &Reflection{core.NewRay(hitPoint, reflectedDirection), d.color}

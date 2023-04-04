@@ -10,55 +10,56 @@ import (
 )
 
 func TestReflective_ShouldReflectRayAroundNormal_WhenNotFuzzy(t *testing.T) {
-	material := materials.NewReflective(anyColor, random.NewRandomGenerator())
+	material := materials.NewReflective(MATERIAL_COLOR, random.NewRandomGenerator())
 	incidentDirection := core.NewVec3(4, -3, 0)
 
-	reflection := material.Reflect(incidentDirection, hitPoint, normalAtHitPointUp)
+	reflection := material.Reflect(incidentDirection, HIT_POINT, NORMAL_AT_HIT_POINT)
 
 	expected := materials.Reflection{
-		Ray:   core.NewRay(hitPoint, core.NewVec3(4, 3, 0).Normalize()),
-		Color: material.Color(),
+		Ray:   core.NewRay(HIT_POINT, core.NewVec3(4, 3, 0).Normalize()),
+		Color: MATERIAL_COLOR,
 	}
 	assert.Equal(t, expected, *reflection)
 }
 
 func TestReflective_ShouldNotReflect_WhenRayParallelToSurface(t *testing.T) {
-	material := materials.NewReflective(anyColor, random.NewRandomGenerator())
+	material := materials.NewReflective(MATERIAL_COLOR, random.NewRandomGenerator())
 	incidentDirection := core.NewVec3(4, 0, 0)
 
-	reflection := material.Reflect(incidentDirection, hitPoint, normalAtHitPointUp)
+	reflection := material.Reflect(incidentDirection, HIT_POINT, NORMAL_AT_HIT_POINT)
 
 	assert.Nil(t, reflection)
 }
 
 func TestReflective_ShouldNotReflect_WhenRaysNormalComponentCoalignedWithNormal(t *testing.T) {
-	material := materials.NewReflective(anyColor, random.NewRandomGenerator())
+	material := materials.NewReflective(MATERIAL_COLOR, random.NewRandomGenerator())
 	incidentDirection := core.NewVec3(4, 3, 0)
 
-	reflection := material.Reflect(incidentDirection, hitPoint, normalAtHitPointUp)
+	reflection := material.Reflect(incidentDirection, HIT_POINT, NORMAL_AT_HIT_POINT)
 
 	assert.Nil(t, reflection)
 }
 
 func TestRefective_WithFuzziness(t *testing.T) {
-	material := materials.NewReflectiveFuzzy(anyColor, 0.5, random.NewRandomGenerator())
+	var fuzziness core.Real = 0.5
+	material := materials.NewReflectiveFuzzy(MATERIAL_COLOR, fuzziness, random.NewRandomGenerator())
 	incidentDirection := core.NewVec3(4, -3, 0)
 
-	reflection := material.Reflect(incidentDirection, hitPoint, normalAtHitPointUp)
+	reflection := material.Reflect(incidentDirection, HIT_POINT, NORMAL_AT_HIT_POINT)
 
 	expectedMeanDirection := core.NewVec3(4, 3, 0).Normalize()
 	randomPerturbation := reflection.Ray.Direction().Sub(expectedMeanDirection).Len()
-	assert.Less(t, randomPerturbation, material.Fuzziness())
+	assert.Less(t, randomPerturbation, fuzziness)
 }
 
 func TestReflective_FuzzinessCantBeLessThanZero(t *testing.T) {
 	assert.Panics(t, func() {
-		materials.NewReflectiveFuzzy(anyColor, -0.5, random.NewRandomGenerator())
+		materials.NewReflectiveFuzzy(MATERIAL_COLOR, -0.5, random.NewRandomGenerator())
 	})
 }
 
 func TestReflective_FuzzinessCantBeMoreThanOne(t *testing.T) {
 	assert.Panics(t, func() {
-		materials.NewReflectiveFuzzy(anyColor, 1.5, random.NewRandomGenerator())
+		materials.NewReflectiveFuzzy(MATERIAL_COLOR, 1.5, random.NewRandomGenerator())
 	})
 }

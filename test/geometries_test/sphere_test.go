@@ -1,4 +1,4 @@
-package objects
+package geometries_test
 
 import (
 	"testing"

@@ -9,35 +9,35 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var anyPoint = core.NewVec3(999, 666, 333)
-var anyDirection = core.NewVec3(1, 2, 3)
-var anyColor = color.White
-var anyColor2 = color.Black
-var equalColorMix = color.GrayMedium
+var RAY_ORIGIN = core.NewVec3(999, 666, 333)
+var RAY_DIRECTION = core.NewVec3(1, 2, 3)
+var BACKGROUND_COLOR = color.White
+var OTHER_BACKGROUND_COLOR = color.Black
 
 func TestVerticalGradient_ShouldBlendColorsForHorizontalRay(t *testing.T) {
-	gradient := background.NewVerticalGradient(anyColor, anyColor2)
-	ray := core.NewRay(anyPoint, core.NewVec3(0, 0, 1))
+	gradient := background.NewVerticalGradient(BACKGROUND_COLOR, OTHER_BACKGROUND_COLOR)
+	ray := core.NewRay(RAY_ORIGIN, core.NewVec3(0, 0, 1))
 
 	rayColor := gradient.ColorRay(ray)
 
-	assert.Equal(t, equalColorMix, rayColor)
+	expectedColor := color.Interpolate(BACKGROUND_COLOR, OTHER_BACKGROUND_COLOR, 0.5)
+	assert.Equal(t, expectedColor, rayColor)
 }
 
 func TestVerticalGradient_ShouldReturnBottomColorForVerticalDownRay(t *testing.T) {
-	gradient := background.NewVerticalGradient(anyColor, anyColor2)
-	ray := core.NewRay(anyPoint, core.NewVec3(0, -1, 0))
+	gradient := background.NewVerticalGradient(BACKGROUND_COLOR, OTHER_BACKGROUND_COLOR)
+	ray := core.NewRay(RAY_ORIGIN, core.NewVec3(0, -1, 0))
 
 	rayColor := gradient.ColorRay(ray)
 
-	assert.Equal(t, gradient.BottomColor(), rayColor)
+	assert.Equal(t, BACKGROUND_COLOR, rayColor)
 }
 
 func TestVerticalGradient_ShouldReturnTopColorForVerticalUpRay(t *testing.T) {
-	gradient := background.NewVerticalGradient(anyColor, anyColor2)
-	ray := core.NewRay(anyPoint, core.NewVec3(0, 1, 0))
+	gradient := background.NewVerticalGradient(BACKGROUND_COLOR, OTHER_BACKGROUND_COLOR)
+	ray := core.NewRay(RAY_ORIGIN, core.NewVec3(0, 1, 0))
 
 	rayColor := gradient.ColorRay(ray)
 
-	assert.Equal(t, gradient.TopColor(), rayColor)
+	assert.Equal(t, OTHER_BACKGROUND_COLOR, rayColor)
 }

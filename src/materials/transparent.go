@@ -24,10 +24,6 @@ func NewTransparent(refractionIndex core.Real, color color.Color, randomizer ran
 		randomizer: randomizer}
 }
 
-func (m Transparent) Color() color.Color {
-	return m.color
-}
-
 func (m Transparent) Reflect(incidentDirection, hitPoint, normalAtHitPoint core.Vec3) *Reflection {
 	refraction := m.refractor.Refract(incidentDirection, normalAtHitPoint)
 	reflectedDirection := incidentDirection.Reflect(normalAtHitPoint)

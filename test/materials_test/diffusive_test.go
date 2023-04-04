@@ -10,30 +10,30 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var anyDirection = core.NewVec3(10, 20, 30)
-var anyColor = color.Red
-var hitPoint = core.NewVec3(0, 1, 2)
-var normalAtHitPointUp = core.NewVec3(0, 1, 0)
+var RAY_DIRECTION = core.NewVec3(10, 20, 30)
+var MATERIAL_COLOR = color.Red
+var HIT_POINT = core.NewVec3(0, 1, 2)
+var NORMAL_AT_HIT_POINT = core.NewVec3(0, 1, 0)
 
 func TestDiffusive_ShouldReflectRayInNormalDirection_WhenNotRandom(t *testing.T) {
-	material := materials.NewDiffusive(anyColor, random.NewFakeRandomGenerator())
+	material := materials.NewDiffusive(MATERIAL_COLOR, random.NewFakeRandomGenerator())
 
-	reflection := material.Reflect(anyDirection, hitPoint, normalAtHitPointUp)
+	reflection := material.Reflect(RAY_DIRECTION, HIT_POINT, NORMAL_AT_HIT_POINT)
 
 	expected := materials.Reflection{
-		Ray:   core.NewRay(hitPoint, normalAtHitPointUp),
-		Color: material.Color(),
+		Ray:   core.NewRay(HIT_POINT, NORMAL_AT_HIT_POINT),
+		Color: MATERIAL_COLOR,
 	}
 	assert.Equal(t, expected, *reflection)
 }
 
 func TestDiffusive_ShouldReflectRayWithinUnitSphereOfNormal_WhenRandom(t *testing.T) {
-	material := materials.NewDiffusive(anyColor, random.NewRandomGenerator())
+	material := materials.NewDiffusive(MATERIAL_COLOR, random.NewRandomGenerator())
 
-	reflection := material.Reflect(anyDirection, hitPoint, normalAtHitPointUp)
+	reflection := material.Reflect(RAY_DIRECTION, HIT_POINT, NORMAL_AT_HIT_POINT)
 
-	randomPerturbation := reflection.Ray.Direction().Sub(normalAtHitPointUp).Len()
+	randomPerturbation := reflection.Ray.Direction().Sub(NORMAL_AT_HIT_POINT).Len()
 	assert.Less(t, randomPerturbation, core.Real(1))
-	assert.Equal(t, material.Color(), reflection.Color)
-	assert.Equal(t, hitPoint, reflection.Ray.Origin())
+	assert.Equal(t, MATERIAL_COLOR, reflection.Color)
+	assert.Equal(t, HIT_POINT, reflection.Ray.Origin())
 }

@@ -21,8 +21,7 @@ var randomizer = random.NewRandomGenerator()
 
 func tooCloseToBigSpheres(sphere geometries.Sphere, bigSpheres []geometries.Sphere) bool {
 	for _, bigSphere := range bigSpheres {
-		distance := sphere.Center().Sub(bigSphere.Center()).Len()
-		if distance < 1.05*sphere.Radius()+bigSphere.Radius() {
+		if sphere.InContactWith(bigSphere) {
 			return true
 		}
 	}

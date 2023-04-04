@@ -18,10 +18,6 @@ func NewPlane(origin, normal core.Vec3) Plane {
 	}
 }
 
-func (p Plane) Normal() core.Vec3 {
-	return p.normal
-}
-
 // R = A + Bt
 // Plane: dot(X-Origin, N) = 0
 // t = dot(Origin-A,N) / dot(B,N)

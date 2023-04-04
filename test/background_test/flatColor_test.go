@@ -9,10 +9,10 @@ import (
 )
 
 func TestFlatColor_ShouldReturnColor(t *testing.T) {
-	flatColor := background.NewFlatColor(anyColor)
-	ray := core.NewRay(anyPoint, anyDirection)
+	flatColor := background.NewFlatColor(BACKGROUND_COLOR)
+	ray := core.NewRay(RAY_ORIGIN, RAY_DIRECTION)
 
 	rayColor := flatColor.ColorRay(ray)
 
-	assert.Equal(t, flatColor.Color(), rayColor)
+	assert.Equal(t, BACKGROUND_COLOR, rayColor)
 }

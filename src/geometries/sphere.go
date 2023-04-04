@@ -40,10 +40,7 @@ func (s Sphere) EvaluateHit(ray core.Ray, hitParam core.Real) HitPoint {
 	return HitPoint{hitPoint, hitNormal}
 }
 
-func (s Sphere) Center() core.Vec3 {
-	return s.center
-}
-
-func (s Sphere) Radius() core.Real {
-	return s.radius
+func (s Sphere) InContactWith(other Sphere) bool {
+	distance := s.center.Sub(other.center).Len()
+	return distance <= s.radius+other.radius
 }

@@ -22,14 +22,6 @@ func NewReflective(color color.Color, randomizer random.RandomGenerator) Reflect
 	}
 }
 
-func (r Reflective) Color() color.Color {
-	return r.color
-}
-
-func (r Reflective) Fuzziness() core.Real {
-	return r.fuzziness
-}
-
 func NewReflectiveFuzzy(color color.Color, fuzziness core.Real, randomizer random.RandomGenerator) Reflective {
 	if fuzziness < 0 || fuzziness > 1 {
 		panic(fmt.Errorf("fuzziness must be in range [0, 1], got %f", fuzziness))
