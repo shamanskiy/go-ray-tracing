@@ -3,10 +3,7 @@ package image
 import (
 	"fmt"
 	"image"
-	"image/png"
-	"io"
 
-	"github.com/Shamanskiy/go-ray-tracer/src/camera/log"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 )
 
@@ -34,9 +31,7 @@ func (i *Image) PixelColor(x, y int) color.Color {
 	return i.pixels[x][y]
 }
 
-func (i *Image) SaveAsPNG(writer io.Writer) {
-	defer log.TimeExecution("save image")()
-
+func (i *Image) ConvertToRGBA() *image.RGBA {
 	upLeft := image.Point{0, 0}
 	lowRight := image.Point{len(i.pixels), len(i.pixels[0])}
 	rgbaImage := image.NewRGBA(image.Rectangle{upLeft, lowRight})
@@ -47,5 +42,5 @@ func (i *Image) SaveAsPNG(writer io.Writer) {
 		}
 	}
 
-	png.Encode(writer, rgbaImage)
+	return rgbaImage
 }

@@ -3,6 +3,7 @@
 package main
 
 import (
+	"image/png"
 	"os"
 
 	"github.com/Shamanskiy/go-ray-tracer/src/camera"
@@ -18,6 +19,13 @@ import (
 )
 
 var randomizer = random.NewRandomGenerator()
+
+func main() {
+	scene := makeScene()
+	camera := makeCamera()
+	image := camera.Render(scene)
+	saveImage(image, "threeSpheres.png")
+}
 
 func makeScene() scene.Scene {
 	background := background.NewVerticalGradient(color.White, color.SkyBlue)
@@ -59,14 +67,9 @@ func makeCamera() *camera.Camera {
 }
 
 func saveImage(image *image.Image, filename string) {
+	defer log.TimeExecution("save image")()
 	file, _ := os.Create(filename)
 	defer file.Close()
-	image.SaveAsPNG(file)
-}
-
-func main() {
-	scene := makeScene()
-	camera := makeCamera()
-	image := camera.Render(scene)
-	saveImage(image, "threeSpheres.png")
+	rgbaImage := image.ConvertToRGBA()
+	png.Encode(file, rgbaImage)
 }

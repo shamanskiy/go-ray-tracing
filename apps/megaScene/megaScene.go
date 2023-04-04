@@ -4,6 +4,7 @@
 package main
 
 import (
+	"image/png"
 	"os"
 
 	"github.com/Shamanskiy/go-ray-tracer/src/camera"
@@ -20,36 +21,11 @@ import (
 
 var randomizer = random.NewRandomGenerator()
 
-func tooCloseToBigSpheres(sphere geometries.Sphere, bigSpheres []geometries.Sphere) bool {
-	for _, bigSphere := range bigSpheres {
-		if sphere.InContactWith(bigSphere) {
-			return true
-		}
-	}
-	return false
-}
-
-func genRandomSmallSphere(i, j int) geometries.Sphere {
-	center := core.NewVec3(
-		core.Real(i)+0.8*randomizer.Real(),
-		0.2,
-		core.Real(j)+0.8*randomizer.Real(),
-	)
-	return geometries.NewSphere(center, 0.2)
-}
-
-func genRandomMaterial() materials.Material {
-	materialChoice := randomizer.Real()
-	randomColor := color.FromVec3(randomizer.Vec3())
-	if materialChoice < 0.7 {
-		return materials.NewDiffusive(randomColor, randomizer)
-	} else if materialChoice < 0.9 {
-		metallicColor := color.New(1., 1., 1.).Add(randomColor).Mul(0.5)
-		fuzziness := 0.1 * randomizer.Real()
-		return materials.NewReflectiveFuzzy(metallicColor, fuzziness, randomizer)
-	} else {
-		return materials.NewTransparent(1.5, color.White, randomizer)
-	}
+func main() {
+	scene := makeScene()
+	camera := makeCamera()
+	image := camera.Render(scene)
+	saveImage(image, "megaScene.png")
 }
 
 func makeScene() scene.Scene {
@@ -86,6 +62,38 @@ func makeScene() scene.Scene {
 	return scene
 }
 
+func genRandomSmallSphere(i, j int) geometries.Sphere {
+	center := core.NewVec3(
+		core.Real(i)+0.8*randomizer.Real(),
+		0.2,
+		core.Real(j)+0.8*randomizer.Real(),
+	)
+	return geometries.NewSphere(center, 0.2)
+}
+
+func genRandomMaterial() materials.Material {
+	materialChoice := randomizer.Real()
+	randomColor := color.FromVec3(randomizer.Vec3())
+	if materialChoice < 0.7 {
+		return materials.NewDiffusive(randomColor, randomizer)
+	} else if materialChoice < 0.9 {
+		metallicColor := color.New(1., 1., 1.).Add(randomColor).Mul(0.5)
+		fuzziness := 0.1 * randomizer.Real()
+		return materials.NewReflectiveFuzzy(metallicColor, fuzziness, randomizer)
+	} else {
+		return materials.NewTransparent(1.5, color.White, randomizer)
+	}
+}
+
+func tooCloseToBigSpheres(sphere geometries.Sphere, bigSpheres []geometries.Sphere) bool {
+	for _, bigSphere := range bigSpheres {
+		if sphere.InContactWith(bigSphere) {
+			return true
+		}
+	}
+	return false
+}
+
 func makeCamera() *camera.Camera {
 	settings := camera.DefaultCameraSettings()
 	settings.AspectRatio = 16. / 9.
@@ -102,14 +110,9 @@ func makeCamera() *camera.Camera {
 }
 
 func saveImage(image *image.Image, filename string) {
+	defer log.TimeExecution("save image")()
 	file, _ := os.Create(filename)
 	defer file.Close()
-	image.SaveAsPNG(file)
-}
-
-func main() {
-	scene := makeScene()
-	camera := makeCamera()
-	image := camera.Render(scene)
-	saveImage(image, "megaScene.png")
+	rgbaImage := image.ConvertToRGBA()
+	png.Encode(file, rgbaImage)
 }
