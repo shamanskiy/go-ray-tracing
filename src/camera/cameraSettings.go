@@ -9,7 +9,6 @@ type CameraSettings struct {
 
 	LookFrom core.Vec3
 	LookAt   core.Vec3
-	GlobalUp core.Vec3
 
 	Antialiasing int
 
@@ -25,7 +24,6 @@ func DefaultCameraSettings() CameraSettings {
 		ImagePixelHeight: 360,
 		LookFrom:         core.NewVec3(0., 0., 0.),
 		LookAt:           core.NewVec3(0., 0., -1.),
-		GlobalUp:         core.NewVec3(0., 1., 0.),
 		Antialiasing:     4,
 	}
 }
