@@ -2,14 +2,17 @@ package log
 
 import "github.com/schollz/progressbar/v3"
 
-const UNSET_MAX = 1
+const (
+	UNSET_MAX      = 1
+	NO_DESCRIPTION = ""
+)
 
 type ProgressUpdate struct {
 	Max int
 }
 
-func ProgressBar(processName string) (progressChan chan<- ProgressUpdate) {
-	bar := progressbar.Default(UNSET_MAX, processName)
+func NewProgressBar() (progressChan chan<- ProgressUpdate) {
+	bar := progressbar.Default(UNSET_MAX, NO_DESCRIPTION)
 
 	c := make(chan ProgressUpdate)
 	go func() {
