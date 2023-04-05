@@ -5,6 +5,7 @@ import (
 
 	"github.com/Shamanskiy/go-ray-tracer/src/camera"
 	"github.com/Shamanskiy/go-ray-tracer/src/camera/image"
+	"github.com/Shamanskiy/go-ray-tracer/src/camera/log"
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
@@ -48,17 +49,18 @@ func TestCamera_ShouldColorCentralPixelWithObjectColor(t *testing.T) {
 }
 
 func TestCamera_ShouldReportProgress(t *testing.T) {
+	waitForConsumer := make(chan struct{})
+	progressUpdates := &[]log.ProgressUpdate{}
 	settings := cameraSettings
-	progressRecording := &[]int{}
-	settings.ProgressChan = makeProgressConsumer(progressRecording)
+	settings.ProgressChan = makeProgressConsumer(progressUpdates, waitForConsumer)
 	camera := camera.NewCamera(&settings, randomizer)
 	scene := scene.New(background.NewFlatColor(color.Red))
 
 	camera.Render(scene)
+	<-waitForConsumer
 
-	assert.NotEmpty(t, progressRecording)
-	assertOrdered(t, *progressRecording)
-	assertLastElem(t, *progressRecording, 100)
+	imageWidth := 5 * 2
+	assert.Len(t, *progressUpdates, imageWidth)
 }
 
 func TestCamera_ShouldMultiSampleEachPixel(t *testing.T) {
@@ -91,27 +93,13 @@ func assertCornerPixelsColor(t *testing.T, image *image.Image, color color.Color
 	assert.Equal(t, color, image.PixelColor(width-1, height-1))
 }
 
-func makeProgressConsumer(progressValues *[]int) chan int {
-	progressChan := make(chan int)
+func makeProgressConsumer(progressMessages *[]log.ProgressUpdate, done chan struct{}) chan log.ProgressUpdate {
+	progressChan := make(chan log.ProgressUpdate)
 	go func() {
 		for progress := range progressChan {
-			*progressValues = append(*progressValues, progress)
+			*progressMessages = append(*progressMessages, progress)
 		}
+		done <- struct{}{}
 	}()
 	return progressChan
-}
-
-func assertOrdered(t *testing.T, progressRecordging []int) {
-	if len(progressRecordging) < 2 {
-		return
-	}
-
-	for i := 0; i < len(progressRecordging)-1; i++ {
-		assert.LessOrEqual(t, progressRecordging[i], progressRecordging[i+1])
-	}
-}
-
-func assertLastElem(t *testing.T, progressRecordging []int, expectedValue int) {
-	lastValue := progressRecordging[len(progressRecordging)-1]
-	assert.Equal(t, expectedValue, lastValue)
 }

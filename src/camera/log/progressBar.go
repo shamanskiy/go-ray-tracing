@@ -2,13 +2,20 @@ package log
 
 import "github.com/schollz/progressbar/v3"
 
-func ProgressBar(maxProgressValue int64, processName string) (progressChan chan<- int) {
-	bar := progressbar.Default(maxProgressValue, processName)
+const UNSET_MAX = 1
 
-	c := make(chan int)
+type ProgressUpdate struct {
+	Max int
+}
+
+func ProgressBar(processName string) (progressChan chan<- ProgressUpdate) {
+	bar := progressbar.Default(UNSET_MAX, processName)
+
+	c := make(chan ProgressUpdate)
 	go func() {
-		for progress := range c {
-			bar.Set(progress)
+		for msg := range c {
+			bar.ChangeMax(msg.Max)
+			bar.Add(1)
 		}
 	}()
 

@@ -104,7 +104,7 @@ func makeCamera() *camera.Camera {
 		LookFrom:         core.NewVec3(3.5, 1.35, 1.9),
 		LookAt:           core.NewVec3(3., 1.25, 1.5),
 		Antialiasing:     10,
-		ProgressChan:     log.ProgressBar(100, "rendering"),
+		ProgressChan:     log.ProgressBar("rendering"),
 	}
 
 	return camera.NewCamera(&settings, randomizer)

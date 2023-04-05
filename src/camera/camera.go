@@ -15,7 +15,7 @@ type Camera struct {
 	rayGenerator *RayGenerator
 	image        *image.Image
 	randomizer   random.RandomGenerator
-	progressChan chan<- int
+	progressChan chan<- log.ProgressUpdate
 	sampling     int
 }
 
@@ -28,7 +28,7 @@ type CameraSettings struct {
 	LookAt   core.Vec3
 
 	Antialiasing int
-	ProgressChan chan<- int
+	ProgressChan chan<- log.ProgressUpdate
 }
 
 func NewCamera(settings *CameraSettings, randomizer random.RandomGenerator) *Camera {
@@ -70,7 +70,7 @@ func (c *Camera) Render(scene scene.Scene) *image.Image {
 	defer log.TimeExecution("rendering")()
 
 	for x := 0; x < c.image.Width(); x++ {
-		c.reportProgress(x+1, c.image.Width())
+		c.reportProgress(x)
 		for y := 0; y < c.image.Height(); y++ {
 			pixelColor := c.samplePixel(x, y, scene)
 			c.image.SetPixelColor(x, y, pixelColor)
@@ -96,15 +96,14 @@ func (c *Camera) toParam(index, maxIndex int) core.Real {
 	return (core.Real(index) + c.randomizer.Real()) / core.Real(maxIndex)
 }
 
-func (c *Camera) reportProgress(done, total int) {
+func (c *Camera) reportProgress(currentImageColumn int) {
 	if c.progressChan == nil {
 		return
 	}
 
-	progress := int(float64(done) / float64(total) * 100)
-	c.progressChan <- progress
+	c.progressChan <- log.ProgressUpdate{Max: c.image.Width()}
 
-	if done == total {
+	if currentImageColumn == c.image.Width()-1 {
 		close(c.progressChan)
 	}
 }
