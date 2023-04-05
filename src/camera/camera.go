@@ -1,6 +1,8 @@
 package camera
 
 import (
+	"fmt"
+
 	"github.com/Shamanskiy/go-ray-tracer/src/camera/image"
 	"github.com/Shamanskiy/go-ray-tracer/src/camera/log"
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
@@ -30,7 +32,12 @@ type CameraSettings struct {
 }
 
 func NewCamera(settings *CameraSettings, randomizer random.RandomGenerator) *Camera {
+	validateSettings(settings)
+
 	imageWidth := int(core.Real(settings.ImagePixelHeight) * settings.AspectRatio)
+	if settings.ImagePixelHeight <= 0 {
+		panic(fmt.Errorf("new camera: invalid image pixel width: %v", imageWidth))
+	}
 
 	return &Camera{
 		rayGenerator: NewRayGenerator(settings.LookFrom, settings.LookAt, settings.VerticalFOV, settings.AspectRatio),
@@ -38,6 +45,24 @@ func NewCamera(settings *CameraSettings, randomizer random.RandomGenerator) *Cam
 		randomizer:   randomizer,
 		progressChan: settings.ProgressChan,
 		sampling:     settings.Antialiasing,
+	}
+}
+
+func validateSettings(settings *CameraSettings) {
+	if settings.VerticalFOV <= 0 {
+		panic(fmt.Errorf("new camera: invalid vertical FOV: %v", settings.VerticalFOV))
+	}
+	if settings.AspectRatio <= 0 {
+		panic(fmt.Errorf("new camera: invalid aspect ratio: %v", settings.AspectRatio))
+	}
+	if settings.ImagePixelHeight <= 0 {
+		panic(fmt.Errorf("new camera: invalid image pixel height: %v", settings.ImagePixelHeight))
+	}
+	if settings.LookFrom == settings.LookAt {
+		panic(fmt.Errorf("new camera: lookAt coincides with lookFrom: %v", settings.LookAt))
+	}
+	if settings.Antialiasing < 1 {
+		panic(fmt.Errorf("new camera: invalid antialiasing: %d", settings.Antialiasing))
 	}
 }
 

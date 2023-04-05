@@ -32,4 +32,7 @@ func TestImage_ShouldReturnSize(t *testing.T) {
 
 	assert.Equal(t, IMAGE_WIDTH, image.Width())
 	assert.Equal(t, IMAGE_HEIGHT, image.Height())
+
+	assert.Equal(t, color.Black, image.PixelColor(0, 0))
+	assert.Equal(t, color.Black, image.PixelColor(1, 0))
 }

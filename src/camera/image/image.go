@@ -35,6 +35,10 @@ func (i *Image) SetPixelColor(x, y int, color color.Color) {
 	i.pixels[x][y] = color
 }
 
+func (i *Image) PixelColor(x, y int) color.Color {
+	return i.pixels[x][y]
+}
+
 func (i *Image) ConvertToRGBA() *image.RGBA {
 	upLeft := image.Point{0, 0}
 	lowRight := image.Point{i.Width(), i.Height()}
