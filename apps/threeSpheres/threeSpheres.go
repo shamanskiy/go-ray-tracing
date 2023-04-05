@@ -31,23 +31,21 @@ func makeScene() scene.Scene {
 	background := background.NewVerticalGradient(color.White, color.SkyBlue)
 	scene := scene.New(background)
 
-	// matt green ball
-	scene.Add(geometries.NewSphere(core.NewVec3(0, 0, -1), 0.5),
-		materials.NewDiffusive(color.Red, randomizer))
+	floor := geometries.NewPlane(core.NewVec3(0, -0.5, 0), core.NewVec3(0, 1, 0))
+	scene.Add(floor, materials.NewDiffusive(color.GrayMedium, randomizer))
 
-	// mirrow ball
-	scene.Add(geometries.NewSphere(core.NewVec3(1, 0, -1), 0.5),
-		materials.NewReflectiveFuzzy(color.Golden, 0.1, randomizer))
+	mattSphere := geometries.NewSphere(core.NewVec3(0, 0, -1), 0.5)
+	scene.Add(mattSphere, materials.NewDiffusive(color.Red, randomizer))
 
-	// glass shell
-	scene.Add(geometries.NewSphere(core.NewVec3(-1, 0, -1), 0.5),
-		materials.NewTransparent(1.5, color.White, randomizer))
-	scene.Add(geometries.NewSphere(core.NewVec3(-1, 0, -1), -0.4),
-		materials.NewTransparent(1.5, color.White, randomizer))
+	mirrowSphere := geometries.NewSphere(core.NewVec3(1, 0, -1), 0.5)
+	scene.Add(mirrowSphere, materials.NewReflectiveFuzzy(color.Golden, 0.1, randomizer))
 
-	// floor
-	scene.Add(geometries.NewPlane(core.NewVec3(0, -0.5, 0), core.NewVec3(0, 1, 0)),
-		materials.NewDiffusive(color.GrayMedium, randomizer))
+	glassShellOuter := geometries.NewSphere(core.NewVec3(-1, 0, -1), 0.5)
+	glassShellInner := geometries.NewSphere(core.NewVec3(-1, 0, -1), -0.4)
+	glassMaterial := materials.NewTransparent(1.5, color.White, randomizer)
+	scene.Add(glassShellOuter, glassMaterial)
+	scene.Add(glassShellInner, glassMaterial)
+
 	return scene
 }
 
