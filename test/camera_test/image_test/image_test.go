@@ -26,3 +26,10 @@ func TestImage_ShouldConvertToRGBA(t *testing.T) {
 	assert.Equal(t, rgba.RGBA{255, 0, 0, 255}, rgbaImage.At(0, 0))
 	assert.Equal(t, rgba.RGBA{0, 0, 255, 255}, rgbaImage.At(1, 0))
 }
+
+func TestImage_ShouldReturnSize(t *testing.T) {
+	image := image.NewImage(IMAGE_WIDTH, IMAGE_HEIGHT)
+
+	assert.Equal(t, IMAGE_WIDTH, image.Width())
+	assert.Equal(t, IMAGE_HEIGHT, image.Height())
+}

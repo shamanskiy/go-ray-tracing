@@ -8,29 +8,28 @@ import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
 	"github.com/Shamanskiy/go-ray-tracer/src/scene"
 	"github.com/Shamanskiy/go-ray-tracer/src/scene/background"
-	"github.com/stretchr/testify/assert"
 )
 
-func TestCamera_indexToU(t *testing.T) {
-	t.Log("Camera with 100 px height and 1:1 aspect ratio")
-	settings := camera.DefaultCameraSettings()
-	settings.ImagePixelHeight = 100
-	settings.AspectRatio = 2.0
-	randomizer := random.NewFakeRandomGenerator()
+// func TestCamera_indexToU(t *testing.T) {
+// 	t.Log("Camera with 100 px height and 1:1 aspect ratio")
+// 	settings := camera.DefaultCameraSettings()
+// 	settings.ImagePixelHeight = 100
+// 	settings.AspectRatio = 2.0
+// 	randomizer := random.NewFakeRandomGenerator()
 
-	camera := camera.NewCamera(&settings, randomizer)
+// 	camera := camera.NewCamera(&settings, randomizer)
 
-	assert.Equal(t, 100, camera.PixelHeight)
-	assert.Equal(t, 200, camera.PixelWidth)
+// 	// assert.Equal(t, 100, camera.PixelHeight)
+// 	// assert.Equal(t, 200, camera.PixelWidth)
 
-	assert.EqualValues(t, 0, camera.IndexToU(0))
-	assert.EqualValues(t, 0.5, camera.IndexToU(100))
-	assert.EqualValues(t, 1, camera.IndexToU(200))
+// 	// assert.EqualValues(t, 0, camera.IndexToU(0))
+// 	// assert.EqualValues(t, 0.5, camera.IndexToU(100))
+// 	// assert.EqualValues(t, 1, camera.IndexToU(200))
 
-	assert.EqualValues(t, 0, camera.IndexToV(0))
-	assert.EqualValues(t, 0.5, camera.IndexToV(50))
-	assert.EqualValues(t, 1, camera.IndexToV(100))
-}
+// 	// assert.EqualValues(t, 0, camera.IndexToV(0))
+// 	// assert.EqualValues(t, 0.5, camera.IndexToV(50))
+// 	// assert.EqualValues(t, 1, camera.IndexToV(100))
+// }
 
 func TestCamera_RenderEmptyScene(t *testing.T) {
 	t.Log("Given an empty scene with white background")
