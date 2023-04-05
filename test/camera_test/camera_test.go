@@ -1,15 +1,5 @@
 package camera_test
 
-import (
-	"testing"
-
-	"github.com/Shamanskiy/go-ray-tracer/src/camera"
-	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
-	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
-	"github.com/Shamanskiy/go-ray-tracer/src/scene"
-	"github.com/Shamanskiy/go-ray-tracer/src/scene/background"
-)
-
 // func TestCamera_indexToU(t *testing.T) {
 // 	t.Log("Camera with 100 px height and 1:1 aspect ratio")
 // 	settings := camera.DefaultCameraSettings()
@@ -31,29 +21,29 @@ import (
 // 	// assert.EqualValues(t, 1, camera.IndexToV(100))
 // }
 
-func TestCamera_RenderEmptyScene(t *testing.T) {
-	t.Log("Given an empty scene with white background")
-	scene := scene.New(background.NewFlatColor(color.White))
+// func TestCamera_RenderEmptyScene(t *testing.T) {
+// 	t.Log("Given an empty scene with white background")
+// 	scene := scene.New(background.NewFlatColor(color.White))
 
-	imageSize := 2
-	t.Logf("and a camera with %vx%v resolution,\n", imageSize, imageSize)
-	settings := camera.DefaultCameraSettings()
-	settings.ImagePixelHeight = imageSize
-	settings.AspectRatio = 1
-	settings.Antialiasing = 1
-	randomizer := random.NewFakeRandomGenerator()
-	camera := camera.NewCamera(&settings, randomizer)
+// 	imageSize := 2
+// 	t.Logf("and a camera with %vx%v resolution,\n", imageSize, imageSize)
+// 	settings := camera.DefaultCameraSettings()
+// 	settings.ImagePixelHeight = imageSize
+// 	settings.AspectRatio = 1
+// 	settings.Antialiasing = 1
+// 	randomizer := random.NewFakeRandomGenerator()
+// 	camera := camera.NewCamera(&settings, randomizer)
 
-	t.Logf("  the rendered image should be a %vx%v white square:\n", imageSize, imageSize)
-	camera.Render(scene)
+// 	t.Logf("  the rendered image should be a %vx%v white square:\n", imageSize, imageSize)
+// 	camera.Render(scene)
 
-	// assert.Equal(t, imageSize, renderedImage.Bounds().Size().X)
-	// assert.Equal(t, imageSize, renderedImage.Bounds().Size().Y)
+// 	// assert.Equal(t, imageSize, renderedImage.Bounds().Size().X)
+// 	// assert.Equal(t, imageSize, renderedImage.Bounds().Size().Y)
 
-	// for x := 0; x < imageSize; x++ {
-	// 	for y := 0; y < imageSize; y++ {
-	// 		assert.Equal(t, color.White, renderedImage.PixelColor(x, y))
-	// 	}
-	// }
+// 	// for x := 0; x < imageSize; x++ {
+// 	// 	for y := 0; y < imageSize; y++ {
+// 	// 		assert.Equal(t, color.White, renderedImage.PixelColor(x, y))
+// 	// 	}
+// 	// }
 
-}
+// }

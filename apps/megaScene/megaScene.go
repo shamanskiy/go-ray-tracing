@@ -95,18 +95,17 @@ func tooCloseToBigSpheres(sphere geometries.Sphere, bigSpheres []geometries.Sphe
 }
 
 func makeCamera() *camera.Camera {
-	settings := camera.DefaultCameraSettings()
-	settings.AspectRatio = 16. / 9.
-	settings.ImagePixelHeight = 300
-	settings.Antialiasing = 10
-	settings.LookFrom = core.NewVec3(3.5, 1.35, 1.9)
-	settings.LookAt = core.NewVec3(3., 1.25, 1.5)
-	settings.VerticalFOV = 75
-	settings.ProgressChan = log.ProgressBar(100, "rendering")
+	settings := camera.CameraSettings{
+		VerticalFOV:      75,
+		AspectRatio:      16. / 9.,
+		ImagePixelHeight: 360,
+		LookFrom:         core.NewVec3(3.5, 1.35, 1.9),
+		LookAt:           core.NewVec3(3., 1.25, 1.5),
+		Antialiasing:     10,
+		ProgressChan:     log.ProgressBar(100, "rendering"),
+	}
 
-	camera := camera.NewCamera(&settings, randomizer)
-
-	return camera
+	return camera.NewCamera(&settings, randomizer)
 }
 
 func saveImage(image *image.Image, filename string) {

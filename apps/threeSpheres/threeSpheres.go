@@ -52,18 +52,17 @@ func makeScene() scene.Scene {
 }
 
 func makeCamera() *camera.Camera {
-	settings := camera.DefaultCameraSettings()
-	settings.AspectRatio = 16. / 9.
-	settings.ImagePixelHeight = 360
-	settings.Antialiasing = 4
-	settings.LookFrom = core.NewVec3(0, 0, 0.15)
-	settings.LookAt = core.NewVec3(0, 0, -1)
+	settings := camera.CameraSettings{
+		VerticalFOV:      90,
+		AspectRatio:      16. / 9.,
+		ImagePixelHeight: 360,
+		LookFrom:         core.NewVec3(0, 0, 0.15),
+		LookAt:           core.NewVec3(0, 0, -1),
+		Antialiasing:     4,
+		ProgressChan:     log.ProgressBar(100, "rendering"),
+	}
 
-	settings.ProgressChan = log.ProgressBar(100, "rendering")
-
-	camera := camera.NewCamera(&settings, randomizer)
-
-	return camera
+	return camera.NewCamera(&settings, randomizer)
 }
 
 func saveImage(image *image.Image, filename string) {

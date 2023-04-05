@@ -17,6 +17,18 @@ type Camera struct {
 	sampling     int
 }
 
+type CameraSettings struct {
+	VerticalFOV      core.Real
+	AspectRatio      core.Real
+	ImagePixelHeight int
+
+	LookFrom core.Vec3
+	LookAt   core.Vec3
+
+	Antialiasing int
+	ProgressChan chan<- int
+}
+
 func NewCamera(settings *CameraSettings, randomizer random.RandomGenerator) *Camera {
 	imageWidth := int(core.Real(settings.ImagePixelHeight) * settings.AspectRatio)
 
