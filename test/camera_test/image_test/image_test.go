@@ -23,6 +23,6 @@ func TestImage_ShouldConvertToRGBA(t *testing.T) {
 
 	assert.Equal(t, IMAGE_WIDTH, rgbaImage.Bounds().Max.X)
 	assert.Equal(t, IMAGE_HEIGHT, rgbaImage.Bounds().Max.Y)
-	assert.Equal(t, rgba.RGBA{255, 0, 0, 255}, rgba.Black, rgbaImage.At(0, 0))
+	assert.Equal(t, rgba.RGBA{255, 0, 0, 255}, rgbaImage.At(0, 0))
 	assert.Equal(t, rgba.RGBA{0, 0, 255, 255}, rgbaImage.At(1, 0))
 }
