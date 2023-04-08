@@ -32,7 +32,9 @@ Execute the following command from the project root to run the unit tests:
 go test ./...
 ```
 
-## ToDo
+## Profiling
 
-- dependency inversion for scene in camera.render
-- test scene with fake objects and materials
+go get github.com/pkg/profile
+Put `defer profile.Start(profile.ProfilePath(".")).Stop()` in main.
+Run `go tool pprof cpu.prof`
+Run `top` or `web`

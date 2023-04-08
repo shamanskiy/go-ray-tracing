@@ -2,6 +2,7 @@ package camera
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/Shamanskiy/go-ray-tracer/src/camera/image"
 	"github.com/Shamanskiy/go-ray-tracer/src/camera/log"
@@ -69,15 +70,29 @@ func validateSettings(settings *CameraSettings) {
 func (c *Camera) Render(scene scene.Scene) *image.Image {
 	defer log.TimeExecution("rendering")()
 
-	for x := 0; x < c.image.Width(); x++ {
+	numWorkers := 10
+	waitGroup := sync.WaitGroup{}
+	waitGroup.Add(numWorkers)
+
+	for worker := 0; worker < numWorkers; worker++ {
+		go c.render(scene, worker, numWorkers, &waitGroup)
+	}
+
+	waitGroup.Wait()
+	close(c.progressChan)
+
+	return c.image
+}
+
+func (c *Camera) render(scene scene.Scene, worker, numWorkers int, waitGroup *sync.WaitGroup) {
+	for x := worker; x < c.image.Width(); x += numWorkers {
 		c.reportProgress(x)
 		for y := 0; y < c.image.Height(); y++ {
 			pixelColor := c.samplePixel(x, y, scene)
 			c.image.SetPixelColor(x, y, pixelColor)
 		}
 	}
-
-	return c.image
+	waitGroup.Done()
 }
 
 func (c *Camera) samplePixel(x, y int, scene scene.Scene) color.Color {
@@ -102,8 +117,4 @@ func (c *Camera) reportProgress(currentImageColumn int) {
 	}
 
 	c.progressChan <- log.ProgressUpdate{Max: c.image.Width()}
-
-	if currentImageColumn == c.image.Width()-1 {
-		close(c.progressChan)
-	}
 }
