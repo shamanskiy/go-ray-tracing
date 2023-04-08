@@ -1,6 +1,3 @@
-// This is a big scene with three big central spheres and
-// 450+ small randomly generated spheres.
-// ATTENTION: the scene can take a while to render
 package main
 
 import (

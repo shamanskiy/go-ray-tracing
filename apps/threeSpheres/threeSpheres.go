@@ -1,5 +1,3 @@
-// This is a demo app that renders three spheres with
-// different materials.
 package main
 
 import (
