@@ -13,11 +13,12 @@ import (
 )
 
 type Camera struct {
-	rayGenerator *RayGenerator
-	image        *image.Image
-	randomizer   random.RandomGenerator
-	progressChan chan<- log.ProgressUpdate
-	sampling     int
+	rayGenerator        *RayGenerator
+	image               *image.Image
+	randomizer          random.RandomGenerator
+	progressChan        chan<- log.ProgressUpdate
+	sampling            int
+	numRenderingThreads int
 }
 
 type CameraSettings struct {
@@ -28,24 +29,26 @@ type CameraSettings struct {
 	LookFrom core.Vec3
 	LookAt   core.Vec3
 
-	Antialiasing int
-	ProgressChan chan<- log.ProgressUpdate
+	Antialiasing        int
+	NumRenderingThreads int
+	ProgressChan        chan<- log.ProgressUpdate
 }
 
 func NewCamera(settings *CameraSettings, randomizer random.RandomGenerator) *Camera {
 	validateSettings(settings)
 
 	imageWidth := int(core.Real(settings.ImagePixelHeight) * settings.AspectRatio)
-	if settings.ImagePixelHeight <= 0 {
+	if imageWidth <= 0 {
 		panic(fmt.Errorf("new camera: invalid image pixel width: %v", imageWidth))
 	}
 
 	return &Camera{
-		rayGenerator: NewRayGenerator(settings.LookFrom, settings.LookAt, settings.VerticalFOV, settings.AspectRatio),
-		image:        image.NewImage(imageWidth, settings.ImagePixelHeight),
-		randomizer:   randomizer,
-		progressChan: settings.ProgressChan,
-		sampling:     settings.Antialiasing,
+		rayGenerator:        NewRayGenerator(settings.LookFrom, settings.LookAt, settings.VerticalFOV, settings.AspectRatio),
+		image:               image.NewImage(imageWidth, settings.ImagePixelHeight),
+		randomizer:          randomizer,
+		progressChan:        settings.ProgressChan,
+		sampling:            settings.Antialiasing,
+		numRenderingThreads: settings.NumRenderingThreads,
 	}
 }
 
@@ -65,29 +68,29 @@ func validateSettings(settings *CameraSettings) {
 	if settings.Antialiasing < 1 {
 		panic(fmt.Errorf("new camera: invalid antialiasing: %d", settings.Antialiasing))
 	}
+	if settings.NumRenderingThreads < 1 {
+		panic(fmt.Errorf("new camera: invalid number of rendering threads: %d", settings.NumRenderingThreads))
+	}
 }
 
 func (c *Camera) Render(scene scene.Scene) *image.Image {
 	defer log.TimeExecution("rendering")()
+	defer c.closeProgressChan()
 
-	numWorkers := 10
 	waitGroup := sync.WaitGroup{}
-	waitGroup.Add(numWorkers)
+	waitGroup.Add(c.numRenderingThreads)
 
-	for worker := 0; worker < numWorkers; worker++ {
-		go c.render(scene, worker, numWorkers, &waitGroup)
+	for worker := 0; worker < c.numRenderingThreads; worker++ {
+		go c.render(scene, worker, &waitGroup)
 	}
 
 	waitGroup.Wait()
-	if c.progressChan != nil {
-		close(c.progressChan)
-	}
 
 	return c.image
 }
 
-func (c *Camera) render(scene scene.Scene, worker, numWorkers int, waitGroup *sync.WaitGroup) {
-	for x := worker; x < c.image.Width(); x += numWorkers {
+func (c *Camera) render(scene scene.Scene, worker int, waitGroup *sync.WaitGroup) {
+	for x := worker; x < c.image.Width(); x += c.numRenderingThreads {
 		c.reportProgress(x)
 		for y := 0; y < c.image.Height(); y++ {
 			pixelColor := c.samplePixel(x, y, scene)
@@ -117,6 +120,12 @@ func (c *Camera) reportProgress(currentImageColumn int) {
 	if c.progressChan == nil {
 		return
 	}
-
 	c.progressChan <- log.ProgressUpdate{Max: c.image.Width()}
+}
+
+func (c *Camera) closeProgressChan() {
+	if c.progressChan == nil {
+		return
+	}
+	close(c.progressChan)
 }
