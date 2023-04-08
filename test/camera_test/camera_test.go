@@ -17,12 +17,12 @@ import (
 )
 
 var cameraSettings = camera.CameraSettings{
-	VerticalFOV:         90,
-	AspectRatio:         2,
-	ImagePixelHeight:    5,
-	LookAt:              core.NewVec3(0, 0, -1),
-	Antialiasing:        1,
-	NumRenderingThreads: 1,
+	VerticalFOV:      90,
+	AspectRatio:      2,
+	ImagePixelHeight: 5,
+	LookAt:           core.NewVec3(0, 0, -1),
+	Antialiasing:     1,
+	NumRenderThreads: 1,
 }
 
 var randomizer = random.NewRandomGenerator()

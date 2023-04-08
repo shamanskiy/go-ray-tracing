@@ -52,14 +52,14 @@ func makeScene() scene.Scene {
 
 func makeCamera() *camera.Camera {
 	settings := camera.CameraSettings{
-		VerticalFOV:         90,
-		AspectRatio:         16. / 9.,
-		ImagePixelHeight:    360 * 5,
-		LookFrom:            core.NewVec3(0, 0, 0.15),
-		LookAt:              core.NewVec3(0, 0, -1),
-		Antialiasing:        4,
-		ProgressChan:        log.NewProgressBar(),
-		NumRenderingThreads: runtime.NumCPU(),
+		VerticalFOV:      90,
+		AspectRatio:      16. / 9.,
+		ImagePixelHeight: 360 * 5,
+		LookFrom:         core.NewVec3(0, 0, 0.15),
+		LookAt:           core.NewVec3(0, 0, -1),
+		Antialiasing:     4,
+		ProgressChan:     log.NewProgressBar(),
+		NumRenderThreads: runtime.NumCPU(),
 	}
 
 	return camera.NewCamera(&settings, randomizer)

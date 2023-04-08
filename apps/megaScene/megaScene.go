@@ -6,6 +6,7 @@ package main
 import (
 	"image/png"
 	"os"
+	"runtime"
 
 	"github.com/Shamanskiy/go-ray-tracer/src/camera"
 	"github.com/Shamanskiy/go-ray-tracer/src/camera/image"
@@ -105,6 +106,7 @@ func makeCamera() *camera.Camera {
 		LookAt:           core.NewVec3(3., 1.25, 1.5),
 		Antialiasing:     4,
 		ProgressChan:     log.NewProgressBar(),
+		NumRenderThreads: runtime.NumCPU(),
 	}
 
 	return camera.NewCamera(&settings, randomizer)
