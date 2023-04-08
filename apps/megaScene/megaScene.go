@@ -103,7 +103,7 @@ func makeCamera() *camera.Camera {
 		ImagePixelHeight: 360,
 		LookFrom:         core.NewVec3(3.5, 1.35, 1.9),
 		LookAt:           core.NewVec3(3., 1.25, 1.5),
-		Antialiasing:     10,
+		Antialiasing:     4,
 		ProgressChan:     log.NewProgressBar(),
 	}
 
