@@ -1,6 +1,7 @@
 package random_test
 
 import (
+	"math"
 	"testing"
 
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
@@ -9,12 +10,33 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRandomReal(t *testing.T) {
+func TestRandomReal_ShouldBeBetweenZeroAndOne(t *testing.T) {
 	randomGenerator := random.RandomGeneratedImpl{}
+	numSamples := 1000000
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < numSamples; i++ {
 		randomReal := randomGenerator.Real()
 		test.AssertInSemiInternal(t, randomReal, 0, 1)
+	}
+}
+
+func TestRandomReal_ShouldBeApproximatelyUniform(t *testing.T) {
+	randomGenerator := random.NewRandomGenerator()
+	valueCounts := make(map[int]int)
+
+	numSamples := 1000000
+	numBins := 100
+	maxDivergence := 0.10
+
+	for i := 0; i < numSamples; i++ {
+		randomReal := randomGenerator.Real()
+		valueCounts[int(randomReal*float32(numBins))]++
+	}
+
+	for bin := 0; bin < numBins; bin++ {
+		count := valueCounts[bin]
+		divergence := math.Abs(float64(count-numSamples/numBins)) / float64(numSamples/numBins)
+		assert.Less(t, divergence, maxDivergence, "bin %d, count %d, divergence %f", bin, count, divergence)
 	}
 }
 

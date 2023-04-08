@@ -79,7 +79,9 @@ func (c *Camera) Render(scene scene.Scene) *image.Image {
 	}
 
 	waitGroup.Wait()
-	close(c.progressChan)
+	if c.progressChan != nil {
+		close(c.progressChan)
+	}
 
 	return c.image
 }

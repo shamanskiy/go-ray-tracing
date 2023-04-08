@@ -1,7 +1,7 @@
 package random
 
 import (
-	"math/rand"
+	"hash/maphash"
 
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 )
@@ -18,8 +18,14 @@ func NewRandomGenerator() RandomGenerator {
 	return RandomGeneratedImpl{}
 }
 
+// https://qqq.ninja/blog/post/fast-threadsafe-randomness-in-go/
 func (r RandomGeneratedImpl) Real() core.Real {
-	return core.Real(rand.Float32())
+	outUint64 := new(maphash.Hash).Sum64()
+	outFloat64 := float64(outUint64) / float64(1<<64)
+	if outFloat64 >= 1 {
+		outFloat64 = 0.
+	}
+	return float32(outFloat64)
 }
 
 func (r RandomGeneratedImpl) Vec3() core.Vec3 {
