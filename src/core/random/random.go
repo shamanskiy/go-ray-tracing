@@ -10,6 +10,7 @@ type RandomGenerator interface {
 	Real() core.Real
 	Vec3() core.Vec3
 	Vec3InUnitSphere() core.Vec3
+	Vec3InUnitDisk() core.Vec3
 }
 
 type RandomGeneratedImpl struct{}
@@ -32,12 +33,26 @@ func (r RandomGeneratedImpl) Vec3() core.Vec3 {
 	return core.NewVec3(r.Real(), r.Real(), r.Real())
 }
 
+func (r RandomGeneratedImpl) vec2() core.Vec3 {
+	return core.NewVec3(r.Real(), r.Real(), 0)
+}
+
 func (r RandomGeneratedImpl) Vec3InUnitSphere() core.Vec3 {
 	unitDiagVec := core.NewVec3(1, 1, 1)
 
 	vec := core.NewVec3(1, 0, 0)
 	for vec.LenSqr() >= 1 {
 		vec = r.Vec3().Mul(2).Sub(unitDiagVec)
+	}
+	return vec
+}
+
+func (r RandomGeneratedImpl) Vec3InUnitDisk() core.Vec3 {
+	unitDiagVec2 := core.NewVec3(1, 1, 0)
+
+	vec := core.NewVec3(1, 0, 0)
+	for vec.LenSqr() >= 1 {
+		vec = r.vec2().Mul(2).Sub(unitDiagVec2)
 	}
 	return vec
 }

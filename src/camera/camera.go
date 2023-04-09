@@ -29,9 +29,10 @@ type CameraSettings struct {
 	LookFrom core.Vec3
 	LookAt   core.Vec3
 
-	Antialiasing     int
-	NumRenderThreads int
-	ProgressChan     chan<- log.ProgressUpdate
+	Antialiasing        int
+	DefocusBlurStrength core.Real
+	NumRenderThreads    int
+	ProgressChan        chan<- log.ProgressUpdate
 }
 
 func NewCamera(settings *CameraSettings, randomizer random.RandomGenerator) *Camera {
@@ -43,7 +44,7 @@ func NewCamera(settings *CameraSettings, randomizer random.RandomGenerator) *Cam
 	}
 
 	return &Camera{
-		rayGenerator:     NewRayGenerator(settings.LookFrom, settings.LookAt, settings.VerticalFOV, settings.AspectRatio),
+		rayGenerator:     NewRayGenerator(settings, randomizer),
 		image:            image.NewImage(imageWidth, settings.ImagePixelHeight),
 		randomizer:       randomizer,
 		progressChan:     settings.ProgressChan,
@@ -70,6 +71,9 @@ func validateSettings(settings *CameraSettings) {
 	}
 	if settings.NumRenderThreads < 1 {
 		panic(fmt.Errorf("new camera: invalid number of rendering threads: %d", settings.NumRenderThreads))
+	}
+	if settings.DefocusBlurStrength < 0. {
+		panic(fmt.Errorf("new camera: invalid defocus blur strength: %v", settings.DefocusBlurStrength))
 	}
 }
 

@@ -5,6 +5,7 @@ import (
 
 	"github.com/Shamanskiy/go-ray-tracer/src/camera"
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
+	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -12,9 +13,15 @@ var LOOK_FROM = core.NewVec3(0, 0, 0)
 var LOOK_AT = core.NewVec3(0, 0, -2)
 var VERTICAL_FOV = core.Real(90.)
 var ASPECT_RATIO = core.Real(2.)
+var CAMERA_SETTINGS = &camera.CameraSettings{
+	VerticalFOV: VERTICAL_FOV,
+	AspectRatio: ASPECT_RATIO,
+	LookAt:      LOOK_AT,
+	LookFrom:    LOOK_FROM,
+}
 
 func TestRayGenerator_ShouldGenerateRays(t *testing.T) {
-	rayGenerator := camera.NewRayGenerator(LOOK_FROM, LOOK_AT, VERTICAL_FOV, ASPECT_RATIO)
+	rayGenerator := camera.NewRayGenerator(CAMERA_SETTINGS, random.NewRandomGenerator())
 
 	centerRay := rayGenerator.GenerateRay(0.5, 0.5)
 	assert.Equal(t, LOOK_FROM, centerRay.Origin())

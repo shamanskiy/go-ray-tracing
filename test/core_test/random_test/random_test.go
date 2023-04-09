@@ -59,3 +59,13 @@ func TestRandomVec3InUnitSphere(t *testing.T) {
 		assert.Less(t, randomSphereVec.LenSqr(), core.Real(1))
 	}
 }
+
+func TestRandomVec3InUnitDisk(t *testing.T) {
+	randomGenerator := random.RandomGeneratedImpl{}
+
+	for i := 0; i < 10; i++ {
+		randomDiskVec := randomGenerator.Vec3InUnitDisk()
+		assert.EqualValues(t, randomDiskVec.Z(), 0.)
+		assert.Less(t, randomDiskVec.LenSqr(), core.Real(1))
+	}
+}

@@ -21,3 +21,7 @@ func (f FakeRandomGenerator) Vec3() core.Vec3 {
 func (f FakeRandomGenerator) Vec3InUnitSphere() core.Vec3 {
 	return core.NewVec3(0, 0, 0)
 }
+
+func (FakeRandomGenerator) Vec3InUnitDisk() core.Vec3 {
+	return core.NewVec3(0, 0, 0)
+}

@@ -36,8 +36,11 @@ func makeScene() scene.Scene {
 	mattSphere := geometries.NewSphere(core.NewVec3(0, 0, -1), 0.5)
 	scene.Add(mattSphere, materials.NewDiffusive(color.Red, randomizer))
 
+	smallMattSphere := geometries.NewSphere(core.NewVec3(0.25, -0.4, -0.5), 0.1)
+	scene.Add(smallMattSphere, materials.NewDiffusive(color.SkyBlue, randomizer))
+
 	mirrowSphere := geometries.NewSphere(core.NewVec3(1, 0, -1), 0.5)
-	scene.Add(mirrowSphere, materials.NewReflectiveFuzzy(color.Golden, 0.1, randomizer))
+	scene.Add(mirrowSphere, materials.NewReflectiveFuzzy(color.GrayLight, 0.05, randomizer))
 
 	glassShellOuter := geometries.NewSphere(core.NewVec3(-1, 0, -1), 0.5)
 	glassShellInner := geometries.NewSphere(core.NewVec3(-1, 0, -1), -0.4)
@@ -50,14 +53,15 @@ func makeScene() scene.Scene {
 
 func makeCamera() *camera.Camera {
 	settings := camera.CameraSettings{
-		VerticalFOV:      90,
-		AspectRatio:      16. / 9.,
-		ImagePixelHeight: 360 * 5,
-		LookFrom:         core.NewVec3(0, 0, 0.15),
-		LookAt:           core.NewVec3(0, 0, -1),
-		Antialiasing:     4,
-		ProgressChan:     log.NewProgressBar(),
-		NumRenderThreads: runtime.NumCPU(),
+		VerticalFOV:         70,
+		AspectRatio:         16. / 9.,
+		ImagePixelHeight:    360 * 5,
+		LookFrom:            core.NewVec3(0, 0, 0.5),
+		LookAt:              core.NewVec3(0, 0, -1),
+		Antialiasing:        4,
+		ProgressChan:        log.NewProgressBar(),
+		NumRenderThreads:    runtime.NumCPU(),
+		DefocusBlurStrength: 0.05,
 	}
 
 	return camera.NewCamera(&settings, randomizer)
