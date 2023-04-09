@@ -21,10 +21,11 @@ func TestDiffusive_ShouldReflectRayInNormalDirection_WhenNotRandom(t *testing.T)
 	reflection := material.Reflect(RAY_DIRECTION, HIT_POINT, NORMAL_AT_HIT_POINT)
 
 	expected := materials.Reflection{
+		Type:  materials.Scattered,
 		Ray:   core.NewRay(HIT_POINT, NORMAL_AT_HIT_POINT),
 		Color: MATERIAL_COLOR,
 	}
-	assert.Equal(t, expected, *reflection)
+	assert.Equal(t, expected, reflection)
 }
 
 func TestDiffusive_ShouldReflectRayWithinUnitSphereOfNormal_WhenRandom(t *testing.T) {

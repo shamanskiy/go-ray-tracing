@@ -16,10 +16,11 @@ func TestReflective_ShouldReflectRayAroundNormal_WhenNotFuzzy(t *testing.T) {
 	reflection := material.Reflect(incidentDirection, HIT_POINT, NORMAL_AT_HIT_POINT)
 
 	expected := materials.Reflection{
+		Type:  materials.Scattered,
 		Ray:   core.NewRay(HIT_POINT, core.NewVec3(4, 3, 0).Normalize()),
 		Color: MATERIAL_COLOR,
 	}
-	assert.Equal(t, expected, *reflection)
+	assert.Equal(t, expected, reflection)
 }
 
 func TestReflective_ShouldNotReflect_WhenRayParallelToSurface(t *testing.T) {
@@ -28,7 +29,7 @@ func TestReflective_ShouldNotReflect_WhenRayParallelToSurface(t *testing.T) {
 
 	reflection := material.Reflect(incidentDirection, HIT_POINT, NORMAL_AT_HIT_POINT)
 
-	assert.Nil(t, reflection)
+	assert.Equal(t, materials.Absorbed, reflection.Type)
 }
 
 func TestReflective_ShouldNotReflect_WhenRaysNormalComponentCoalignedWithNormal(t *testing.T) {
@@ -37,7 +38,7 @@ func TestReflective_ShouldNotReflect_WhenRaysNormalComponentCoalignedWithNormal(
 
 	reflection := material.Reflect(incidentDirection, HIT_POINT, NORMAL_AT_HIT_POINT)
 
-	assert.Nil(t, reflection)
+	assert.Equal(t, materials.Absorbed, reflection.Type)
 }
 
 func TestRefective_WithFuzziness(t *testing.T) {

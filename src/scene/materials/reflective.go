@@ -33,14 +33,18 @@ func NewReflectiveFuzzy(color color.Color, fuzziness core.Real, randomizer rando
 	}
 }
 
-func (r Reflective) Reflect(incidentDirection, hitPoint, normalAtHitPoint core.Vec3) *Reflection {
+func (r Reflective) Reflect(incidentDirection, hitPoint, normalAtHitPoint core.Vec3) Reflection {
 	reflectedDirection := incidentDirection.Normalize().Reflect(normalAtHitPoint)
 	fuzzyPerturbation := r.randomizer.Vec3InUnitSphere().Mul(r.fuzziness)
 	reflectedDirection = reflectedDirection.Add(fuzzyPerturbation)
 
 	if reflectedDirection.Dot(normalAtHitPoint) > 0 {
-		return &Reflection{core.NewRay(hitPoint, reflectedDirection), r.color}
+		return Reflection{
+			Type:  Scattered,
+			Ray:   core.NewRay(hitPoint, reflectedDirection),
+			Color: r.color,
+		}
 	} else {
-		return nil
+		return Reflection{Type: Absorbed}
 	}
 }

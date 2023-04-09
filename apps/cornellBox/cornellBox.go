@@ -19,6 +19,11 @@ import (
 
 var randomizer = random.NewRandomGenerator()
 
+const (
+	MAX_RAY_REFLECTIONS = 10
+	CAMERA_Z            = 1.2
+)
+
 func main() {
 	scene := makeScene()
 	camera := makeCamera()
@@ -28,22 +33,28 @@ func main() {
 
 func makeScene() scene.Scene {
 	background := background.NewFlatColor(color.White)
-	scene := scene.New(background)
+	scene := scene.New(background, scene.MaxRayReflections(MAX_RAY_REFLECTIONS))
 
-	bottom := geometries.NewPlane(core.NewVec3(0, 0, 0), core.NewVec3(0, 1, 0))
-	scene.Add(bottom, materials.NewDiffusive(color.White, randomizer))
+	floor := geometries.NewPlane(core.NewVec3(0, 0, 0), core.NewVec3(0, 1, 0))
+	scene.Add(floor, materials.NewDiffusive(color.White, randomizer))
 
-	// top := geometries.NewPlane(core.NewVec3(0, 1, 0), core.NewVec3(0, 1, 0))
-	// scene.Add(top, materials.NewDiffusive(color.White, randomizer))
+	topLight := geometries.NewPlane(core.NewVec3(0, 1, 0), core.NewVec3(0, 1, 0))
+	scene.Add(topLight, materials.NewDiffusive(color.White, randomizer))
 
-	back := geometries.NewPlane(core.NewVec3(0, 0, 0), core.NewVec3(0, 0, 1))
-	scene.Add(back, materials.NewDiffusive(color.White, randomizer))
+	backWall := geometries.NewPlane(core.NewVec3(0, 0, 0), core.NewVec3(0, 0, 1))
+	scene.Add(backWall, materials.NewReflective(color.GrayMedium, randomizer))
 
-	left := geometries.NewPlane(core.NewVec3(0, 0, 0), core.NewVec3(1, 0, 0))
-	scene.Add(left, materials.NewDiffusive(color.Red, randomizer))
+	frontWall := geometries.NewPlane(core.NewVec3(0, 0, CAMERA_Z), core.NewVec3(0, 0, 1))
+	scene.Add(frontWall, materials.NewReflective(color.GrayMedium, randomizer))
 
-	// right := geometries.NewPlane(core.NewVec3(1, 0, 0), core.NewVec3(1, 0, 0))
-	// scene.Add(right, materials.NewDiffusive(color.Green, randomizer))
+	leftWall := geometries.NewPlane(core.NewVec3(0, 0, 0), core.NewVec3(1, 0, 0))
+	scene.Add(leftWall, materials.NewDiffusive(color.Red, randomizer))
+
+	rightWall := geometries.NewPlane(core.NewVec3(1, 0, 0), core.NewVec3(1, 0, 0))
+	scene.Add(rightWall, materials.NewDiffusive(color.Green, randomizer))
+
+	sphere := geometries.NewSphere(core.NewVec3(0.5, 0.2, 0.5), 0.2)
+	scene.Add(sphere, materials.NewDiffusiveLight(color.White))
 
 	return scene
 }
@@ -52,10 +63,10 @@ func makeCamera() *camera.Camera {
 	settings := camera.CameraSettings{
 		VerticalFOV:      90,
 		AspectRatio:      1.,
-		ImagePixelHeight: 360,
-		LookFrom:         core.NewVec3(0.5, 0.5, 1),
+		ImagePixelHeight: 360 * 2,
+		LookFrom:         core.NewVec3(0.75, 0.5, CAMERA_Z),
 		LookAt:           core.NewVec3(0.5, 0.5, 0.5),
-		Antialiasing:     1,
+		Antialiasing:     10,
 		ProgressChan:     log.NewProgressBar(),
 		NumRenderThreads: runtime.NumCPU(),
 	}

@@ -58,12 +58,17 @@ func (s *SceneImpl) testRay(ray core.Ray, reflectionDepth int) color.Color {
 	}
 
 	reflection := objectHit.material.Reflect(ray.Direction(), objectHit.location.Point, objectHit.location.Normal)
-	if reflection == nil {
+	switch reflection.Type {
+	case materials.Scattered:
+		reflectedRayColor := s.testRay(reflection.Ray, reflectionDepth+1)
+		return reflectedRayColor.MulColor(reflection.Color)
+	case materials.Emitted:
+		return reflection.Color
+	case materials.Absorbed:
 		return color.Black
+	default:
+		panic("unknown reflection type")
 	}
-
-	reflectedRayColor := s.testRay(reflection.Ray, reflectionDepth+1)
-	return reflectedRayColor.MulColor(reflection.Color)
 }
 
 type objectHit struct {
