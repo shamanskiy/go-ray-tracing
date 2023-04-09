@@ -39,3 +39,15 @@ func TestRayGenerator_ShouldGenerateRays(t *testing.T) {
 	bottomRightRay := rayGenerator.GenerateRay(1, 1)
 	assert.Equal(t, core.NewVec3(4, -2, -2), bottomRightRay.Eval(1))
 }
+
+func TestRayGenerator_RayWithDefocusBlurShouldFocusOnFocusPlane(t *testing.T) {
+	settings := *CAMERA_SETTINGS
+	settings.DefocusBlurStrength = 1
+	rayGenerator := camera.NewRayGenerator(&settings, random.NewRandomGenerator())
+
+	for i := 0; i < 10; i++ {
+		ray := rayGenerator.GenerateRay(0.5, 0.5)
+		assert.Equal(t, LOOK_AT, ray.Eval(1))
+		assert.NotEqual(t, LOOK_FROM, ray.Origin())
+	}
+}
