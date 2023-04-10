@@ -32,15 +32,18 @@ func makeScene() scene.Scene {
 	background := background.NewVerticalGradient(color.White, color.SkyBlue)
 	scene := scene.New(background)
 
-	floor := geometries.NewPlane(core.NewVec3(0, 0, 0), core.NewVec3(0, 1, 0))
+	floor := geometries.NewSphere(core.NewVec3(0, -500, 0), 500)
 	scene.Add(floor, materials.NewDiffusive(color.GrayMedium, randomizer))
+
+	sun := geometries.NewSphere(core.NewVec3(100, 200, 100), 50)
+	scene.Add(sun, materials.NewDiffusiveLight(color.White))
 
 	mattSphere := geometries.NewSphere(core.NewVec3(-2.5, 1.0, 1), 1)
 	scene.Add(mattSphere, materials.NewDiffusive(color.Red, randomizer))
 	glassSphere := geometries.NewSphere(core.NewVec3(0.0, 1.0, 0.15), 1)
 	scene.Add(glassSphere, materials.NewTransparent(1.5, color.White, randomizer))
 	mirrorSphere := geometries.NewSphere(core.NewVec3(2.5, 1.0, 0.0), 1)
-	scene.Add(mirrorSphere, materials.NewReflectiveFuzzy(color.GrayLight, 0.03, randomizer))
+	scene.Add(mirrorSphere, materials.NewReflectiveFuzzy(color.GrayLight, 0.02, randomizer))
 
 	bigSpheres := []geometries.Sphere{mattSphere, glassSphere, mirrorSphere}
 	makeGridOfRandomSpheres(scene, SMALL_SPHERE_GRID_SIZE, bigSpheres)
@@ -96,14 +99,15 @@ func tooCloseToBigSpheres(sphere geometries.Sphere, bigSpheres []geometries.Sphe
 
 func makeCamera() *camera.Camera {
 	settings := camera.CameraSettings{
-		VerticalFOV:      75,
-		AspectRatio:      16. / 9.,
-		ImagePixelHeight: 360,
-		LookFrom:         core.NewVec3(3.5, 1.35, 1.9),
-		LookAt:           core.NewVec3(3., 1.25, 1.5),
-		Antialiasing:     4,
-		ProgressChan:     log.NewProgressBar(),
-		NumRenderThreads: runtime.NumCPU(),
+		VerticalFOV:         75,
+		AspectRatio:         16. / 9.,
+		ImagePixelHeight:    360 * 3,
+		LookFrom:            core.NewVec3(3.5, 1.35, 1.9),
+		LookAt:              core.NewVec3(3., 1.25, 1.5),
+		Antialiasing:        20,
+		ProgressChan:        log.NewProgressBar(),
+		NumRenderThreads:    runtime.NumCPU(),
+		DefocusBlurStrength: 0.005,
 	}
 
 	return camera.NewCamera(&settings, randomizer)
