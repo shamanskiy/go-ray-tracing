@@ -46,7 +46,7 @@ func (s *SceneImpl) Add(object geometries.Geometry, material materials.Material)
 }
 
 func (s *SceneImpl) BuildBVH() {
-	defer log.TimeExecution("save image")()
+	defer log.TimeExecution("build bvh")()
 	s.bvh = geometries.BuildBVH(s.objects)
 }
 
