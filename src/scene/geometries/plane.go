@@ -2,17 +2,20 @@ package geometries
 
 import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
+	"github.com/google/uuid"
 )
 
 type Plane struct {
 	origin core.Vec3
 	normal core.Vec3
+	id     uuid.UUID
 }
 
 func NewPlane(origin, normal core.Vec3) Plane {
 	return Plane{
 		origin: origin,
 		normal: normal,
+		id:     uuid.New(),
 	}
 }
 
@@ -29,7 +32,7 @@ func (p Plane) TestRay(ray core.Ray, params core.Interval) Hit {
 	hitParam := rayPlaneDistance / dotBN
 
 	if params.Contains(hitParam) {
-		return Hit{true, hitParam}
+		return Hit{true, hitParam, p}
 	}
 
 	return Hit{}
@@ -52,4 +55,8 @@ func (p Plane) EvaluateHit(ray core.Ray, hitParam core.Real) HitPoint {
 
 func (p Plane) BoundingBox() core.Box {
 	return core.NewInfiniteBox()
+}
+
+func (p Plane) Id() uuid.UUID {
+	return p.id
 }

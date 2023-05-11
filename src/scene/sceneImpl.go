@@ -6,6 +6,7 @@ import (
 	"github.com/Shamanskiy/go-ray-tracer/src/scene/background"
 	"github.com/Shamanskiy/go-ray-tracer/src/scene/geometries"
 	"github.com/Shamanskiy/go-ray-tracer/src/scene/materials"
+	"github.com/google/uuid"
 )
 
 const (
@@ -14,8 +15,8 @@ const (
 )
 
 type SceneImpl struct {
-	objects    []geometries.Hittable
-	materials  []materials.Material
+	objects    []geometries.Geometry
+	materials  map[uuid.UUID]materials.Material
 	background background.Background
 
 	minHitParam       core.Real // prevents black acne
@@ -27,6 +28,7 @@ func New(background background.Background, settings ...SceneImplSetting) *SceneI
 		background:        background,
 		minHitParam:       DEFAULT_MIN_HIT_PARAM,
 		maxRayReflections: DEFAULT_MAX_RAY_REFLECTIONS,
+		materials:         make(map[uuid.UUID]materials.Material),
 	}
 
 	for _, setting := range settings {
@@ -36,9 +38,9 @@ func New(background background.Background, settings ...SceneImplSetting) *SceneI
 	return scene
 }
 
-func (s *SceneImpl) Add(object geometries.Hittable, material materials.Material) {
+func (s *SceneImpl) Add(object geometries.Geometry, material materials.Material) {
 	s.objects = append(s.objects, object)
-	s.materials = append(s.materials, material)
+	s.materials[object.Id()] = material
 }
 
 func (s *SceneImpl) TestRay(ray core.Ray) color.Color {
@@ -76,30 +78,24 @@ type objectHit struct {
 }
 
 func (s *SceneImpl) hitClosestObject(ray core.Ray) objectHit {
-	closestHit := core.Inf()
-	var objectIndex int
+	closestHit := geometries.Hit{false, core.Inf(), nil}
 
 	for currentObjectIndex := range s.objects {
 		hit := s.objects[currentObjectIndex].TestRay(ray, core.NewInterval(s.minHitParam, core.Inf()))
 
-		if !hit.HasHit {
-			continue
-		}
-
-		if hit.Param < closestHit {
-			closestHit = hit.Param
-			objectIndex = currentObjectIndex
+		if hit.HasHit && hit.Param < closestHit.Param {
+			closestHit = hit
 		}
 	}
 
-	if closestHit == core.Inf() {
+	if !closestHit.HasHit {
 		return objectHit{}
 	}
 
-	closestHitPoint := s.objects[objectIndex].EvaluateHit(ray, closestHit)
+	closestHitPoint := closestHit.HitGeometry.EvaluateHit(ray, closestHit.Param)
 	return objectHit{
 		hasHit:   true,
 		location: closestHitPoint,
-		material: s.materials[objectIndex],
+		material: s.materials[closestHit.HitGeometry.Id()],
 	}
 }

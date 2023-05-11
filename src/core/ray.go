@@ -30,8 +30,8 @@ func (ray Ray) Hits(box Box, params Interval) bool {
 			t0, t1 = t1, t0
 		}
 
-		params.min = ternaryIf(t0 > params.min, t0, params.min)
-		params.max = ternaryIf(t1 < params.max, t1, params.max)
+		params.min = IfElse(t0 > params.min, t0, params.min)
+		params.max = IfElse(t1 < params.max, t1, params.max)
 
 		if params.max < params.min {
 			return false
@@ -40,7 +40,7 @@ func (ray Ray) Hits(box Box, params Interval) bool {
 	return true
 }
 
-func ternaryIf[T any](condition bool, ifTrue, ifFalse T) T {
+func IfElse[T any](condition bool, ifTrue, ifFalse T) T {
 	if condition {
 		return ifTrue
 	} else {

@@ -2,17 +2,20 @@ package geometries
 
 import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
+	"github.com/google/uuid"
 )
 
 type Sphere struct {
 	center core.Vec3
 	radius core.Real
+	id     uuid.UUID
 }
 
 func NewSphere(center core.Vec3, radius core.Real) Sphere {
 	return Sphere{
 		center: center,
 		radius: radius,
+		id:     uuid.New(),
 	}
 }
 
@@ -29,11 +32,11 @@ func (s Sphere) TestRay(ray core.Ray, params core.Interval) Hit {
 	}
 
 	if params.Contains(solution.Left) {
-		return Hit{true, solution.Left}
+		return Hit{true, solution.Left, s}
 	}
 
 	if params.Contains(solution.Right) {
-		return Hit{true, solution.Right}
+		return Hit{true, solution.Right, s}
 	}
 
 	return Hit{}
@@ -53,4 +56,8 @@ func (s Sphere) InContactWith(other Sphere) bool {
 func (s Sphere) BoundingBox() core.Box {
 	centerToCorner := core.NewVec3(s.radius, s.radius, s.radius)
 	return core.NewBox(s.center.Sub(centerToCorner), s.center.Add(centerToCorner))
+}
+
+func (s Sphere) Id() uuid.UUID {
+	return s.id
 }
