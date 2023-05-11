@@ -63,10 +63,37 @@ func TestRayShouldHitBox_IfRayGoesThroughBoxEdge(t *testing.T) {
 	assert.True(t, ray.Hits(box, 0, 10))
 }
 
-// Why ray-box hit is detected for sides and edges but not for corners? No idea
 func TestRayShouldNotHitBox_IfRayGoesThroughBoxCorner(t *testing.T) {
 	ray := core.NewRay(core.NewVec3(0, 0, 0), core.NewVec3(1, -1, -1))
 	box := core.NewBox(core.NewVec3(1, -1, -1), core.NewVec3(3, 1, 1))
 
-	assert.False(t, ray.Hits(box, 0, 10))
+	assert.True(t, ray.Hits(box, 0, 10))
+}
+
+func TestRayShouldHitDegenerateFlatBox(t *testing.T) {
+	ray := core.NewRay(core.NewVec3(0, 0, 0), core.NewVec3(1, 0, 0))
+	box := core.NewBox(core.NewVec3(1, -1, -1), core.NewVec3(1, 1, 1))
+
+	assert.True(t, ray.Hits(box, 0, 10))
+}
+
+func TestRayShouldHitDegenerateLineBox(t *testing.T) {
+	ray := core.NewRay(core.NewVec3(0, 0, 0), core.NewVec3(1, 0, 0))
+	box := core.NewBox(core.NewVec3(1, 0, 0), core.NewVec3(3, 0, 0))
+
+	assert.True(t, ray.Hits(box, 0, 10))
+}
+
+func TestRayShouldHitDegeneratePointBox(t *testing.T) {
+	ray := core.NewRay(core.NewVec3(0, 0, 0), core.NewVec3(1, 0, 0))
+	box := core.NewBox(core.NewVec3(1, 0, 0), core.NewVec3(1, 0, 0))
+
+	assert.True(t, ray.Hits(box, 0, 10))
+}
+
+func TestRayShouldHitDegenerateFlatBox_IfRayIsNotNormalToBoxPlane(t *testing.T) {
+	ray := core.NewRay(core.NewVec3(0, -1, -1), core.NewVec3(1, 1, 1))
+	box := core.NewBox(core.NewVec3(1, -1, -1), core.NewVec3(1, 1, 1))
+
+	assert.True(t, ray.Hits(box, 0, 10))
 }

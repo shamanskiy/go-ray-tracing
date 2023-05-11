@@ -33,7 +33,7 @@ func (ray Ray) Hits(box Box, tMin, tMax Real) bool {
 		tMin = ternaryIf(t0 > tMin, t0, tMin)
 		tMax = ternaryIf(t1 < tMax, t1, tMax)
 
-		if tMax <= tMin {
+		if tMax < tMin {
 			return false
 		}
 	}
