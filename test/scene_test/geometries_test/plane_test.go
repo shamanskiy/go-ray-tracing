@@ -11,13 +11,23 @@ import (
 var PLANE_ORIGIN = core.NewVec3(0, 0, 0)
 var PLANE_NORMAL = core.NewVec3(0, 1, 0)
 
-func TestPlane_ShouldReturnOneHit_IfRayIntersectsPlane(t *testing.T) {
+func TestPlane_ShouldReturnHit_IfRayIntersectsPlaneWithinParamInterval(t *testing.T) {
 	plane := xzPlane()
 	ray := core.NewRay(core.NewVec3(-2, 2, 0), core.NewVec3(1, -1, 0))
 
-	hits := plane.TestRay(ray)
+	hit := plane.TestRay(ray, core.NewInterval(0, 10))
 
-	assert.Equal(t, []core.Real{2}, hits)
+	assert.True(t, hit.HasHit)
+	assert.EqualValues(t, 2., hit.Param)
+}
+
+func TestPlane_ShouldReturnNoHit_IfRayIntersectsPlaneOutsideOfParamInterval(t *testing.T) {
+	plane := xzPlane()
+	ray := core.NewRay(core.NewVec3(-2, 2, 0), core.NewVec3(1, -1, 0))
+
+	hit := plane.TestRay(ray, core.NewInterval(0, 1))
+
+	assert.False(t, hit.HasHit)
 }
 
 func TestPlane_ShouldEvaluateHitWithPlaneNormal_IfRayHitsPositiveSide(t *testing.T) {
@@ -40,22 +50,21 @@ func TestPlane_ShouldEvaluateHitWithNegatedNormal_IfRayHitsNegativeSide(t *testi
 	assert.Equal(t, PLANE_NORMAL.Mul(-1), hitRecord.Normal)
 }
 
-func TestPlane_ShouldReturnNoHits_IfRayIsParallelToPlane(t *testing.T) {
+func TestPlane_ShouldReturnNoHit_IfRayIsParallelToPlane(t *testing.T) {
 	plane := xzPlane()
 	ray := core.NewRay(core.NewVec3(-2, 2, 0), core.NewVec3(1, 0, 0))
 
-	hits := plane.TestRay(ray)
+	hit := plane.TestRay(ray, core.NewInterval(0, core.Inf()))
 
-	assert.Empty(t, hits)
+	assert.False(t, hit.HasHit)
 }
 
-func TestPlane_ShouldReturnNoHits_IfRayPointsAwayFromPlane(t *testing.T) {
+func TestPlane_ShouldReturnInfiniteBoundingBox(t *testing.T) {
 	plane := xzPlane()
-	ray := core.NewRay(core.NewVec3(-2, 2, 0), core.NewVec3(1, 1, 0))
 
-	hits := plane.TestRay(ray)
+	bbox := plane.BoundingBox()
 
-	assert.Empty(t, hits)
+	assert.Equal(t, core.NewInfiniteBox(), bbox)
 }
 
 func xzPlane() geometries.Plane {

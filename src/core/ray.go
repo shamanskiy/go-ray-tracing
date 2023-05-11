@@ -21,7 +21,7 @@ func (ray Ray) Eval(t Real) Vec3 {
 	return ray.origin.Add(ray.direction.Mul(t))
 }
 
-func (ray Ray) Hits(box Box, tMin, tMax Real) bool {
+func (ray Ray) Hits(box Box, params Interval) bool {
 	for i := 0; i < 3; i++ {
 		invD := 1. / ray.direction.At(i)
 		t0 := (box.min.At(i) - ray.origin.At(i)) * invD
@@ -30,10 +30,10 @@ func (ray Ray) Hits(box Box, tMin, tMax Real) bool {
 			t0, t1 = t1, t0
 		}
 
-		tMin = ternaryIf(t0 > tMin, t0, tMin)
-		tMax = ternaryIf(t1 < tMax, t1, tMax)
+		params.min = ternaryIf(t0 > params.min, t0, params.min)
+		params.max = ternaryIf(t1 < params.max, t1, params.max)
 
-		if tMax < tMin {
+		if params.max < params.min {
 			return false
 		}
 	}

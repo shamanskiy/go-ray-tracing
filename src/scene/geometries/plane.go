@@ -2,8 +2,6 @@ package geometries
 
 import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
-	"github.com/Shamanskiy/go-ray-tracer/src/core/slices"
-	"github.com/Shamanskiy/go-ray-tracer/src/core/slices/filters"
 )
 
 type Plane struct {
@@ -21,16 +19,20 @@ func NewPlane(origin, normal core.Vec3) Plane {
 // R = A + Bt
 // Plane: dot(X-Origin, N) = 0
 // t = dot(Origin-A,N) / dot(B,N)
-func (p Plane) TestRay(ray core.Ray) (hitParams []core.Real) {
+func (p Plane) TestRay(ray core.Ray, params core.Interval) Hit {
 	dotBN := ray.Direction().Dot(p.normal)
 	if core.Abs(dotBN) <= core.Tolerance {
-		return []core.Real{}
+		return Hit{}
 	}
 
 	rayPlaneDistance := p.origin.Sub(ray.Origin()).Dot(p.normal)
-	t := []core.Real{rayPlaneDistance / dotBN}
+	hitParam := rayPlaneDistance / dotBN
 
-	return slices.Filter(t, filters.GreaterOrEqualThan(core.Real(0.)))
+	if params.Contains(hitParam) {
+		return Hit{true, hitParam}
+	}
+
+	return Hit{}
 }
 
 func (p Plane) EvaluateHit(ray core.Ray, hitParam core.Real) HitPoint {
@@ -46,4 +48,8 @@ func (p Plane) EvaluateHit(ray core.Ray, hitParam core.Real) HitPoint {
 		Point:  ray.Eval(hitParam),
 		Normal: normal,
 	}
+}
+
+func (p Plane) BoundingBox() core.Box {
+	return core.NewInfiniteBox()
 }

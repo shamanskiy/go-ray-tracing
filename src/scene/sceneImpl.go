@@ -3,8 +3,6 @@ package scene
 import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
-	"github.com/Shamanskiy/go-ray-tracer/src/core/slices"
-	"github.com/Shamanskiy/go-ray-tracer/src/core/slices/filters"
 	"github.com/Shamanskiy/go-ray-tracer/src/scene/background"
 	"github.com/Shamanskiy/go-ray-tracer/src/scene/geometries"
 	"github.com/Shamanskiy/go-ray-tracer/src/scene/materials"
@@ -16,7 +14,7 @@ const (
 )
 
 type SceneImpl struct {
-	objects    []geometries.Geometry
+	objects    []geometries.Hittable
 	materials  []materials.Material
 	background background.Background
 
@@ -38,7 +36,7 @@ func New(background background.Background, settings ...SceneImplSetting) *SceneI
 	return scene
 }
 
-func (s *SceneImpl) Add(object geometries.Geometry, material materials.Material) {
+func (s *SceneImpl) Add(object geometries.Hittable, material materials.Material) {
 	s.objects = append(s.objects, object)
 	s.materials = append(s.materials, material)
 }
@@ -49,7 +47,7 @@ func (s *SceneImpl) TestRay(ray core.Ray) color.Color {
 
 func (s *SceneImpl) testRay(ray core.Ray, reflectionDepth int) color.Color {
 	objectHit := s.hitClosestObject(ray)
-	if objectHit.noHit() {
+	if !objectHit.hasHit {
 		return s.background.ColorRay(ray)
 	}
 
@@ -72,12 +70,9 @@ func (s *SceneImpl) testRay(ray core.Ray, reflectionDepth int) color.Color {
 }
 
 type objectHit struct {
-	location *geometries.HitPoint
+	hasHit   bool
+	location geometries.HitPoint
 	material materials.Material
-}
-
-func (hit objectHit) noHit() bool {
-	return hit.location == nil
 }
 
 func (s *SceneImpl) hitClosestObject(ray core.Ray) objectHit {
@@ -85,26 +80,26 @@ func (s *SceneImpl) hitClosestObject(ray core.Ray) objectHit {
 	var objectIndex int
 
 	for currentObjectIndex := range s.objects {
-		hits := s.objects[currentObjectIndex].TestRay(ray)
-		firstHit := slices.FindFirst(hits, filters.GreaterOrEqualThan(s.minHitParam))
+		hit := s.objects[currentObjectIndex].TestRay(ray, core.NewInterval(s.minHitParam, core.Inf()))
 
-		if firstHit == nil {
+		if !hit.HasHit {
 			continue
 		}
 
-		if *firstHit < closestHit {
-			closestHit = *firstHit
+		if hit.Param < closestHit {
+			closestHit = hit.Param
 			objectIndex = currentObjectIndex
 		}
 	}
 
 	if closestHit == core.Inf() {
 		return objectHit{}
-	} else {
-		closestHitPoint := s.objects[objectIndex].EvaluateHit(ray, closestHit)
-		return objectHit{
-			location: &closestHitPoint,
-			material: s.materials[objectIndex],
-		}
+	}
+
+	closestHitPoint := s.objects[objectIndex].EvaluateHit(ray, closestHit)
+	return objectHit{
+		hasHit:   true,
+		location: closestHitPoint,
+		material: s.materials[objectIndex],
 	}
 }

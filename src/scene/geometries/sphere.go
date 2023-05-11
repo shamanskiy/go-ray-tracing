@@ -2,8 +2,6 @@ package geometries
 
 import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
-	"github.com/Shamanskiy/go-ray-tracer/src/core/slices"
-	"github.com/Shamanskiy/go-ray-tracer/src/core/slices/filters"
 )
 
 type Sphere struct {
@@ -18,7 +16,7 @@ func NewSphere(center core.Vec3, radius core.Real) Sphere {
 	}
 }
 
-func (s Sphere) TestRay(ray core.Ray) []core.Real {
+func (s Sphere) TestRay(ray core.Ray, params core.Interval) Hit {
 	centerToOrigin := ray.Origin().Sub(s.center)
 
 	a := ray.Direction().Dot(ray.Direction())
@@ -27,11 +25,18 @@ func (s Sphere) TestRay(ray core.Ray) []core.Real {
 	solution := core.SolveQuadEquation(a, b, c)
 
 	if solution.NoSolution {
-		return []core.Real{}
+		return Hit{}
 	}
 
-	solutions := []core.Real{solution.Left, solution.Right}
-	return slices.Filter(solutions, filters.GreaterOrEqualThan(core.Real(0.)))
+	if params.Contains(solution.Left) {
+		return Hit{true, solution.Left}
+	}
+
+	if params.Contains(solution.Right) {
+		return Hit{true, solution.Right}
+	}
+
+	return Hit{}
 }
 
 func (s Sphere) EvaluateHit(ray core.Ray, hitParam core.Real) HitPoint {
@@ -43,4 +48,9 @@ func (s Sphere) EvaluateHit(ray core.Ray, hitParam core.Real) HitPoint {
 func (s Sphere) InContactWith(other Sphere) bool {
 	distance := s.center.Sub(other.center).Len()
 	return distance <= s.radius+other.radius
+}
+
+func (s Sphere) BoundingBox() core.Box {
+	centerToCorner := core.NewVec3(s.radius, s.radius, s.radius)
+	return core.NewBox(s.center.Sub(centerToCorner), s.center.Add(centerToCorner))
 }

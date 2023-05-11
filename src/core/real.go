@@ -1,6 +1,10 @@
 package core
 
-import "github.com/chewxy/math32"
+import (
+	"fmt"
+
+	"github.com/chewxy/math32"
+)
 
 type Real = float32
 
@@ -10,4 +14,23 @@ func Inf() Real {
 
 func Abs(v Real) Real {
 	return math32.Abs(v)
+}
+
+type Interval struct {
+	min, max Real
+}
+
+func NewInterval(min, max Real) Interval {
+	if min > max {
+		panic(fmt.Sprintf("new internal: min %f must be less or equal max %f", min, max))
+	}
+	return Interval{min: min, max: max}
+}
+
+func (i Interval) Contains(x Real) bool {
+	return x >= i.min && x <= i.max
+}
+
+func (i Interval) ContainsStrictly(x Real) bool {
+	return x > i.min && x < i.max
 }

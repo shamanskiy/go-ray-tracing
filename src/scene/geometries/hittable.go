@@ -7,7 +7,13 @@ type HitPoint struct {
 	Normal core.Vec3
 }
 
-type Geometry interface {
-	TestRay(ray core.Ray) (hitParams []core.Real)
+type Hit struct {
+	HasHit          bool
+	Param core.Real
+}
+
+type Hittable interface {
+	TestRay(ray core.Ray, params core.Interval) Hit
 	EvaluateHit(ray core.Ray, hitParam core.Real) HitPoint
+	BoundingBox() core.Box
 }
