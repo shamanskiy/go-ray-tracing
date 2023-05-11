@@ -1,6 +1,8 @@
 package core
 
 import (
+	"fmt"
+
 	"github.com/go-gl/mathgl/mgl32"
 )
 
@@ -70,4 +72,17 @@ func (vec Vec3) Reflect(axis Vec3) Vec3 {
 
 func (vecA Vec3) InDelta(vecB Vec3, delta Real) bool {
 	return vecA.Sub(vecB).LenSqr() < delta*delta
+}
+
+func (vec Vec3) At(i int) Real {
+	switch i {
+	case 0:
+		return vec.X()
+	case 1:
+		return vec.Y()
+	case 2:
+		return vec.Z()
+	default:
+		panic(fmt.Sprintf("invalid index %d for 3d vector", i))
+	}
 }
