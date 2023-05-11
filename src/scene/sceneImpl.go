@@ -1,6 +1,7 @@
 package scene
 
 import (
+	"github.com/Shamanskiy/go-ray-tracer/src/camera/log"
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/scene/background"
@@ -18,6 +19,7 @@ type SceneImpl struct {
 	objects    []geometries.Geometry
 	materials  map[uuid.UUID]materials.Material
 	background background.Background
+	bvh        *geometries.BVHNode
 
 	minHitParam       core.Real // prevents black acne
 	maxRayReflections int       // prevents infinite ray bouncing between parallel walls
@@ -41,6 +43,11 @@ func New(background background.Background, settings ...SceneImplSetting) *SceneI
 func (s *SceneImpl) Add(object geometries.Geometry, material materials.Material) {
 	s.objects = append(s.objects, object)
 	s.materials[object.Id()] = material
+}
+
+func (s *SceneImpl) BuildBVH() {
+	defer log.TimeExecution("save image")()
+	s.bvh = geometries.BuildBVH(s.objects)
 }
 
 func (s *SceneImpl) TestRay(ray core.Ray) color.Color {
@@ -78,24 +85,20 @@ type objectHit struct {
 }
 
 func (s *SceneImpl) hitClosestObject(ray core.Ray) objectHit {
-	closestHit := geometries.Hit{false, core.Inf(), nil}
-
-	for currentObjectIndex := range s.objects {
-		hit := s.objects[currentObjectIndex].TestRay(ray, core.NewInterval(s.minHitParam, core.Inf()))
-
-		if hit.HasHit && hit.Param < closestHit.Param {
-			closestHit = hit
-		}
+	if s.bvh == nil {
+		panic("scene not ready: build bvh before rendering")
 	}
 
-	if !closestHit.HasHit {
+	hit := s.bvh.TestRay(ray, core.NewInterval(s.minHitParam, core.Inf()))
+
+	if !hit.HasHit {
 		return objectHit{}
 	}
 
-	closestHitPoint := closestHit.HitGeometry.EvaluateHit(ray, closestHit.Param)
+	closestHitPoint := hit.HitGeometry.EvaluateHit(ray, hit.Param)
 	return objectHit{
 		hasHit:   true,
 		location: closestHitPoint,
-		material: s.materials[closestHit.HitGeometry.Id()],
+		material: s.materials[hit.HitGeometry.Id()],
 	}
 }
