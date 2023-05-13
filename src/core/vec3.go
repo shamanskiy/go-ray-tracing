@@ -74,6 +74,8 @@ func (vecA Vec3) InDelta(vecB Vec3, delta Real) bool {
 	return vecA.Sub(vecB).LenSqr() < delta*delta
 }
 
+// At is relatively slow because of the switch.
+// Don't use it in performance critical sections
 func (vec Vec3) At(i int) Real {
 	switch i {
 	case 0:

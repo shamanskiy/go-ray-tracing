@@ -43,7 +43,7 @@ go get github.com/pkg/profile
 to install the `profile` package and put
 
 ```
-defer profile.Start(profile.ProfilePath(".")).Stop()`
+defer profile.Start(profile.ProfilePath(".")).Stop()
 ```
 
 at the top of the function you want to profile and run the program/test. This should produce a `cpu.prof` file that you can inspect by running
