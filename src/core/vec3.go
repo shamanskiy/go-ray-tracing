@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 
+	"github.com/chewxy/math32"
 	"github.com/go-gl/mathgl/mgl32"
 )
 
@@ -87,4 +88,12 @@ func (vec Vec3) At(i int) Real {
 	default:
 		panic(fmt.Sprintf("invalid index %d for 3d vector", i))
 	}
+}
+
+func Vec3Min(a, b Vec3) Vec3 {
+	return NewVec3(math32.Min(a.X(), b.X()), math32.Min(a.Y(), b.Y()), math32.Min(a.Z(), b.Z()))
+}
+
+func Vec3Max(a, b Vec3) Vec3 {
+	return NewVec3(math32.Max(a.X(), b.X()), math32.Max(a.Y(), b.Y()), math32.Max(a.Z(), b.Z()))
 }
