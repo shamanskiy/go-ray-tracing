@@ -1,7 +1,6 @@
 package scene
 
 import (
-	"github.com/Shamanskiy/go-ray-tracer/src/camera/log"
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/optional"
@@ -44,11 +43,6 @@ func New(background background.Background, settings ...SceneImplSetting) *SceneI
 func (s *SceneImpl) Add(object geometries.Geometry, material materials.Material) {
 	s.objects = append(s.objects, object)
 	s.materials[object.Id()] = material
-	s.buildBVH()
-}
-
-func (s *SceneImpl) buildBVH() {
-	defer log.TimeExecution("build bvh")()
 	s.bvh = geometries.BuildBVH(s.objects)
 }
 
@@ -85,21 +79,21 @@ func (s *SceneImpl) testRay(ray core.Ray, reflectionDepth int) color.Color {
 	}
 }
 
-type objectHit struct {
+type sceneHit struct {
 	location geometries.HitPoint
 	material materials.Material
 }
 
-func (s *SceneImpl) hitClosestObject(ray core.Ray) optional.Optional[objectHit] {
+func (s *SceneImpl) hitClosestObject(ray core.Ray) optional.Optional[sceneHit] {
 	optionalHit := s.bvh.TestRay(ray, core.NewInterval(s.minHitParam, core.Inf()))
 
 	if optionalHit.Empty() {
-		return optional.Empty[objectHit]()
+		return optional.Empty[sceneHit]()
 	}
 
 	hit := optionalHit.Value()
 	closestHitPoint := hit.HitGeometry.EvaluateHit(ray, hit.Param)
-	return optional.Of(objectHit{
+	return optional.Of(sceneHit{
 		location: closestHitPoint,
 		material: s.materials[hit.HitGeometry.Id()],
 	})

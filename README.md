@@ -34,7 +34,22 @@ go test ./...
 
 ## Profiling
 
+To get a CPU profile of a function, run
+
+```
 go get github.com/pkg/profile
-Put `defer profile.Start(profile.ProfilePath(".")).Stop()` in main.
-Run `go tool pprof cpu.prof`
-Run `top` or `web`
+```
+
+to install the `profile` package and put
+
+```
+defer profile.Start(profile.ProfilePath(".")).Stop()`
+```
+
+at the top of the function you want to profile and run the program/test. This should produce a `cpu.prof` file that you can inspect by running
+
+```
+go tool pprof cpu.prof
+top # print the most CPU-consuming functions
+web # create a CPU profile graph and displays it in the browser
+```

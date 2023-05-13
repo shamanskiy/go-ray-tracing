@@ -20,7 +20,6 @@ func BuildBVH(geometries []Geometry) *BVHNode {
 	}
 
 	sortingAxis := rand.Intn(3)
-
 	sort.Slice(geometries, func(i, j int) bool {
 		return compareGeometries(geometries, i, j, sortingAxis)
 	})
