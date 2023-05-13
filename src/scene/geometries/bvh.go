@@ -5,6 +5,7 @@ import (
 	"sort"
 
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
+	"github.com/Shamanskiy/go-ray-tracer/src/core/optional"
 )
 
 type BVHNode struct {
@@ -48,27 +49,27 @@ func compareGeometries(geometries []Geometry, i, j, sortingAxis int) bool {
 	return minI < minj
 }
 
-func (bhv *BVHNode) TestRay(ray core.Ray, params core.Interval) Hit {
+func (bhv *BVHNode) TestRay(ray core.Ray, params core.Interval) optional.Optional[Hit] {
 	if !ray.Hits(bhv.boundingBox, params) {
-		return Hit{}
+		return optional.Empty[Hit]()
 	}
 
 	leftHit := bhv.leftChild.TestRay(ray, params)
 	rightHit := bhv.rightChild.TestRay(ray, params)
 
-	if leftHit.HasHit && rightHit.HasHit {
-		return core.IfElse(leftHit.Param < rightHit.Param, leftHit, rightHit)
+	if leftHit.Present() && rightHit.Present() {
+		return core.IfElse(leftHit.Value().Param < rightHit.Value().Param, leftHit, rightHit)
 	}
 
-	if leftHit.HasHit {
+	if leftHit.Present() {
 		return leftHit
 	}
 
-	if rightHit.HasHit {
+	if rightHit.Present() {
 		return rightHit
 	}
 
-	return Hit{}
+	return optional.Empty[Hit]()
 }
 
 func (bvh *BVHNode) BoundingBox() core.Box {

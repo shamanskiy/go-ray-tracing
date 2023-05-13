@@ -17,8 +17,7 @@ func TestPlane_ShouldReturnHit_IfRayIntersectsPlaneWithinParamInterval(t *testin
 
 	hit := plane.TestRay(ray, core.NewInterval(0, 10))
 
-	assert.True(t, hit.HasHit)
-	assert.EqualValues(t, 2., hit.Param)
+	assert.EqualValues(t, 2., hit.Value().Param)
 }
 
 func TestPlane_ShouldReturnNoHit_IfRayIntersectsPlaneOutsideOfParamInterval(t *testing.T) {
@@ -27,7 +26,7 @@ func TestPlane_ShouldReturnNoHit_IfRayIntersectsPlaneOutsideOfParamInterval(t *t
 
 	hit := plane.TestRay(ray, core.NewInterval(0, 1))
 
-	assert.False(t, hit.HasHit)
+	assert.True(t, hit.Empty())
 }
 
 func TestPlane_ShouldEvaluateHitWithPlaneNormal_IfRayHitsPositiveSide(t *testing.T) {
@@ -56,7 +55,7 @@ func TestPlane_ShouldReturnNoHit_IfRayIsParallelToPlane(t *testing.T) {
 
 	hit := plane.TestRay(ray, core.NewInterval(0, core.Inf()))
 
-	assert.False(t, hit.HasHit)
+	assert.True(t, hit.Empty())
 }
 
 func TestPlane_ShouldReturnInfiniteBoundingBox(t *testing.T) {

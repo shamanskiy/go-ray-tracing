@@ -2,6 +2,7 @@ package geometries
 
 import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
+	"github.com/Shamanskiy/go-ray-tracer/src/core/optional"
 	"github.com/google/uuid"
 )
 
@@ -19,27 +20,27 @@ func NewSphere(center core.Vec3, radius core.Real) Sphere {
 	}
 }
 
-func (s Sphere) TestRay(ray core.Ray, params core.Interval) Hit {
-	centerToOrigin := ray.Origin().Sub(s.center)
+func (sphere Sphere) TestRay(ray core.Ray, params core.Interval) optional.Optional[Hit] {
+	centerToOrigin := ray.Origin().Sub(sphere.center)
 
 	a := ray.Direction().Dot(ray.Direction())
 	b := 2.0 * ray.Direction().Dot(centerToOrigin)
-	c := centerToOrigin.Dot(centerToOrigin) - s.radius*s.radius
+	c := centerToOrigin.Dot(centerToOrigin) - sphere.radius*sphere.radius
 	solution := core.SolveQuadEquation(a, b, c)
 
 	if solution.NoSolution {
-		return Hit{}
+		return optional.Empty[Hit]()
 	}
 
 	if params.Contains(solution.Left) {
-		return Hit{true, solution.Left, s}
+		return optional.Of(Hit{solution.Left, sphere})
 	}
 
 	if params.Contains(solution.Right) {
-		return Hit{true, solution.Right, s}
+		return optional.Of(Hit{solution.Right, sphere})
 	}
 
-	return Hit{}
+	return optional.Empty[Hit]()
 }
 
 func (s Sphere) EvaluateHit(ray core.Ray, hitParam core.Real) HitPoint {

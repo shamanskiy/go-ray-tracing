@@ -2,6 +2,7 @@ package geometries
 
 import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
+	"github.com/Shamanskiy/go-ray-tracer/src/core/optional"
 	"github.com/google/uuid"
 )
 
@@ -22,20 +23,21 @@ func NewPlane(origin, normal core.Vec3) Plane {
 // R = A + Bt
 // Plane: dot(X-Origin, N) = 0
 // t = dot(Origin-A,N) / dot(B,N)
-func (p Plane) TestRay(ray core.Ray, params core.Interval) Hit {
-	dotBN := ray.Direction().Dot(p.normal)
+func (plane Plane) TestRay(ray core.Ray, params core.Interval) optional.Optional[Hit] {
+	dotBN := ray.Direction().Dot(plane.normal)
 	if core.Abs(dotBN) <= core.Tolerance {
-		return Hit{}
+		return optional.Empty[Hit]()
 	}
 
-	rayPlaneDistance := p.origin.Sub(ray.Origin()).Dot(p.normal)
+	rayPlaneDistance := plane.origin.Sub(ray.Origin()).Dot(plane.normal)
 	hitParam := rayPlaneDistance / dotBN
 
 	if params.Contains(hitParam) {
-		return Hit{true, hitParam, p}
+		hit := Hit{hitParam, plane}
+		return optional.Of(hit)
 	}
 
-	return Hit{}
+	return optional.Empty[Hit]()
 }
 
 func (p Plane) EvaluateHit(ray core.Ray, hitParam core.Real) HitPoint {

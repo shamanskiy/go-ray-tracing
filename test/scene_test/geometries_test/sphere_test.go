@@ -14,8 +14,7 @@ func TestSphere_ShouldReturnClosestHit_IfHasTwoIntersectionsWithinParamInterval(
 
 	hit := sphere.TestRay(ray, core.NewInterval(0, 10))
 
-	assert.True(t, hit.HasHit)
-	assert.EqualValues(t, 2., hit.Param)
+	assert.EqualValues(t, 2., hit.Value().Param)
 }
 
 func TestSphere_ShouldReturnFarthestHit_IfClosestHitOutsideParamInternal(t *testing.T) {
@@ -24,8 +23,7 @@ func TestSphere_ShouldReturnFarthestHit_IfClosestHitOutsideParamInternal(t *test
 
 	hit := sphere.TestRay(ray, core.NewInterval(3, 10))
 
-	assert.True(t, hit.HasHit)
-	assert.EqualValues(t, 6., hit.Param)
+	assert.EqualValues(t, 6., hit.Value().Param)
 }
 
 func TestSphere_ShouldReturnNoHit_IfBothHitsOutsideOfParamInterval(t *testing.T) {
@@ -34,7 +32,7 @@ func TestSphere_ShouldReturnNoHit_IfBothHitsOutsideOfParamInterval(t *testing.T)
 
 	hit := sphere.TestRay(ray, core.NewInterval(0, 1))
 
-	assert.False(t, hit.HasHit)
+	assert.True(t, hit.Empty())
 }
 
 func TestSphere_ShouldReturnHit_IfRayTouchesSphere(t *testing.T) {
@@ -43,8 +41,7 @@ func TestSphere_ShouldReturnHit_IfRayTouchesSphere(t *testing.T) {
 
 	hit := sphere.TestRay(ray, core.NewInterval(0, 10))
 
-	assert.True(t, hit.HasHit)
-	assert.EqualValues(t, 4., hit.Param)
+	assert.EqualValues(t, 4., hit.Value().Param)
 }
 
 func TestSphere_ShouldReturnNoHits_IfRayDoesNotIntersectSphere(t *testing.T) {
@@ -53,7 +50,7 @@ func TestSphere_ShouldReturnNoHits_IfRayDoesNotIntersectSphere(t *testing.T) {
 
 	hit := sphere.TestRay(ray, core.NewInterval(0, 10))
 
-	assert.False(t, hit.HasHit)
+	assert.True(t, hit.Empty())
 }
 
 func TestSphere_ShouldReturnNoHits_IfRayPointsDirectlyAgainstSphere(t *testing.T) {
@@ -62,7 +59,7 @@ func TestSphere_ShouldReturnNoHits_IfRayPointsDirectlyAgainstSphere(t *testing.T
 
 	hit := sphere.TestRay(ray, core.NewInterval(0, 10))
 
-	assert.False(t, hit.HasHit)
+	assert.True(t, hit.Empty())
 }
 
 func TestSphere_ShouldEvaluateHit(t *testing.T) {

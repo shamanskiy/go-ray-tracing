@@ -48,7 +48,6 @@ func makeScene() scene.Scene {
 	bigSpheres := []geometries.Sphere{mattSphere, glassSphere, mirrorSphere}
 	makeGridOfRandomSpheres(scene, SMALL_SPHERE_GRID_SIZE, bigSpheres)
 
-	scene.BuildBVH()
 	return scene
 }
 

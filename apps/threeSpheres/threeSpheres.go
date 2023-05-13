@@ -48,7 +48,6 @@ func makeScene() scene.Scene {
 	scene.Add(glassShellOuter, glassMaterial)
 	scene.Add(glassShellInner, glassMaterial)
 
-	scene.BuildBVH()
 	return scene
 }
 
