@@ -1,5 +1,7 @@
 # go-ray-tracing
 
+![build-lint-test-workflow](https://github.com/shamanskiy/go-ray-tracing/actions/workflows/run_tests_on_push.yml/badge.svg)
+
 This is a Go implementation of the [awesome ray tracing tutorial](http://in1weekend.blogspot.com/2016/01/ray-tracing-in-one-weekend.html) by Peter Shirley.
 
 <img src="https://raw.githubusercontent.com/Shamanskiy/go-ray-tracing/media/images/megaScene1280x720.png" width="700">
