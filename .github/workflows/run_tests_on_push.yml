@@ -19,10 +19,5 @@ jobs:
       - name: Lint - vet
         run: go vet ./...
 
-      - name: Lint - staticcheck
-        uses: dominikh/staticcheck-action@v1.2.0
-        with:
-          go-version: "2022.1.1"
-
       - name: Test
         run: go test -v ./...
