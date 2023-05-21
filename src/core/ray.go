@@ -60,8 +60,5 @@ func (ray Ray) Hits(box Box, params Interval) bool {
 	params.min = IfElse(t0 > params.min, t0, params.min)
 	params.max = IfElse(t1 < params.max, t1, params.max)
 
-	if params.max < params.min {
-		return false
-	}
-	return true
+	return params.max >= params.min
 }
