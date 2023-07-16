@@ -27,28 +27,32 @@ func main() {
 }
 
 func makeScene() scene.Scene {
-	background := background.NewVerticalGradient(color.White, color.SkyBlue)
-	scene := scene.New(background)
+	objects := []scene.Object{}
 
 	floor := geometries.NewPlane(core.NewVec3(0, -0.5, 0), core.NewVec3(0, 1, 0))
-	scene.Add(floor, materials.NewDiffusive(color.GrayMedium, randomizer))
+	floorMaterial := materials.NewDiffusive(color.GrayMedium, randomizer)
+	objects = append(objects, scene.Object{Hittable: floor, Material: floorMaterial})
 
 	mattSphere := geometries.NewSphere(core.NewVec3(0, 0, -1), 0.5)
-	scene.Add(mattSphere, materials.NewDiffusive(color.Red, randomizer))
+	mattSphereMaterial := materials.NewDiffusive(color.Red, randomizer)
+	objects = append(objects, scene.Object{Hittable: mattSphere, Material: mattSphereMaterial})
 
 	smallMattSphere := geometries.NewSphere(core.NewVec3(0.25, -0.4, -0.5), 0.1)
-	scene.Add(smallMattSphere, materials.NewDiffusive(color.SkyBlue, randomizer))
+	smallMattSphereMaterial := materials.NewDiffusive(color.SkyBlue, randomizer)
+	objects = append(objects, scene.Object{Hittable: smallMattSphere, Material: smallMattSphereMaterial})
 
 	mirrowSphere := geometries.NewSphere(core.NewVec3(1, 0, -1), 0.5)
-	scene.Add(mirrowSphere, materials.NewReflectiveFuzzy(color.GrayLight, 0.05, randomizer))
+	mirrowSphereMaterial := materials.NewReflectiveFuzzy(color.GrayLight, 0.05, randomizer)
+	objects = append(objects, scene.Object{Hittable: mirrowSphere, Material: mirrowSphereMaterial})
 
 	glassShellOuter := geometries.NewSphere(core.NewVec3(-1, 0, -1), 0.5)
 	glassShellInner := geometries.NewSphere(core.NewVec3(-1, 0, -1), -0.4)
 	glassMaterial := materials.NewTransparent(1.5, color.White, randomizer)
-	scene.Add(glassShellOuter, glassMaterial)
-	scene.Add(glassShellInner, glassMaterial)
+	objects = append(objects, scene.Object{Hittable: glassShellOuter, Material: glassMaterial})
+	objects = append(objects, scene.Object{Hittable: glassShellInner, Material: glassMaterial})
 
-	return scene
+	background := background.NewVerticalGradient(color.White, color.SkyBlue)
+	return scene.New(objects, background)
 }
 
 func makeCamera() *camera.Camera {

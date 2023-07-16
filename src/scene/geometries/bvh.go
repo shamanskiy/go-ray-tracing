@@ -14,27 +14,24 @@ type BVHNode struct {
 	rightChild  Hittable
 }
 
-func BuildBVH(geometries []Geometry) *BVHNode {
-	if len(geometries) == 0 {
-		panic("can't build bvh with zero geometries")
-	}
-
+func BuildBVH(hittables []Hittable) *BVHNode {
 	sortingAxis := rand.Intn(3)
-	sort.Slice(geometries, func(i, j int) bool {
-		return compareGeometries(geometries, i, j, sortingAxis)
+	sort.Slice(hittables, func(i, j int) bool {
+		return compareGeometries(hittables, i, j, sortingAxis)
 	})
 
 	bvhNode := &BVHNode{}
 
-	if len(geometries) == 1 {
-		bvhNode.leftChild = geometries[0]
-		bvhNode.rightChild = geometries[0]
-	} else if len(geometries) == 2 {
-		bvhNode.leftChild = geometries[0]
-		bvhNode.rightChild = geometries[1]
-	} else {
-		bvhNode.leftChild = BuildBVH(geometries[0 : len(geometries)/2])
-		bvhNode.rightChild = BuildBVH(geometries[len(geometries)/2:])
+	switch len(hittables) {
+	case 0:
+		bvhNode.leftChild = emptyHittable{}
+		bvhNode.rightChild = emptyHittable{}
+	case 1:
+		bvhNode.leftChild = hittables[0]
+		bvhNode.rightChild = emptyHittable{}
+	default:
+		bvhNode.leftChild = BuildBVH(hittables[0 : len(hittables)/2])
+		bvhNode.rightChild = BuildBVH(hittables[len(hittables)/2:])
 	}
 
 	bvhNode.boundingBox = bvhNode.leftChild.BoundingBox().Union(bvhNode.rightChild.BoundingBox())
@@ -42,9 +39,9 @@ func BuildBVH(geometries []Geometry) *BVHNode {
 	return bvhNode
 }
 
-func compareGeometries(geometries []Geometry, i, j, sortingAxis int) bool {
-	minI := geometries[i].BoundingBox().Min().At(sortingAxis)
-	minj := geometries[j].BoundingBox().Min().At(sortingAxis)
+func compareGeometries(hittables []Hittable, i, j, sortingAxis int) bool {
+	minI := hittables[i].BoundingBox().Min().At(sortingAxis)
+	minj := hittables[j].BoundingBox().Min().At(sortingAxis)
 	return minI < minj
 }
 

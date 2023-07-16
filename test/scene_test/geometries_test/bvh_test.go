@@ -13,7 +13,7 @@ func TestBVHNode(t *testing.T) {
 	sphereY := geometries.NewSphere(core.NewVec3(0, 3, 0), 1)
 	sphereZ := geometries.NewSphere(core.NewVec3(0, 0, 3), 1)
 	sphereCenter := geometries.NewSphere(core.NewVec3(0, 0, 0), 1)
-	objects := []geometries.Geometry{sphereX, sphereY, sphereZ, sphereCenter}
+	objects := []geometries.Hittable{sphereX, sphereY, sphereZ, sphereCenter}
 	bvh := geometries.BuildBVH(objects)
 
 	expectedBBox := core.NewBox(core.NewVec3(-1, -1, -1), core.NewVec3(4, 4, 4))
@@ -23,5 +23,5 @@ func TestBVHNode(t *testing.T) {
 	hit := bvh.TestRay(ray, core.NewInterval(2, 10))
 
 	assert.EqualValues(t, 2, hit.Value().Param)
-	assert.Equal(t, sphereX.Id(), hit.Value().HitGeometry.Id())
+	assert.Equal(t, sphereX, hit.Value().Geometry)
 }

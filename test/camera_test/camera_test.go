@@ -26,10 +26,11 @@ var cameraSettings = camera.CameraSettings{
 }
 
 var randomizer = random.NewRandomGenerator()
+var noObjects = []scene.Object{}
 
 func TestCamera_ShouldColorAllPixelsSameColor_IfEmptySceneWithFlatColorBackground(t *testing.T) {
 	camera := camera.NewCamera(&cameraSettings, randomizer)
-	scene := scene.New(background.NewFlatColor(color.Red))
+	scene := scene.New(noObjects, background.NewFlatColor(color.Red))
 
 	image := camera.Render(scene)
 
@@ -40,8 +41,8 @@ func TestCamera_ShouldColorAllPixelsSameColor_IfEmptySceneWithFlatColorBackgroun
 
 func TestCamera_ShouldColorCentralPixelWithObjectColor(t *testing.T) {
 	camera := camera.NewCamera(&cameraSettings, randomizer)
-	scene := scene.New(background.NewFlatColor(color.White))
-	scene.Add(geometries.NewSphere(core.NewVec3(0, 0, -2), 1), materials.NewDiffusive(color.Red, randomizer))
+	objects := []scene.Object{{geometries.NewSphere(core.NewVec3(0, 0, -2), 1), materials.NewDiffusive(color.Red, randomizer)}}
+	scene := scene.New(objects, background.NewFlatColor(color.White))
 
 	image := camera.Render(scene)
 
@@ -55,7 +56,7 @@ func TestCamera_ShouldReportProgress(t *testing.T) {
 	settings := cameraSettings
 	settings.ProgressChan = makeProgressConsumer(progressUpdates, waitForConsumer)
 	camera := camera.NewCamera(&settings, randomizer)
-	scene := scene.New(background.NewFlatColor(color.Red))
+	scene := scene.New(noObjects, background.NewFlatColor(color.Red))
 
 	camera.Render(scene)
 	<-waitForConsumer

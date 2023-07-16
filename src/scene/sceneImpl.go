@@ -7,7 +7,6 @@ import (
 	"github.com/Shamanskiy/go-ray-tracer/src/scene/background"
 	"github.com/Shamanskiy/go-ray-tracer/src/scene/geometries"
 	"github.com/Shamanskiy/go-ray-tracer/src/scene/materials"
-	"github.com/google/uuid"
 )
 
 const (
@@ -16,8 +15,6 @@ const (
 )
 
 type SceneImpl struct {
-	objects    []geometries.Geometry
-	materials  map[uuid.UUID]materials.Material
 	background background.Background
 	bvh        *geometries.BVHNode
 
@@ -25,32 +22,27 @@ type SceneImpl struct {
 	maxRayReflections int       // prevents infinite ray bouncing between parallel walls
 }
 
-func New(background background.Background, settings ...SceneImplSetting) *SceneImpl {
+func New(objects []Object, background background.Background, settings ...SceneImplSetting) *SceneImpl {
 	scene := &SceneImpl{
 		background:        background,
 		minHitParam:       DEFAULT_MIN_HIT_PARAM,
 		maxRayReflections: DEFAULT_MAX_RAY_REFLECTIONS,
-		materials:         make(map[uuid.UUID]materials.Material),
 	}
 
 	for _, setting := range settings {
 		setting(scene)
 	}
 
+	hittables := []geometries.Hittable{}
+	for _, object := range objects {
+		hittables = append(hittables, object)
+	}
+	scene.bvh = geometries.BuildBVH(hittables)
+
 	return scene
 }
 
-func (s *SceneImpl) Add(object geometries.Geometry, material materials.Material) {
-	s.objects = append(s.objects, object)
-	s.materials[object.Id()] = material
-	s.bvh = geometries.BuildBVH(s.objects)
-}
-
 func (s *SceneImpl) TestRay(ray core.Ray) color.Color {
-	if len(s.objects) == 0 {
-		return s.background.ColorRay(ray)
-	}
-
 	return s.testRay(ray, 0)
 }
 
@@ -92,9 +84,9 @@ func (s *SceneImpl) hitClosestObject(ray core.Ray) optional.Optional[sceneHit] {
 	}
 
 	hit := optionalHit.Value()
-	closestHitPoint := hit.HitGeometry.EvaluateHit(ray, hit.Param)
+	closestHitPoint := hit.Geometry.EvaluateHit(ray, hit.Param)
 	return optional.Of(sceneHit{
 		location: closestHitPoint,
-		material: s.materials[hit.HitGeometry.Id()],
+		material: hit.Material,
 	})
 }

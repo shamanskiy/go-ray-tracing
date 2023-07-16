@@ -29,29 +29,37 @@ func main() {
 }
 
 func makeScene() scene.Scene {
-	background := background.NewVerticalGradient(color.White, color.SkyBlue)
-	scene := scene.New(background)
+	objects := []scene.Object{}
 
 	floor := geometries.NewSphere(core.NewVec3(0, -500, 0), 500)
-	scene.Add(floor, materials.NewDiffusive(color.GrayMedium, randomizer))
+	floorMaterial := materials.NewDiffusive(color.GrayMedium, randomizer)
+	objects = append(objects, scene.Object{Hittable: floor, Material: floorMaterial})
 
 	sun := geometries.NewSphere(core.NewVec3(100, 200, 100), 50)
-	scene.Add(sun, materials.NewDiffusiveLight(color.White))
+	sunMaterial := materials.NewDiffusiveLight(color.White)
+	objects = append(objects, scene.Object{Hittable: sun, Material: sunMaterial})
 
 	mattSphere := geometries.NewSphere(core.NewVec3(-2.5, 1.0, 1), 1)
-	scene.Add(mattSphere, materials.NewDiffusive(color.Red, randomizer))
+	mattSphereMaterial := materials.NewDiffusive(color.Red, randomizer)
+	objects = append(objects, scene.Object{Hittable: mattSphere, Material: mattSphereMaterial})
+
 	glassSphere := geometries.NewSphere(core.NewVec3(0.0, 1.0, 0.15), 1)
-	scene.Add(glassSphere, materials.NewTransparent(1.5, color.White, randomizer))
+	glassSphereMaterial := materials.NewTransparent(1.5, color.White, randomizer)
+	objects = append(objects, scene.Object{Hittable: glassSphere, Material: glassSphereMaterial})
+
 	mirrorSphere := geometries.NewSphere(core.NewVec3(2.5, 1.0, 0.0), 1)
-	scene.Add(mirrorSphere, materials.NewReflectiveFuzzy(color.GrayLight, 0.02, randomizer))
+	mirrorSphereMaterial := materials.NewReflectiveFuzzy(color.GrayLight, 0.02, randomizer)
+	objects = append(objects, scene.Object{Hittable: mirrorSphere, Material: mirrorSphereMaterial})
 
 	bigSpheres := []geometries.Sphere{mattSphere, glassSphere, mirrorSphere}
-	makeGridOfRandomSpheres(scene, SMALL_SPHERE_GRID_SIZE, bigSpheres)
+	objects = append(objects, makeGridOfRandomSpheres(SMALL_SPHERE_GRID_SIZE, bigSpheres)...)
 
-	return scene
+	background := background.NewVerticalGradient(color.White, color.SkyBlue)
+	return scene.New(objects, background)
 }
 
-func makeGridOfRandomSpheres(scene *scene.SceneImpl, gridSize int, bigSpheres []geometries.Sphere) {
+func makeGridOfRandomSpheres(gridSize int, bigSpheres []geometries.Sphere) []scene.Object {
+	objects := []scene.Object{}
 	for i := -gridSize; i < gridSize; i++ {
 		for j := -gridSize; j < gridSize; j++ {
 			sphere := makeRandomSmallSphere(i, j)
@@ -60,9 +68,10 @@ func makeGridOfRandomSpheres(scene *scene.SceneImpl, gridSize int, bigSpheres []
 			}
 
 			material := makeRandomMaterial()
-			scene.Add(sphere, material)
+			objects = append(objects, scene.Object{Hittable: sphere, Material: material})
 		}
 	}
+	return objects
 }
 
 func makeRandomSmallSphere(i, j int) geometries.Sphere {

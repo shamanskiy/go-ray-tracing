@@ -3,16 +3,14 @@ package geometries
 import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/optional"
-	"github.com/google/uuid"
 )
 
 type Triangle struct {
 	a, b, c core.Vec3
-	id      uuid.UUID
 }
 
 func NewTriangle(a, b, c core.Vec3) Triangle {
-	return Triangle{a, b, c, uuid.New()}
+	return Triangle{a, b, c}
 }
 
 func (t Triangle) BoundingBox() core.Box {

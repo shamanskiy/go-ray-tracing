@@ -15,6 +15,13 @@ func NewInfiniteBox() Box {
 	}
 }
 
+func NewEmptyBox() Box {
+	return Box{
+		min: NewVec3(Inf(), Inf(), Inf()),
+		max: NewVec3(-Inf(), -Inf(), -Inf()),
+	}
+}
+
 func (box Box) Min() Vec3 {
 	return box.min
 }

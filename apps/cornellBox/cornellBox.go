@@ -32,31 +32,38 @@ func main() {
 }
 
 func makeScene() scene.Scene {
-	background := background.NewFlatColor(color.White)
-	scene := scene.New(background, scene.MaxRayReflections(MAX_RAY_REFLECTIONS))
+	objects := []scene.Object{}
 
 	floor := geometries.NewPlane(core.NewVec3(0, 0, 0), core.NewVec3(0, 1, 0))
-	scene.Add(floor, materials.NewDiffusive(color.White, randomizer))
+	floorMaterial := materials.NewDiffusive(color.White, randomizer)
+	objects = append(objects, scene.Object{Hittable: floor, Material: floorMaterial})
 
 	topLight := geometries.NewPlane(core.NewVec3(0, 1, 0), core.NewVec3(0, 1, 0))
-	scene.Add(topLight, materials.NewDiffusive(color.White, randomizer))
+	topLightMaterial := materials.NewDiffusive(color.White, randomizer)
+	objects = append(objects, scene.Object{Hittable: topLight, Material: topLightMaterial})
 
 	backWall := geometries.NewPlane(core.NewVec3(0, 0, 0), core.NewVec3(0, 0, 1))
-	scene.Add(backWall, materials.NewReflective(color.GrayMedium, randomizer))
+	backWallMaterial := materials.NewReflective(color.GrayMedium, randomizer)
+	objects = append(objects, scene.Object{Hittable: backWall, Material: backWallMaterial})
 
 	frontWall := geometries.NewPlane(core.NewVec3(0, 0, CAMERA_Z), core.NewVec3(0, 0, 1))
-	scene.Add(frontWall, materials.NewReflective(color.GrayMedium, randomizer))
+	frontWallMaterial := materials.NewReflective(color.GrayMedium, randomizer)
+	objects = append(objects, scene.Object{Hittable: frontWall, Material: frontWallMaterial})
 
 	leftWall := geometries.NewPlane(core.NewVec3(0, 0, 0), core.NewVec3(1, 0, 0))
-	scene.Add(leftWall, materials.NewDiffusive(color.Red, randomizer))
+	leftWallMaterial := materials.NewDiffusive(color.Red, randomizer)
+	objects = append(objects, scene.Object{Hittable: leftWall, Material: leftWallMaterial})
 
 	rightWall := geometries.NewPlane(core.NewVec3(1, 0, 0), core.NewVec3(1, 0, 0))
-	scene.Add(rightWall, materials.NewDiffusive(color.Green, randomizer))
+	rightWallMaterial := materials.NewDiffusive(color.Green, randomizer)
+	objects = append(objects, scene.Object{Hittable: rightWall, Material: rightWallMaterial})
 
 	sphere := geometries.NewSphere(core.NewVec3(0.5, 0.2, 0.5), 0.2)
-	scene.Add(sphere, materials.NewDiffusiveLight(color.White))
+	sphereMaterial := materials.NewDiffusiveLight(color.White)
+	objects = append(objects, scene.Object{Hittable: sphere, Material: sphereMaterial})
 
-	return scene
+	background := background.NewFlatColor(color.White)
+	return scene.New(objects, background, scene.MaxRayReflections(MAX_RAY_REFLECTIONS))
 }
 
 func makeCamera() *camera.Camera {
