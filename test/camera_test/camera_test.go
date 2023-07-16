@@ -26,11 +26,10 @@ var cameraSettings = camera.CameraSettings{
 }
 
 var randomizer = random.NewRandomGenerator()
-var noObjects = []scene.Object{}
 
 func TestCamera_ShouldColorAllPixelsSameColor_IfEmptySceneWithFlatColorBackground(t *testing.T) {
 	camera := camera.NewCamera(&cameraSettings, randomizer)
-	scene := scene.New(noObjects, background.NewFlatColor(color.Red))
+	scene := scene.NewFakeScene(color.Red)
 
 	image := camera.Render(scene)
 
@@ -41,7 +40,12 @@ func TestCamera_ShouldColorAllPixelsSameColor_IfEmptySceneWithFlatColorBackgroun
 
 func TestCamera_ShouldColorCentralPixelWithObjectColor(t *testing.T) {
 	camera := camera.NewCamera(&cameraSettings, randomizer)
-	objects := []scene.Object{{geometries.NewSphere(core.NewVec3(0, 0, -2), 1), materials.NewDiffusive(color.Red, randomizer)}}
+	objects := []scene.Object{
+		{
+			Hittable: geometries.NewSphere(core.NewVec3(0, 0, -2), 1),
+			Material: materials.NewDiffusive(color.Red, randomizer),
+		},
+	}
 	scene := scene.New(objects, background.NewFlatColor(color.White))
 
 	image := camera.Render(scene)
@@ -56,7 +60,7 @@ func TestCamera_ShouldReportProgress(t *testing.T) {
 	settings := cameraSettings
 	settings.ProgressChan = makeProgressConsumer(progressUpdates, waitForConsumer)
 	camera := camera.NewCamera(&settings, randomizer)
-	scene := scene.New(noObjects, background.NewFlatColor(color.Red))
+	scene := scene.NewFakeScene(color.Red)
 
 	camera.Render(scene)
 	<-waitForConsumer
@@ -71,7 +75,7 @@ func TestCamera_ShouldMultiSampleEachPixel(t *testing.T) {
 	settings.AspectRatio = 1
 	settings.Antialiasing = 10
 	camera := camera.NewCamera(&settings, randomizer)
-	scene := scene.NewFakeScene()
+	scene := scene.NewFakeScene(color.Red)
 
 	camera.Render(scene)
 

@@ -6,14 +6,15 @@ import (
 )
 
 type FakeScene struct {
-	RecordedRays []core.Ray
+	RecordedRays  []core.Ray
+	ColorToReturn color.Color
 }
 
-func NewFakeScene() *FakeScene {
-	return &FakeScene{}
+func NewFakeScene(colorToReturn color.Color) *FakeScene {
+	return &FakeScene{ColorToReturn: colorToReturn}
 }
 
 func (fs *FakeScene) TestRay(ray core.Ray) color.Color {
 	fs.RecordedRays = append(fs.RecordedRays, ray)
-	return color.Red
+	return fs.ColorToReturn
 }
