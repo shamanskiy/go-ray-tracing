@@ -3,7 +3,10 @@ package image
 import (
 	"fmt"
 	"image"
+	"image/png"
+	"os"
 
+	"github.com/Shamanskiy/go-ray-tracer/src/camera/log"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 )
 
@@ -51,4 +54,19 @@ func (i *Image) ConvertToRGBA() *image.RGBA {
 	}
 
 	return rgbaImage
+}
+
+func (i *Image) SaveRGBAToPNG(filename string) {
+	defer log.TimeExecution("save image")()
+	file, err := os.Create(filename)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	rgbaImage := i.ConvertToRGBA()
+	err = png.Encode(file, rgbaImage)
+	if err != nil {
+		panic(err)
+	}
 }

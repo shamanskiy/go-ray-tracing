@@ -20,24 +20,23 @@ import (
 
 var randomizer = random.NewFakeRandomGenerator()
 
-func TestPixelwiseImageComparison(t *testing.T) {
-	scene := makeScene()
-	camera := makeCamera()
-
-	img := camera.Render(scene)
-
-	assertImage(t, "singleRedSphere.png", img)
+var pixelwiseTests = []string{
+	"redDiffusiveSphere",
+	"grayReflectiveSphere",
 }
 
-func makeScene() scene.Scene {
-	objects := []scene.Object{}
+func TestPixelwiseImageComparison(t *testing.T) {
+	camera := makeCamera()
 
-	mattSphere := geometries.NewSphere(core.NewVec3(0, 0, 0), 0.5)
-	mattSphereMaterial := materials.NewDiffusive(color.Red, randomizer)
-	objects = append(objects, scene.Object{Hittable: mattSphere, Material: mattSphereMaterial})
+	for _, testName := range pixelwiseTests {
+		t.Run(testName, func(t *testing.T) {
+			scene := makeScene(testName)
 
-	background := background.NewVerticalGradient(color.White, color.SkyBlue)
-	return scene.New(objects, background)
+			img := camera.Render(scene)
+
+			assertImage(t, testName, img)
+		})
+	}
 }
 
 func makeCamera() *camera.Camera {
@@ -54,11 +53,45 @@ func makeCamera() *camera.Camera {
 	return camera.NewCamera(&settings, randomizer)
 }
 
-func assertImage(t *testing.T, benchmarkImageName string, renderedImage *image.Image) {
+func assertImage(t *testing.T, testName string, renderedImage *image.Image) {
+	benchmarkImageName := testName + ".png"
 	benchmarkImageFile, err := fs.Open(benchmarkImageName)
 	test.PanicOnErr(err)
 	benchmarkImage, err := png.Decode(benchmarkImageFile)
 	test.PanicOnErr(err)
 
 	assert.Equal(t, benchmarkImage, renderedImage.ConvertToRGBA())
+}
+
+func makeScene(testName string) scene.Scene {
+	switch testName {
+	case "redDiffusiveSphere":
+		return redDiffusiveSphereScene()
+	case "grayReflectiveSphere":
+		return grayReflectiveSphereScene()
+	default:
+		panic("unknown testName: " + testName)
+	}
+}
+
+func redDiffusiveSphereScene() scene.Scene {
+	objects := []scene.Object{}
+
+	sphere := geometries.NewSphere(core.NewVec3(0, 0, 0), 0.5)
+	material := materials.NewDiffusive(color.Red, randomizer)
+	objects = append(objects, scene.Object{Hittable: sphere, Material: material})
+
+	background := background.NewVerticalGradient(color.White, color.SkyBlue)
+	return scene.New(objects, background)
+}
+
+func grayReflectiveSphereScene() scene.Scene {
+	objects := []scene.Object{}
+
+	sphere := geometries.NewSphere(core.NewVec3(0, 0, 0), 0.5)
+	material := materials.NewReflective(color.GrayLight, randomizer)
+	objects = append(objects, scene.Object{Hittable: sphere, Material: material})
+
+	background := background.NewVerticalGradient(color.White, color.Black)
+	return scene.New(objects, background)
 }
