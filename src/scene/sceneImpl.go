@@ -3,7 +3,6 @@ package scene
 import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
-	"github.com/Shamanskiy/go-ray-tracer/src/core/optional"
 	"github.com/Shamanskiy/go-ray-tracer/src/scene/background"
 	"github.com/Shamanskiy/go-ray-tracer/src/scene/geometries"
 	"github.com/Shamanskiy/go-ray-tracer/src/scene/materials"
@@ -47,7 +46,7 @@ func (s *SceneImpl) TestRay(ray core.Ray) color.Color {
 }
 
 func (s *SceneImpl) testRay(ray core.Ray, reflectionDepth int) color.Color {
-	optionalHit := s.hitClosestObject(ray)
+	optionalHit := s.bvh.TestRay(ray, core.NewInterval(s.minHitParam, core.Inf()))
 	if optionalHit.Empty() {
 		return s.background.ColorRay(ray)
 	}
@@ -57,7 +56,7 @@ func (s *SceneImpl) testRay(ray core.Ray, reflectionDepth int) color.Color {
 	}
 
 	hit := optionalHit.Value()
-	reflection := hit.material.Reflect(ray.Direction(), hit.location.Point, hit.location.Normal)
+	reflection := hit.Material.Reflect(ray.Direction(), hit.Point, hit.Normal)
 	switch reflection.Type {
 	case materials.Scattered:
 		reflectedRayColor := s.testRay(reflection.Ray, reflectionDepth+1)
@@ -69,24 +68,4 @@ func (s *SceneImpl) testRay(ray core.Ray, reflectionDepth int) color.Color {
 	default:
 		panic("unknown reflection type")
 	}
-}
-
-type sceneHit struct {
-	location geometries.HitPoint
-	material materials.Material
-}
-
-func (s *SceneImpl) hitClosestObject(ray core.Ray) optional.Optional[sceneHit] {
-	optionalHit := s.bvh.TestRay(ray, core.NewInterval(s.minHitParam, core.Inf()))
-
-	if optionalHit.Empty() {
-		return optional.Empty[sceneHit]()
-	}
-
-	hit := optionalHit.Value()
-	closestHitPoint := hit.Geometry.EvaluateHit(ray, hit.Param)
-	return optional.Of(sceneHit{
-		location: closestHitPoint,
-		material: hit.Material,
-	})
 }

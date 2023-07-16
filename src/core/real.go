@@ -16,6 +16,10 @@ func Abs(v Real) Real {
 	return math32.Abs(v)
 }
 
+func Sqrt(v Real) Real {
+	return math32.Sqrt(v)
+}
+
 type Interval struct {
 	min, max Real
 }

@@ -23,5 +23,6 @@ func TestBVHNode(t *testing.T) {
 	hit := bvh.TestRay(ray, core.NewInterval(2, 10))
 
 	assert.EqualValues(t, 2, hit.Value().Param)
-	assert.Equal(t, sphereX, hit.Value().Geometry)
+	assert.Equal(t, core.NewVec3(2, 0, 0), hit.Value().Point)
+	assert.Equal(t, core.NewVec3(-1, 0, 0), hit.Value().Normal)
 }

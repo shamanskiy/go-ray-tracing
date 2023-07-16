@@ -30,28 +30,31 @@ func (sphere Sphere) TestRay(ray core.Ray, params core.Interval) optional.Option
 	}
 
 	if params.Contains(solution.Left) {
-		return optional.Of(Hit{Param: solution.Left, Geometry: sphere})
+		return optional.Of(sphere.evaluateHit(ray, solution.Left))
 	}
 
 	if params.Contains(solution.Right) {
-		return optional.Of(Hit{Param: solution.Right, Geometry: sphere})
+		return optional.Of(sphere.evaluateHit(ray, solution.Right))
 	}
 
 	return optional.Empty[Hit]()
 }
 
-func (s Sphere) EvaluateHit(ray core.Ray, hitParam core.Real) HitPoint {
+func (sphere Sphere) evaluateHit(ray core.Ray, hitParam core.Real) Hit {
 	hitPoint := ray.Eval(hitParam)
-	hitNormal := hitPoint.Sub(s.center).Div(s.radius)
-	return HitPoint{hitPoint, hitNormal}
+	return Hit{
+		Param:  hitParam,
+		Point:  hitPoint,
+		Normal: hitPoint.Sub(sphere.center).Div(sphere.radius),
+	}
 }
 
-func (s Sphere) InContactWith(other Sphere) bool {
-	distance := s.center.Sub(other.center).Len()
-	return distance <= s.radius+other.radius
+func (sphere Sphere) InContactWith(other Sphere) bool {
+	distance := sphere.center.Sub(other.center).Len()
+	return distance <= sphere.radius+other.radius
 }
 
-func (s Sphere) BoundingBox() core.Box {
-	centerToCorner := core.NewVec3(s.radius, s.radius, s.radius)
-	return core.NewBox(s.center.Sub(centerToCorner), s.center.Add(centerToCorner))
+func (sphere Sphere) BoundingBox() core.Box {
+	centerToCorner := core.NewVec3(sphere.radius, sphere.radius, sphere.radius)
+	return core.NewBox(sphere.center.Sub(centerToCorner), sphere.center.Add(centerToCorner))
 }

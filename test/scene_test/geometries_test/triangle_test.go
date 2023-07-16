@@ -9,10 +9,7 @@ import (
 )
 
 func TestTriangleBoundingBox(t *testing.T) {
-	triangle := geometries.NewTriangle(
-		core.NewVec3(1, 0, 0),
-		core.NewVec3(0, 1, 0),
-		core.NewVec3(0, 0, 1))
+	triangle := xyzTriangle()
 
 	bbox := triangle.BoundingBox()
 
@@ -21,10 +18,7 @@ func TestTriangleBoundingBox(t *testing.T) {
 }
 
 func TestTriangle_RayShouldMiss(t *testing.T) {
-	triangle := geometries.NewTriangle(
-		core.NewVec3(1, 0, 0),
-		core.NewVec3(0, 1, 0),
-		core.NewVec3(0, 0, 1))
+	triangle := xyzTriangle()
 	ray := core.NewRay(core.NewVec3(0, 0, 0), core.NewVec3(-1, 0, 0))
 
 	hit := triangle.TestRay(ray, core.NewInterval(0, 10))
@@ -33,10 +27,7 @@ func TestTriangle_RayShouldMiss(t *testing.T) {
 }
 
 func TestTriangle_ShouldReturnNoHitBecauseOutsideOfParamInterval(t *testing.T) {
-	triangle := geometries.NewTriangle(
-		core.NewVec3(1, 0, 0),
-		core.NewVec3(0, 1, 0),
-		core.NewVec3(0, 0, 1))
+	triangle := xyzTriangle()
 	ray := core.NewRay(core.NewVec3(0, 0, 0), core.NewVec3(1, 1, 1))
 
 	hit := triangle.TestRay(ray, core.NewInterval(0, 0.1))
@@ -44,14 +35,24 @@ func TestTriangle_ShouldReturnNoHitBecauseOutsideOfParamInterval(t *testing.T) {
 	assert.True(t, hit.Empty())
 }
 
-// func TestTriangle_ShouldReturnHit(t *testing.T) {
-// 	triangle := geometries.NewTriangle(
-// 		core.NewVec3(1, 0, 0),
-// 		core.NewVec3(0, 1, 0),
-// 		core.NewVec3(0, 0, 1))
-// 	ray := core.NewRay(core.NewVec3(0, 0, 0), core.NewVec3(1, 1, 1))
+func TestTriangle_ShouldReturnHit(t *testing.T) {
+	triangle := xyzTriangle()
+	ray := core.NewRay(core.NewVec3(0, 0, 0), core.NewVec3(1, 1, 1))
 
-// 	hit := triangle.TestRay(ray, core.NewInterval(0, 10))
+	hit := triangle.TestRay(ray, core.NewInterval(0, 10))
 
-// 	assert.Equal(t, math32.Sqrt(2), hit.Value().Param)
-// }
+	assert.InDelta(t, 1./3, hit.Value().Param, core.Tolerance)
+	assert.Equal(t, core.NewVec3(1./3, 1./3, 1./3), hit.Value().Point)
+	normValue := core.Sqrt(3) / 3
+	assert.Equal(t, core.NewVec3(normValue, normValue, normValue), hit.Value().Normal)
+}
+
+func xyzTriangle() geometries.Triangle {
+	return geometries.NewTriangle(
+		core.NewVec3(1, 0, 0),
+		core.NewVec3(0, 1, 0),
+		core.NewVec3(0, 0, 1),
+		core.NewVec3(1, 1, 1),
+		core.NewVec3(1, 1, 1),
+		core.NewVec3(1, 1, 1))
+}

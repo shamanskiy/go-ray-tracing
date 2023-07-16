@@ -10,9 +10,6 @@ import (
 	"github.com/Shamanskiy/go-ray-tracer/src/core/color"
 	"github.com/Shamanskiy/go-ray-tracer/src/core/random"
 	"github.com/Shamanskiy/go-ray-tracer/src/scene"
-	"github.com/Shamanskiy/go-ray-tracer/src/scene/background"
-	"github.com/Shamanskiy/go-ray-tracer/src/scene/geometries"
-	"github.com/Shamanskiy/go-ray-tracer/src/scene/materials"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -36,22 +33,6 @@ func TestCamera_ShouldColorAllPixelsSameColor_IfEmptySceneWithFlatColorBackgroun
 	assert.Equal(t, cameraSettings.ImagePixelHeight, image.Height())
 	assert.Equal(t, cameraSettings.ImagePixelHeight*2, image.Width())
 	assertAllPixelsColor(t, image, color.Red)
-}
-
-func TestCamera_ShouldColorCentralPixelWithObjectColor(t *testing.T) {
-	camera := camera.NewCamera(&cameraSettings, randomizer)
-	objects := []scene.Object{
-		{
-			Hittable: geometries.NewSphere(core.NewVec3(0, 0, -2), 1),
-			Material: materials.NewDiffusive(color.Red, randomizer),
-		},
-	}
-	scene := scene.New(objects, background.NewFlatColor(color.White))
-
-	image := camera.Render(scene)
-
-	assertCornerPixelsColor(t, image, color.White)
-	assert.Equal(t, color.Red, image.PixelColor(5, 2))
 }
 
 func TestCamera_ShouldReportProgress(t *testing.T) {

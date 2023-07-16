@@ -13,15 +13,7 @@ type Hittable interface {
 
 type Hit struct {
 	Param    core.Real
-	Geometry Geometry
+	Point    core.Vec3
+	Normal   core.Vec3
 	Material materials.Material
-}
-
-type HitPoint struct {
-	Point  core.Vec3
-	Normal core.Vec3
-}
-
-type Geometry interface {
-	EvaluateHit(ray core.Ray, hitParam core.Real) HitPoint
 }

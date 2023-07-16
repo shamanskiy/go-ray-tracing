@@ -30,14 +30,13 @@ func (plane Plane) TestRay(ray core.Ray, params core.Interval) optional.Optional
 	hitParam := rayPlaneDistance / dotBN
 
 	if params.Contains(hitParam) {
-		hit := Hit{Param: hitParam, Geometry: plane}
-		return optional.Of(hit)
+		return optional.Of(plane.evaluateHit(ray, hitParam))
 	}
 
 	return optional.Empty[Hit]()
 }
 
-func (p Plane) EvaluateHit(ray core.Ray, hitParam core.Real) HitPoint {
+func (p Plane) evaluateHit(ray core.Ray, hitParam core.Real) Hit {
 	positiveSide := ray.Direction().Dot(p.normal) < 0
 	var normal core.Vec3
 	if positiveSide {
@@ -46,7 +45,8 @@ func (p Plane) EvaluateHit(ray core.Ray, hitParam core.Real) HitPoint {
 		normal = p.normal.Mul(-1)
 	}
 
-	return HitPoint{
+	return Hit{
+		Param:  hitParam,
 		Point:  ray.Eval(hitParam),
 		Normal: normal,
 	}
