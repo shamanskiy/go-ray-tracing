@@ -23,6 +23,7 @@ var randomizer = random.NewFakeRandomGenerator()
 var pixelwiseTests = []string{
 	"redDiffusiveSphere",
 	"grayReflectiveSphere",
+	"redDiffusiveTriangle",
 }
 
 func TestPixelwiseImageComparison(t *testing.T) {
@@ -44,7 +45,7 @@ func makeCamera() *camera.Camera {
 		VerticalFOV:      70,
 		AspectRatio:      16. / 9.,
 		ImagePixelHeight: 360,
-		LookFrom:         core.NewVec3(1, 1, 1),
+		LookFrom:         core.NewVec3(0, 0, 1),
 		LookAt:           core.NewVec3(0, 0, 0),
 		Antialiasing:     4,
 		NumRenderThreads: runtime.NumCPU(),
@@ -69,6 +70,8 @@ func makeScene(testName string) scene.Scene {
 		return redDiffusiveSphereScene()
 	case "grayReflectiveSphere":
 		return grayReflectiveSphereScene()
+	case "redDiffusiveTriangle":
+		return redDiffusiveTriangleScene()
 	default:
 		panic("unknown testName: " + testName)
 	}
@@ -92,6 +95,23 @@ func grayReflectiveSphereScene() scene.Scene {
 	material := materials.NewReflective(color.GrayLight, randomizer)
 	objects = append(objects, scene.Object{Hittable: sphere, Material: material})
 
-	background := background.NewVerticalGradient(color.White, color.Black)
+	background := background.NewVerticalGradient(color.White, color.SkyBlue)
+	return scene.New(objects, background)
+}
+
+func redDiffusiveTriangleScene() scene.Scene {
+	objects := []scene.Object{}
+
+	triangle := geometries.NewTriangle(
+		core.NewVec3(-0.5, -0.5, 0),
+		core.NewVec3(0.5, -0.5, 0),
+		core.NewVec3(0, 0.5, 0),
+		core.NewVec3(0, 0, 1),
+		core.NewVec3(0, 0, 1),
+		core.NewVec3(0, 0, 1))
+	material := materials.NewDiffusive(color.Red, randomizer)
+	objects = append(objects, scene.Object{Hittable: triangle, Material: material})
+
+	background := background.NewVerticalGradient(color.White, color.SkyBlue)
 	return scene.New(objects, background)
 }
