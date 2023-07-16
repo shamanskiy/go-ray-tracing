@@ -1,5 +1,6 @@
-ray_tracer
-*.png
 .DS_Store
 .vscode
-go.sum
+
+cornellBox.png
+megaScene.png
+threeSpheres.png

@@ -16,3 +16,9 @@ func AssertInSemiInternal(t *testing.T, value, low, high core.Real) {
 	assert.GreaterOrEqual(t, value, low)
 	assert.Less(t, value, high)
 }
+
+func PanicOnErr(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
