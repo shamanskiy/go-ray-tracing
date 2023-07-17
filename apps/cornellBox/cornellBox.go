@@ -31,27 +31,43 @@ func main() {
 func makeScene() scene.Scene {
 	objects := []scene.Object{}
 
-	floor := geometries.NewPlane(core.NewVec3(0, 0, 0), core.NewVec3(0, 1, 0))
+	floor := geometries.NewQuad(
+		core.NewVec3(0, 0, 0),
+		core.NewVec3(0, 0, 1),
+		core.NewVec3(1, 0, 1),
+		core.NewVec3(1, 0, 0))
 	floorMaterial := materials.NewDiffusive(color.White, randomizer)
 	objects = append(objects, scene.Object{Hittable: floor, Material: floorMaterial})
 
-	topLight := geometries.NewPlane(core.NewVec3(0, 1, 0), core.NewVec3(0, 1, 0))
+	topLight := geometries.NewQuad(
+		core.NewVec3(0, 1, 0),
+		core.NewVec3(1, 1, 0),
+		core.NewVec3(1, 1, 1),
+		core.NewVec3(0, 1, 1))
 	topLightMaterial := materials.NewDiffusive(color.White, randomizer)
 	objects = append(objects, scene.Object{Hittable: topLight, Material: topLightMaterial})
 
-	backWall := geometries.NewPlane(core.NewVec3(0, 0, 0), core.NewVec3(0, 0, 1))
+	backWall := geometries.NewQuad(
+		core.NewVec3(0, 0, 0),
+		core.NewVec3(1, 0, 0),
+		core.NewVec3(1, 1, 0),
+		core.NewVec3(0, 1, 0))
 	backWallMaterial := materials.NewReflective(color.GrayMedium, randomizer)
 	objects = append(objects, scene.Object{Hittable: backWall, Material: backWallMaterial})
 
-	frontWall := geometries.NewPlane(core.NewVec3(0, 0, CAMERA_Z), core.NewVec3(0, 0, 1))
-	frontWallMaterial := materials.NewReflective(color.GrayMedium, randomizer)
-	objects = append(objects, scene.Object{Hittable: frontWall, Material: frontWallMaterial})
-
-	leftWall := geometries.NewPlane(core.NewVec3(0, 0, 0), core.NewVec3(1, 0, 0))
+	leftWall := geometries.NewQuad(
+		core.NewVec3(0, 0, 0),
+		core.NewVec3(0, 1, 0),
+		core.NewVec3(0, 1, 1),
+		core.NewVec3(0, 0, 1))
 	leftWallMaterial := materials.NewDiffusive(color.Red, randomizer)
 	objects = append(objects, scene.Object{Hittable: leftWall, Material: leftWallMaterial})
 
-	rightWall := geometries.NewPlane(core.NewVec3(1, 0, 0), core.NewVec3(1, 0, 0))
+	rightWall := geometries.NewQuad(
+		core.NewVec3(1, 0, 0),
+		core.NewVec3(1, 0, 1),
+		core.NewVec3(1, 1, 1),
+		core.NewVec3(1, 1, 0))
 	rightWallMaterial := materials.NewDiffusive(color.Green, randomizer)
 	objects = append(objects, scene.Object{Hittable: rightWall, Material: rightWallMaterial})
 

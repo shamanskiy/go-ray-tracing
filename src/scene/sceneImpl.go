@@ -32,7 +32,7 @@ func New(objects []Object, background background.Background, settings ...SceneIm
 		setting(scene)
 	}
 
-	hittables := []geometries.Hittable{}
+	hittables := make([]geometries.Hittable, 0, len(objects))
 	for _, object := range objects {
 		hittables = append(hittables, object)
 	}

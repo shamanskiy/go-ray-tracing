@@ -85,9 +85,18 @@ func flatBackground() background.Background {
 }
 
 func reflectiveXYAngle() []scene.Object {
-	plane1 := geometries.NewPlane(core.NewVec3(0, 0, 0), core.NewVec3(0, 1, 0))
+	plane1 := geometries.NewQuad(
+		core.NewVec3(-5, 0, -5),
+		core.NewVec3(5, 0, -5),
+		core.NewVec3(5, 0, 5),
+		core.NewVec3(-5, 0, 5))
 	material1 := materials.NewReflective(OBJECT_COLOR, randomizer)
-	plane2 := geometries.NewPlane(core.NewVec3(0, 0, 0), core.NewVec3(1, 0, 0))
+	plane2 := geometries.NewQuad(
+		core.NewVec3(0, -5, -5),
+		core.NewVec3(0, 5, -5),
+		core.NewVec3(0, 5, 5),
+		core.NewVec3(0, -5, 5),
+	)
 	material2 := materials.NewReflective(OTHER_OBJECT_COLOR, randomizer)
 
 	return []scene.Object{

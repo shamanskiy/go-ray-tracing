@@ -48,7 +48,7 @@ func TestTriangle_ShouldReturnHit(t *testing.T) {
 }
 
 func xyzTriangle() geometries.Triangle {
-	return geometries.NewTriangle(
+	return geometries.NewTriangleWithNormals(
 		core.NewVec3(1, 0, 0),
 		core.NewVec3(0, 1, 0),
 		core.NewVec3(0, 0, 1),

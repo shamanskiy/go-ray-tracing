@@ -10,7 +10,12 @@ type Triangle struct {
 	n0, n1, n2 core.Vec3
 }
 
-func NewTriangle(v0, v1, v2, n0, n1, n2 core.Vec3) Triangle {
+func NewTriangle(v0, v1, v2 core.Vec3) Triangle {
+	norm := core.Normal(v0, v1, v2)
+	return Triangle{v0, v1, v2, norm, norm, norm}
+}
+
+func NewTriangleWithNormals(v0, v1, v2, n0, n1, n2 core.Vec3) Triangle {
 	return Triangle{v0, v1, v2, n0, n1, n2}
 }
 

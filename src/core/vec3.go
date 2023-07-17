@@ -97,3 +97,9 @@ func Vec3Min(a, b Vec3) Vec3 {
 func Vec3Max(a, b Vec3) Vec3 {
 	return NewVec3(math32.Max(a.X(), b.X()), math32.Max(a.Y(), b.Y()), math32.Max(a.Z(), b.Z()))
 }
+
+func Normal(a, b, c Vec3) Vec3 {
+	edge1 := b.Sub(a)
+	edge2 := c.Sub(a)
+	return edge1.Cross(edge2).Normalize()
+}

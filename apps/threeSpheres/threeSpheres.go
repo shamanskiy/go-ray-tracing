@@ -26,7 +26,7 @@ func main() {
 func makeScene() scene.Scene {
 	objects := []scene.Object{}
 
-	floor := geometries.NewPlane(core.NewVec3(0, -0.5, 0), core.NewVec3(0, 1, 0))
+	floor := geometries.NewSphere(core.NewVec3(0, -500.5, 0), 500)
 	floorMaterial := materials.NewDiffusive(color.GrayMedium, randomizer)
 	objects = append(objects, scene.Object{Hittable: floor, Material: floorMaterial})
 

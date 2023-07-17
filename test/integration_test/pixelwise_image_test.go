@@ -102,7 +102,7 @@ func grayReflectiveSphereScene() scene.Scene {
 func redDiffusiveTriangleScene() scene.Scene {
 	objects := []scene.Object{}
 
-	triangle := geometries.NewTriangle(
+	triangle := geometries.NewTriangleWithNormals(
 		core.NewVec3(-0.5, -0.5, 0),
 		core.NewVec3(0.5, -0.5, 0),
 		core.NewVec3(0, 0.5, 0),
