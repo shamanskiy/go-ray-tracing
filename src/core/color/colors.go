@@ -64,6 +64,7 @@ func (c Color) ToRGBA() rgba.RGBA {
 }
 
 func toZero255(x core.Real) uint8 {
+	x = core.Min(x, 1.)
 	return uint8(math32.Floor(255.99 * gammaCorrection(x)))
 }
 

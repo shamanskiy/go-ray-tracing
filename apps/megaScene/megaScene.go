@@ -33,7 +33,7 @@ func makeScene() scene.Scene {
 	objects = append(objects, scene.Object{Hittable: floor, Material: floorMaterial})
 
 	sun := geometries.NewSphere(core.NewVec3(100, 200, 100), 50)
-	sunMaterial := materials.NewDiffusiveLight(color.White)
+	sunMaterial := materials.NewDiffusiveLight(color.White, 1.)
 	objects = append(objects, scene.Object{Hittable: sun, Material: sunMaterial})
 
 	mattSphere := geometries.NewSphere(core.NewVec3(-2.5, 1.0, 1), 1)

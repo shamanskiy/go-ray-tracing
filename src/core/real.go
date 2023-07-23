@@ -20,12 +20,16 @@ func Sqrt(v Real) Real {
 	return math32.Sqrt(v)
 }
 
+func Min(a, b Real) Real {
+	return math32.Min(a, b)
+}
+
 type Interval struct {
 	min, max Real
 }
 
 func NewInterval(min, max Real) Interval {
-	if min > max {
+	if min > max+Tolerance {
 		panic(fmt.Sprintf("new internal: min %f must be less or equal max %f", min, max))
 	}
 	return Interval{min: min, max: max}
